@@ -13,7 +13,7 @@ class JSONParseTestClass{
     fun JSONParsesTest () {
         println(Paths.get("").toAbsolutePath().toString())
         val path = Paths.get("").toAbsolutePath().toString()
-        val jsonFile = Files.newInputStream(Paths.get("C:\\Users\\K156548\\Documents\\repos\\dagpenger-sommer\\src\\test\\resources\\ExpectedJSONResultForUserPeter"))
+        val jsonFile = Files.newInputStream(Paths.get("src\\test\\resources\\ExpectedJSONResultForUserPeter"))
         val result = Klaxon()
                 .parse<TotalInntekt>(InputStreamReader(jsonFile))
         print(result)
