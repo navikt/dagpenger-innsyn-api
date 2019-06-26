@@ -16,6 +16,7 @@ class JSONParseTestClass{
         val result = Klaxon()
                 .parse<TotalInntekt>(InputStreamReader(jsonFile))
         print(result)
+
     }
 
 }
