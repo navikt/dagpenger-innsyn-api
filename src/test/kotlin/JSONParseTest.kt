@@ -17,6 +17,7 @@ class JSONParseTestClass{
                 .parse<TotalInntekt>(InputStreamReader(jsonFile))
         print(result)
 
+
     }
 
 }
