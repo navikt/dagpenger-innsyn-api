@@ -1,25 +1,22 @@
 import com.beust.klaxon.Klaxon
+import objects.TotalInntekt
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.io.InputStreamReader
 import java.nio.file.Files
 import java.nio.file.Paths
-import objects.TotalInntekt
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class JSONParseTestClass{
+class JSONParseTestClass {
 
     @Test
-    fun JSONParsesTest () {
+    fun JSONParsesTest() {
         println(Paths.get("").toAbsolutePath().toString())
         val jsonFile = Files.newInputStream(Paths.get("src\\test\\resources\\ExpectedJSONResultForUserPeter"))
         val result = Klaxon()
                 .parse<TotalInntekt>(InputStreamReader(jsonFile))
         print(result)
 
-
-
-          
 
     }
 
