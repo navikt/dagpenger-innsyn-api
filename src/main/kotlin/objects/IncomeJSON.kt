@@ -48,9 +48,6 @@ data class Opplysningspliktig(
         val aktoerType: String
 )
 
-
-data class TotalInntekt(
-
 data class TotalInntekt @JvmOverloads constructor(
 
         val inntektId : InntektId,
