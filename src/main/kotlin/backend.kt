@@ -5,7 +5,7 @@ fun main() {
 }
 
 
-fun getSum(employers: MutableList<Employer>) : Double {
+fun getSum(employers: MutableList<Employer>): Double {
     return employers
-        .sumByDouble{employer -> employer.totalIncome}
+            .sumByDouble { employer -> employer.totalIncome }
 }

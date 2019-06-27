@@ -12,10 +12,10 @@ import objects.klaxonConverter
 import java.io.File
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class JSONParseTestClass{
+class JSONParseTestClass {
 
     @Test
-    fun JSONParsesTest () {
+    fun JSONParsesTest() {
         println(Paths.get("").toAbsolutePath().toString())
         val jsonFile = Files.newInputStream(Paths.get("src/test/resources/ExpectedJSONResultForUserPeter"
                 .replace("/", File.separator)))
@@ -23,6 +23,8 @@ class JSONParseTestClass{
                 .fieldConverter(YearMonthDouble::class, klaxonConverter)
                 .parse<TotalInntekt>(InputStreamReader(jsonFile))
         print(result)
+
+
     }
 
     @Test
