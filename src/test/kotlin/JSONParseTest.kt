@@ -24,7 +24,17 @@ class JSONParseTestClass {
                 .parse<TotalInntekt>(InputStreamReader(jsonFile))
         print(result)
 
+    }
+    @Test
+    fun JSONParsesTest2 () {
 
+        println(Paths.get("").toAbsolutePath().toString())
+        val jsonFile = Files.newInputStream(Paths.get("src\\test\\resources\\ExpectedJSONResultForUserBob.json".replace("/", File.separator)))
+
+        val result = Klaxon()
+                .fieldConverter(YearMonthDouble::class, klaxonConverter)
+                .parse<TotalInntekt>(InputStreamReader(jsonFile))
+        print(result)
     }
 
     @Test
