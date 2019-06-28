@@ -1,11 +1,7 @@
-package data.objects
+package data.json
 
-import com.beust.klaxon.Converter
-import com.beust.klaxon.JsonValue
-import com.beust.klaxon.KlaxonException
 import parsing.YearMonthDouble
 import java.time.YearMonth
-import java.time.format.DateTimeParseException
 
 data class ArbeidsInntektInformasjon(
 

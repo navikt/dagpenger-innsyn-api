@@ -1,8 +1,8 @@
 package calculate
 
 import com.beust.klaxon.Klaxon
+import data.json.TotalInntekt
 import data.objects.Opptjeningsperiode
-import data.objects.TotalInntekt
 import parsing.YearMonthDouble
 import parsing.klaxonConverter
 import java.io.InputStreamReader
@@ -53,6 +53,7 @@ class IncomeCalculator {
 
         return incomeForOneMotnh
     }
+
 
     fun getIncomForTheLast36LastMoths(): Double {
         val result = readJSONFile("src\\test\\resources\\ExpectedJSONResultForUserBob.json")

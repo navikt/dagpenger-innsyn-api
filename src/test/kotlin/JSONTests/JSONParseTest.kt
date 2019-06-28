@@ -1,7 +1,7 @@
 package JSONTests
 
 import com.beust.klaxon.Klaxon
-import data.objects.TotalInntekt
+import data.json.TotalInntekt
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -19,11 +19,7 @@ class JSONParseTestClass {
     @Test
     fun JSONParsesTest() {
         println(Paths.get("").toAbsolutePath().toString())
-        val jsonFile = Files.newInputStream(Paths.get("src/test/resources/ExpectedJSONResultForUserPeter"
-                .replace("/", File.separator)))
-        val result = Klaxon()
-                .fieldConverter(YearMonthDouble::class, klaxonConverter)
-                .parse<TotalInntekt>(InputStreamReader(jsonFile))
+        val result = getJSONparsed()
         print(result)
 
     }
@@ -42,11 +38,7 @@ class JSONParseTestClass {
 
     @Test
     fun JSONParsesToYearMonthTest() {
-        val jsonFile = Files.newInputStream(Paths.get("src/test/resources/ExpectedJSONResultForUserPeter"
-                .replace("/", File.separator)))
-        val result = Klaxon()
-                .fieldConverter(YearMonthDouble::class, klaxonConverter)
-                .parse<TotalInntekt>(InputStreamReader(jsonFile))
+        val result = getJSONparsed()
 
         assertTrue(result!!.inntekt.fraDato == YearMonth.parse("2017-08"))
         assertTrue(result.inntekt.tilDato == YearMonth.parse("2017-08"))
@@ -59,14 +51,18 @@ class JSONParseTestClass {
 
     @Test
     fun JSONParsesToDoubleTest() {
-        val jsonFile = Files.newInputStream(Paths.get("src/test/resources/ExpectedJSONResultForUserPeter"
-                .replace("/", File.separator)))
-        val result = Klaxon()
-                .fieldConverter(YearMonthDouble::class, klaxonConverter)
-                .parse<TotalInntekt>(InputStreamReader(jsonFile))
-
+        val result = getJSONparsed()
         assertTrue(result!!.inntekt.arbeidsInntektMaaned[0].arbeidsInntektInformasjon.inntektListe[0].beloep == 5.83)
     }
 
+}
+
+fun getJSONparsed(): TotalInntekt? {
+    return Klaxon()
+            .fieldConverter(YearMonthDouble::class, klaxonConverter)
+            .parse<TotalInntekt>(InputStreamReader(Files
+                    .newInputStream(Paths
+                            .get(("src/test/resources/ExpectedJSONResultForUserPeter"
+                                    .replace("/", File.separator))))))
 }
 
