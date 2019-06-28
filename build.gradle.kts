@@ -27,7 +27,7 @@ repositories {
 
 application {
     applicationName = "dp-regel-minsteinntekt"
-    mainClassName = "no.nav.dagpenger.regel.minsteinntekt.MinsteinntektKt"
+    mainClassName = "io.ktor.server.netty.EngineMain"
 }
 
 java {
@@ -48,13 +48,19 @@ val log4j2Version = "2.11.1"
 val jupiterVersion = "5.3.2"
 val confluentVersion = "5.0.2"
 val prometheusVersion = "0.6.0"
-val ktorVersion = "1.2.0"
+val ktorVersion = "1.2.2"
 val moshiVersion = "1.8.0"
 val ktorMoshiVersion = "1.0.1"
 val orgJsonVersion = "20180813"
 
 dependencies {
     implementation(kotlin("stdlib"))
+
+    implementation("io.ktor:ktor-server:$ktorVersion")
+    implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    implementation("io.ktor:ktor-auth:$ktorVersion")
+    implementation("io.ktor:ktor-auth-jwt:$ktorVersion")
+    implementation("io.ktor:ktor-metrics-micrometer:$ktorVersion")
     implementation("com.beust:klaxon:5.0.1")
     implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
     implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
@@ -64,6 +70,7 @@ dependencies {
     implementation("org.json:json:$orgJsonVersion")
 
     testImplementation(kotlin("test"))
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$jupiterVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jupiterVersion")
 }
