@@ -1,6 +1,7 @@
-import objects.IncomeCalculator
+package JSONTests
+
+import calculate.IncomeCalculator
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import java.time.YearMonth
 import kotlin.test.assertEquals
 
@@ -14,17 +15,19 @@ class JSONInputTest {
     }
 
     @Test
-    fun GetAllIncomeForOneMonthWithOneIncome(){
+    fun GetAllIncomeForOneMonthWithOneIncome() {
         val calc = IncomeCalculator()
-        assertEquals(calc.getIncomeForOneMointh(YearMonth.of(2017,10)), 50.83)
+        assertEquals(calc.getIncomeForOneMointh(YearMonth.of(2017, 10)), 50.83)
     }
+
     @Test
-    fun GetAllIncomeForOneMonthWithTwoIncomes(){
+    fun GetAllIncomeForOneMonthWithTwoIncomes() {
         val calc = IncomeCalculator()
-        assertEquals(calc.getIncomeForOneMointh(YearMonth.of(2017,9)), 5600.0)
+        assertEquals(calc.getIncomeForOneMointh(YearMonth.of(2017, 9)), 5600.0)
     }
+
     @Test
-    fun GetAllIncome36LastMonths(){
+    fun GetAllIncome36LastMonths() {
         val calc = IncomeCalculator()
         assertEquals(calc.getIncomForTheLast36LastMoths(), 5650.83)
     }

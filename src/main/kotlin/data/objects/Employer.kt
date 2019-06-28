@@ -1,4 +1,4 @@
-package objects
+package data.objects
 
 import java.time.LocalDate
 

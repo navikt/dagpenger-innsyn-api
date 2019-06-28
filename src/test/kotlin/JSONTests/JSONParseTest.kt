@@ -1,15 +1,17 @@
+package JSONTests
+
 import com.beust.klaxon.Klaxon
-import objects.YearMonthDouble
+import data.objects.TotalInntekt
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.junit.jupiter.api.Assertions.assertTrue
+import parsing.YearMonthDouble
+import parsing.klaxonConverter
+import java.io.File
 import java.io.InputStreamReader
 import java.nio.file.Files
 import java.nio.file.Paths
-import objects.TotalInntekt
 import java.time.YearMonth
-import objects.klaxonConverter
-import java.io.File
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JSONParseTestClass {
@@ -25,8 +27,9 @@ class JSONParseTestClass {
         print(result)
 
     }
+
     @Test
-    fun JSONParsesTest2 () {
+    fun JSONParsesTest2() {
 
         println(Paths.get("").toAbsolutePath().toString())
         val jsonFile = Files.newInputStream(Paths.get("src\\test\\resources\\ExpectedJSONResultForUserBob.json".replace("/", File.separator)))
@@ -38,7 +41,7 @@ class JSONParseTestClass {
     }
 
     @Test
-    fun JSONParsesToYearMonthTest () {
+    fun JSONParsesToYearMonthTest() {
         val jsonFile = Files.newInputStream(Paths.get("src/test/resources/ExpectedJSONResultForUserPeter"
                 .replace("/", File.separator)))
         val result = Klaxon()
@@ -55,7 +58,7 @@ class JSONParseTestClass {
     }
 
     @Test
-    fun JSONParsesToDoubleTest () {
+    fun JSONParsesToDoubleTest() {
         val jsonFile = Files.newInputStream(Paths.get("src/test/resources/ExpectedJSONResultForUserPeter"
                 .replace("/", File.separator)))
         val result = Klaxon()
