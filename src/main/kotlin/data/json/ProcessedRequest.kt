@@ -11,9 +11,7 @@ data class ProcessedRequest(
 data class EmployerSummary(
         val name: String,
         val orgID: String,
-        val income: Double,
-        val startMonth: YearMonth,
-        val endMonth: YearMonth
+        val income: Double
 )
 
 data class MonthIncomeInformation(
