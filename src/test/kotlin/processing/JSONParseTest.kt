@@ -1,44 +1,28 @@
-package JSONTests
+package processing
 
 import com.beust.klaxon.Klaxon
-import data.json.TotalInntekt
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import parsing.YearMonthDouble
-import parsing.klaxonConverter
 import java.io.File
 import java.io.InputStreamReader
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.YearMonth
 
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JSONParseTestClass {
 
     @Test
     fun JSONParsesTest() {
-        println(Paths.get("").toAbsolutePath().toString())
-        val result = getJSONparsed()
-        print(result)
-
-    }
-
-    @Test
-    fun JSONParsesTest2() {
-
-        println(Paths.get("").toAbsolutePath().toString())
-        val jsonFile = Files.newInputStream(Paths.get("src\\test\\resources\\ExpectedJSONResultForUserBob.json".replace("/", File.separator)))
-
-        val result = Klaxon()
-                .fieldConverter(YearMonthDouble::class, klaxonConverter)
-                .parse<TotalInntekt>(InputStreamReader(jsonFile))
-        print(result)
+        getJSONparsed("Peter")
+        getJSONparsed("Bob")
     }
 
     @Test
     fun JSONParsesToYearMonthTest() {
-        val result = getJSONparsed()
+        val result = getJSONparsed("Peter")
 
         assertTrue(result!!.inntekt.fraDato == YearMonth.parse("2017-08"))
         assertTrue(result.inntekt.tilDato == YearMonth.parse("2017-08"))
@@ -51,18 +35,20 @@ class JSONParseTestClass {
 
     @Test
     fun JSONParsesToDoubleTest() {
-        val result = getJSONparsed()
+        val result = getJSONparsed("Peter")
         assertTrue(result!!.inntekt.arbeidsInntektMaaned[0].arbeidsInntektInformasjon.inntektListe[0].beloep == 5.83)
     }
 
 }
 
-fun getJSONparsed(): TotalInntekt? {
+
+fun getJSONparsed(userName: String): InntektsInformasjon {
+    val test = InntektsInformasjon()
     return Klaxon()
             .fieldConverter(YearMonthDouble::class, klaxonConverter)
-            .parse<TotalInntekt>(InputStreamReader(Files
+            .parse<InntektsInformasjon>(InputStreamReader(Files
                     .newInputStream(Paths
-                            .get(("src/test/resources/ExpectedJSONResultForUserPeter"
-                                    .replace("/", File.separator))))))
+                            .get(("src%stest%sresources%sExpectedJSONResultForUser%s.requests"
+                                    .format(File.separator, File.separator, File.separator, userName))))))
 }
 

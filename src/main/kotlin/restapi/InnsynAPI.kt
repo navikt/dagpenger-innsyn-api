@@ -1,7 +1,7 @@
 package restapi
 
 import com.fasterxml.jackson.databind.SerializationFeature
-import data.json.PersonRequest
+import data.requests.APIPostRequest
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -19,8 +19,9 @@ import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.routing
 import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 
-val logger = LogManager.getLogger()
+val logger: Logger = LogManager.getLogger()
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
@@ -53,7 +54,7 @@ fun Application.module() {
         }
 
         post("/inntekt") {
-            val post = call.receive<PersonRequest>()
+            val post = call.receive<APIPostRequest>()
             logger.info("Received new request from somewhere")
             logger.info(post)
             call.respond(getExample())
