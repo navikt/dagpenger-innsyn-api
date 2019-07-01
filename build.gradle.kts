@@ -70,7 +70,6 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version")
     implementation("com.vlkan.log4j2:log4j2-logstash-layout-fatjar:0.15")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.21")
-    implementation("org.json:json:$orgJsonVersion")
     implementation("no.bekk.bekkopen:nocommons:0.8.2")
 
     testImplementation(kotlin("test"))

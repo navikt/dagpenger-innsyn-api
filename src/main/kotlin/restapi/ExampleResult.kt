@@ -1,15 +1,15 @@
 package restapi
 
-import data.json.Employer
-import data.json.EmployerSummary
-import data.json.MonthIncomeInformation
-import data.json.ProcessedRequest
+import data.inntekt.Employer
+import data.inntekt.EmployerSummary
+import data.inntekt.MonthIncomeInformation
+import data.inntekt.ProcessedRequest
 import java.time.YearMonth
 
-fun getExample() : ProcessedRequest {
+fun getExample(): ProcessedRequest {
 
     return ProcessedRequest(
-            totalIncome=25542.12,
+            totalIncome = 25542.12,
             employerSummaries = listOf(
                     EmployerSummary(
                             name = "NAV",

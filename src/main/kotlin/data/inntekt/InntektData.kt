@@ -1,22 +1,19 @@
-package data.json
+package data.inntekt
 
 import parsing.YearMonthDouble
 import java.time.YearMonth
 
-data class ArbeidsInntektInformasjon(
+data class InntektsInformasjon(
 
-        val inntektListe: List<InntektListe>
+        val inntektId: InntektId,
+        val inntekt: Inntekt,
+        val manueltRedigert: Boolean,
+        val timestamp: String
 )
 
 data class InntektId(
 
         val id: String
-)
-
-data class Virksomhet(
-
-        val identifikator: String,
-        val aktoerType: String
 )
 
 data class Inntekt(
@@ -33,30 +30,9 @@ data class ArbeidsInntektMaaned(
         val arbeidsInntektInformasjon: ArbeidsInntektInformasjon
 )
 
-data class Ident(
+data class ArbeidsInntektInformasjon(
 
-        val identifikator: String,
-        val aktoerType: String
-)
-
-data class Opplysningspliktig(
-
-        val identifikator: String,
-        val aktoerType: String
-)
-
-data class TotalInntekt @JvmOverloads constructor(
-
-        val inntektId: InntektId,
-        val inntekt: Inntekt,
-        val manueltRedigert: Boolean,
-        val timestamp: String
-)
-
-data class Inntektsmottaker(
-
-        val identifikator: String,
-        val aktoerType: String
+        val inntektListe: List<InntektListe>
 )
 
 data class InntektListe(
@@ -78,6 +54,30 @@ data class InntektListe(
         val informasjonsstatus: String,
         val verdikode: String,
         val beskrivelse: String
+)
+
+data class Opplysningspliktig(
+
+        val identifikator: String,
+        val aktoerType: String
+)
+
+data class Virksomhet(
+
+        val identifikator: String,
+        val aktoerType: String
+)
+
+data class Inntektsmottaker(
+
+        val identifikator: String,
+        val aktoerType: String
+)
+
+data class Ident(
+
+        val identifikator: String,
+        val aktoerType: String
 )
 
 

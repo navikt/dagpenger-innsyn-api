@@ -1,4 +1,4 @@
-package data.json
+package data.inntekt
 
 import java.time.YearMonth
 

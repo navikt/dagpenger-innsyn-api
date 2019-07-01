@@ -7,23 +7,20 @@ import java.time.YearMonth
 import java.time.ZoneId
 import java.util.*
 
-data class Opptjeningsperiode(val beregningsdato: LocalDate) {
+class Opptjeningsperiode(beregningsdato: LocalDate) {
     private val antattRapporteringsFrist = LocalDate.of(beregningsdato.year, beregningsdato.month, 5)
     private val reellRapporteringsFrist: LocalDate =
-            finnFørsteArbeidsdagEtterRapporterteringsFrist(antattRapporteringsFrist)
-    private val månedSubtraksjon: Long = when {
+            finnFoersteArbeidsdagEtterRapporterteringsFrist(antattRapporteringsFrist)
+    private val maanedSubtraksjon: Long = when {
         beregningsdato.isBefore(reellRapporteringsFrist) || beregningsdato.isEqual(reellRapporteringsFrist) -> 2
         else -> 1
     }
 
-    val sisteAvsluttendeKalenderMåned: YearMonth = beregningsdato.minusMonths(månedSubtraksjon).toYearMonth()
-    val førsteMåned: YearMonth = sisteAvsluttendeKalenderMåned.minusMonths(36)
+    val sisteAvsluttendeKalenderMaaned: YearMonth = beregningsdato.minusMonths(maanedSubtraksjon).toYearMonth()
+    val foersteMaaned: YearMonth = sisteAvsluttendeKalenderMaaned.minusMonths(36)
 
-    fun sammeOpptjeningsPeriode(other: Opptjeningsperiode): Boolean =
-            this.sisteAvsluttendeKalenderMåned == other.sisteAvsluttendeKalenderMåned
-
-    private fun finnFørsteArbeidsdagEtterRapporterteringsFrist(rapporteringsFrist: LocalDate): LocalDate {
-        return if (rapporteringsFrist.erArbeidsdag()) rapporteringsFrist else finnFørsteArbeidsdagEtterRapporterteringsFrist(
+    private fun finnFoersteArbeidsdagEtterRapporterteringsFrist(rapporteringsFrist: LocalDate): LocalDate {
+        return if (rapporteringsFrist.erArbeidsdag()) rapporteringsFrist else finnFoersteArbeidsdagEtterRapporterteringsFrist(
                 rapporteringsFrist.plusDays(1)
         )
     }
