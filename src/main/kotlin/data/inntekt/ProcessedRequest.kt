@@ -3,6 +3,7 @@ package data.inntekt
 import java.time.YearMonth
 
 data class ProcessedRequest(
+        val personnummer: String,
         val totalIncome: Double,
         val employerSummaries: List<EmployerSummary>,
         val monthsIncomeInformation: List<MonthIncomeInformation>
