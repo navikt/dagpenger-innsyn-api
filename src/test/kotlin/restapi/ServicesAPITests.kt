@@ -7,7 +7,7 @@ import io.ktor.server.testing.withTestApplication
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class RestapiTest {
+class ServicesAPITests {
     @Test
     fun testRoot() {
         withTestApplication({ module() }) {
