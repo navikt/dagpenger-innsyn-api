@@ -43,7 +43,7 @@ fun getJSONParsed(userName: String): InntektsInformasjon {
             .fieldConverter(YearMonthDouble::class, klaxonConverter)
             .parse<InntektsInformasjon>(InputStreamReader(Files
                     .newInputStream(Paths
-                            .get(("src%stest%sresources%sExpectedJSONResultForUser%s.json"
-                                    .format(File.separator, File.separator, File.separator, userName))))))!!
+                            .get(("src%stest%sresources%sresults%sjson%sExpectedJSONResultForUser%s.json"
+                                    .format(File.separator, File.separator, File.separator, File.separator, File.separator, userName))))))!!
 }
 
