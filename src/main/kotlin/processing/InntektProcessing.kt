@@ -6,24 +6,23 @@ import java.time.LocalDate
 import java.time.YearMonth
 
 fun getInntektForFirstMonth(inntektData: InntektsInformasjon): Double? {
-    return inntektData.inntekt.arbeidsInntektMaaned[0].arbeidsInntektInformasjon.inntektListe[0].beloep
+    return inntektData.inntekt.arbeidsInntektMaaned
+            .first().arbeidsInntektInformasjon.inntektListe
+            .first().beloep
 }
 
 fun getInntektForOneMonth(inntektData: InntektsInformasjon, yearMonth: YearMonth): Double {
-    var inntektForOneMonth = 0.0
-    inntektData.inntekt.arbeidsInntektMaaned.filter { arbeidsInntektMaaned -> arbeidsInntektMaaned.aarMaaned.equals(yearMonth) }.forEach {
-        it.arbeidsInntektInformasjon.inntektListe.forEach { inntektForOneMonth += it.beloep }
-    }
-    return inntektForOneMonth
+    return inntektData.inntekt.arbeidsInntektMaaned
+            .filter{arbeidsInntektMaaned -> arbeidsInntektMaaned.aarMaaned.equals(yearMonth) }
+            .first().arbeidsInntektInformasjon.inntektListe
+            .sumByDouble { inntektListe -> inntektListe.beloep }
 }
 
 
-fun getIncomForTheLast36LastMoths(inntektData: InntektsInformasjon): Double {
-    val foersteMaaned = Opptjeningsperiode(LocalDate.now()).foersteMaaned
-    val sisteMaaned = Opptjeningsperiode(LocalDate.now()).sisteAvsluttendeKalenderMaaned
-    var inntektFor36months = 0.0
-    inntektData.inntekt.arbeidsInntektMaaned.filter { it.aarMaaned in foersteMaaned..sisteMaaned }.forEach {
-        it.arbeidsInntektInformasjon.inntektListe.forEach { inntektFor36months += it.beloep }
+fun getInntektForTheLast36LastMoths(inntektData: InntektsInformasjon): Double {
+    return inntektData.inntekt.arbeidsInntektMaaned
+            .filter { it.aarMaaned in Opptjeningsperiode(LocalDate.now()).foersteMaaned..Opptjeningsperiode(LocalDate.now()).sisteAvsluttendeKalenderMaaned }
+            .sumByDouble { it.arbeidsInntektInformasjon.inntektListe
+                    .sumByDouble { it.beloep }
     }
-    return inntektFor36months
 }

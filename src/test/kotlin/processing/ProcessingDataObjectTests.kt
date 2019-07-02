@@ -7,27 +7,27 @@ import kotlin.test.assertEquals
 //@TestInstance
 class ProcessingDataObjectTests {
 
-    val testDataBob = getJSONParsed("Bob")
-    val testDataPeter = getJSONParsed("Peter")
+    private val testDataBob = getJSONParsed("Bob")
+    private val testDataPeter = getJSONParsed("Peter")
 
     @Test
     fun InntektForFirstMonthTest() {
-        assertEquals(getInntektForFirstMonth(testDataPeter), 5.83)
+        assertEquals(5.83, getInntektForFirstMonth(testDataPeter))
     }
 
     @Test
     fun AllInntektForOneMonthWithOneInntekt() {
-        assertEquals(getInntektForOneMonth(testDataBob, YearMonth.of(2017, 10)), 50.83)
+        assertEquals(50.83, getInntektForOneMonth(testDataBob, YearMonth.of(2017, 10)))
     }
 
     @Test
     fun AllInntektForOneMonthWithTwoInntekts() {
-        assertEquals(getInntektForOneMonth(testDataBob, YearMonth.of(2017, 9)), 5600.0)
+        assertEquals(5600.0, getInntektForOneMonth(testDataBob, YearMonth.of(2017, 9)))
     }
 
     @Test
     fun AllInntekt36LastMonths() {
-        assertEquals(getIncomForTheLast36LastMoths(testDataBob), 5650.83)
+        assertEquals(5650.83, getInntektForTheLast36LastMoths(testDataBob))
     }
 
 }
