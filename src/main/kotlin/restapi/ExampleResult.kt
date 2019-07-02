@@ -9,6 +9,7 @@ import java.time.YearMonth
 fun getExample(): ProcessedRequest {
 
     return ProcessedRequest(
+            personnummer = "1432523",
             totalIncome = 25542.12,
             employerSummaries = listOf(
                     EmployerSummary(
