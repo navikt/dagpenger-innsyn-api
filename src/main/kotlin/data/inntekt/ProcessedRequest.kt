@@ -23,5 +23,10 @@ data class MonthIncomeInformation(
 data class Employer(
         val name: String,
         val orgID: String,
-        val income: Double
+        val incomes: List<Income>
+)
+
+data class Income(
+        val income: Double,
+        val verdikode: String
 )

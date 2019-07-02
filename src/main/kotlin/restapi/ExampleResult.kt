@@ -1,9 +1,6 @@
 package restapi
 
-import data.inntekt.Employer
-import data.inntekt.EmployerSummary
-import data.inntekt.MonthIncomeInformation
-import data.inntekt.ProcessedRequest
+import data.inntekt.*
 import java.time.YearMonth
 
 fun getExample(): ProcessedRequest {
@@ -35,17 +32,36 @@ fun getExample(): ProcessedRequest {
                                     Employer(
                                             name = "NAV",
                                             orgID = "451123",
-                                            income = 7300.0
+                                            incomes = listOf(
+                                                    Income(
+                                                        income = 7300.0,
+                                                        verdikode = "Fastlønn"
+                                                    ),
+                                                    Income(
+                                                        income = 7300.0,
+                                                        verdikode = "Feriepenger"
+                                                    )
+                                            )
                                     ),
                                     Employer(
                                             name = "BEKK",
                                             orgID = "112300",
-                                            income = 11231.12
+                                            incomes = listOf(
+                                                    Income(
+                                                        income = 7300.0,
+                                                        verdikode = "Bil"
+                                                    )
+                                            )
                                     ),
                                     Employer(
                                             name = "Visma Consulting",
                                             orgID = "661298",
-                                            income = 7011.0
+                                            incomes = listOf(
+                                                    Income(
+                                                        income = 7300.0,
+                                                        verdikode = "Fastlønn"
+                                                    )
+                                            )
                                     )
                             )
                     )
