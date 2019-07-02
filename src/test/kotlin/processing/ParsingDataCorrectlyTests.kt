@@ -17,7 +17,7 @@ import java.time.YearMonth
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JSONParseTestClass {
 
-    val testDataPeter = getJSONParsed("Peter")
+    private val testDataPeter = getJSONParsed("Peter")
 
     @Test
     fun JSONParsesToYearMonthTest() {
