@@ -29,18 +29,21 @@ class ProcessingDataObjectTests {
     fun AllInntekt36LastMonths() {
         assertEquals(5650.83, getInntektForTheLast36LastMoths(testDataBob))
     }
+
     @Test
     fun GetListOfArbeidsgiverTest() {
 
-        assertEquals(getInntektPerArbeidsgiverList(testDataBob)[0].arbeidsgiver,"222222" )
+        assertEquals(getInntektPerArbeidsgiverList(testDataBob)[0].arbeidsgiver, "222222")
 
     }
+
     @Test
     fun GetListOfInntektForEachArbeidsgiverTest() {
 
         assertEquals(getInntektPerArbeidsgiverList(testDataBob).get(0).inntekt, 5099.00)
-        assertEquals(getInntektPerArbeidsgiverList(testDataBob).get(1).inntekt,501.00 )
+        assertEquals(getInntektPerArbeidsgiverList(testDataBob).get(1).inntekt, 501.00)
     }
+
     @Test
     fun GetTotalListOfInntektForEachArbeidsgiverTest() {
 
