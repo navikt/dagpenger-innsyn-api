@@ -3,7 +3,10 @@ package receive
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.testing.*
+import io.ktor.server.testing.TestApplicationEngine
+import io.ktor.server.testing.handleRequest
+import io.ktor.server.testing.setBody
+import io.ktor.server.testing.withTestApplication
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -43,8 +46,8 @@ class invalidInputTests {
     """.trimIndent()
 
     @Test
-    fun LackingDataFails() = testApp{
-        handleRequest (HttpMethod.Post, "/inntekt" ) {
+    fun LackingDataFails() = testApp {
+        handleRequest(HttpMethod.Post, "/inntekt") {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(lackingData)
         }.apply {
@@ -54,8 +57,8 @@ class invalidInputTests {
     }
 
     @Test
-    fun NoDataFails() = testApp{
-        handleRequest (HttpMethod.Post, "/inntekt" ) {
+    fun NoDataFails() = testApp {
+        handleRequest(HttpMethod.Post, "/inntekt") {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(noData)
         }.apply {
@@ -65,8 +68,8 @@ class invalidInputTests {
     }
 
     @Test
-    fun LackingFieldsDataFails() = testApp{
-        handleRequest (HttpMethod.Post, "/inntekt" ) {
+    fun LackingFieldsDataFails() = testApp {
+        handleRequest(HttpMethod.Post, "/inntekt") {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(lackingFieldsData)
         }.apply {
@@ -87,8 +90,8 @@ class invalidInputTests {
 //    }
 
     @Test
-    fun PartialDataFails() = testApp{
-        handleRequest (HttpMethod.Post, "/inntekt" ) {
+    fun PartialDataFails() = testApp {
+        handleRequest(HttpMethod.Post, "/inntekt") {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(partialData)
         }.apply {
@@ -100,6 +103,6 @@ class invalidInputTests {
     private fun testApp(callback: TestApplicationEngine.() -> Unit) {
         withTestApplication({
             (innsynAPI())
-        }) {callback()}
+        }) { callback() }
     }
 }

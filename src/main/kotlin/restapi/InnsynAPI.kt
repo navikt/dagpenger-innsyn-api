@@ -59,16 +59,16 @@ fun Application.innsynAPI() {
             var post: APIPostRequest? = null
             try {
                 post = call.receive()
-            } catch (exception : UnrecognizedPropertyException) {
+            } catch (exception: UnrecognizedPropertyException) {
                 logger.info("Received invalid API call: ")
                 logger.info(call.request.toLogString())
                 call.respond(HttpStatusCode.NotAcceptable, "Invalid JSON submitted")
-            } catch (exception : MissingKotlinParameterException) {
+            } catch (exception: MissingKotlinParameterException) {
                 logger.info("Received incomplete API call: ")
                 logger.info(call.request.toLogString())
                 call.respond(HttpStatusCode.NotAcceptable, "Incomplete JSON submitted")
             }
-            if(post != null) {
+            if (post != null) {
                 logger.info(post)
                 call.respond(getExample())
             }

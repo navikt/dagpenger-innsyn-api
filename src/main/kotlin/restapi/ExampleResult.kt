@@ -34,12 +34,12 @@ fun getExample(): ProcessedRequest {
                                             orgID = "451123",
                                             incomes = listOf(
                                                     Income(
-                                                        income = 7300.0,
-                                                        verdikode = "Fastlønn"
+                                                            income = 7300.0,
+                                                            verdikode = "Fastlønn"
                                                     ),
                                                     Income(
-                                                        income = 7300.0,
-                                                        verdikode = "Feriepenger"
+                                                            income = 7300.0,
+                                                            verdikode = "Feriepenger"
                                                     )
                                             )
                                     ),
@@ -48,8 +48,8 @@ fun getExample(): ProcessedRequest {
                                             orgID = "112300",
                                             incomes = listOf(
                                                     Income(
-                                                        income = 7300.0,
-                                                        verdikode = "Bil"
+                                                            income = 7300.0,
+                                                            verdikode = "Bil"
                                                     )
                                             )
                                     ),
@@ -58,8 +58,8 @@ fun getExample(): ProcessedRequest {
                                             orgID = "661298",
                                             incomes = listOf(
                                                     Income(
-                                                        income = 7300.0,
-                                                        verdikode = "Fastlønn"
+                                                            income = 7300.0,
+                                                            verdikode = "Fastlønn"
                                                     )
                                             )
                                     )
