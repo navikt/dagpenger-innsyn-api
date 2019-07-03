@@ -1,6 +1,7 @@
 package processing
 
 import org.junit.jupiter.api.Test
+import parsing.getJSONParsed
 import java.time.YearMonth
 import kotlin.test.assertEquals
 

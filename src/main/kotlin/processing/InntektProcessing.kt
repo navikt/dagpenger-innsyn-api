@@ -8,6 +8,8 @@ import java.time.YearMonth
 import kotlin.streams.toList
 
 data class ArbeidsgiverOgInntekt(val arbeidsgiver: String, val inntekt: Double)
+data class ArbeidsgiverOgPeriode(val arbeidsgiver: String, val perioder: List<MonthPeriod>)
+data class MonthPeriod(val startMonth: YearMonth, val endMonth: YearMonth)
 
 fun getInntektForFirstMonth(inntektData: InntektsInformasjon): Double? {
     return inntektData.inntekt.arbeidsInntektMaaned
@@ -21,6 +23,23 @@ fun getInntektForOneMonth(inntektData: InntektsInformasjon, yearMonth: YearMonth
             .filter { arbeidsInntektMaaned -> arbeidsInntektMaaned.aarMaaned.equals(yearMonth) }
             .first().arbeidsInntektInformasjon.inntektListe
             .sumByDouble { inntektListe -> inntektListe.beloep }
+}
+
+fun getPeriodForEachEmployer (inntektData: InntektsInformasjon) : List<ArbeidsgiverOgPeriode>? {
+    val test = inntektData.inntekt.arbeidsInntektMaaned
+            .filter { arbeidsInntektMaaned -> arbeidsInntektMaaned.aarMaaned in Opptjeningsperiode(LocalDate.now()).foersteMaaned..Opptjeningsperiode(LocalDate.now()).sisteAvsluttendeKalenderMaaned }
+            .map { arbeidsInntektMaaned -> Pair(arbeidsInntektMaaned.aarMaaned, arbeidsInntektMaaned.arbeidsInntektInformasjon.inntektListe.stream()
+                    .map { inntektData -> inntektData.virksomhet.identifikator }
+                    .toList()) }
+            .sortedBy { pair -> pair.first }
+            .map { pair -> pair.second.stream()
+                    .map { arbeidsgiverID -> Pair(arbeidsgiverID, pair.first) }
+                    .toList()}
+            .groupBy { pair -> pair.first() }
+            .mapValues { groupedPairValues -> groupedPairValues}
+    println(test)
+    return null
+
 }
 
 
@@ -54,6 +73,10 @@ fun getTotalInntektPerArbeidsgiver(inntektData: InntektsInformasjon): List<Arbei
             .mapValues { values -> values.value.get() }
             .map { (arbeidsgiver, inntekt) -> ArbeidsgiverOgInntekt(arbeidsgiver, inntekt) }
             .toList()
+}
+
+fun main() {
+    getPeriodForEachEmployer()
 }
 
 

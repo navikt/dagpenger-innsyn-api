@@ -15,7 +15,7 @@ import kotlin.test.assertTrue
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class invalidInputTests {
+class InvalidInputTests {
 
     val noData = """
         {
@@ -34,7 +34,7 @@ class invalidInputTests {
         {
             "personnummer": "15118512351",
             "beregningsdato": "2019-03-01",
-            "token":"ah82638419gvh123bn"
+            "token":""
         }
     """.trimIndent()
 
@@ -46,7 +46,7 @@ class invalidInputTests {
     """.trimIndent()
 
     @Test
-    fun LackingDataFails() = testApp {
+    fun lackingDataFails() = testApp {
         handleRequest(HttpMethod.Post, "/inntekt") {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(lackingData)
@@ -57,7 +57,7 @@ class invalidInputTests {
     }
 
     @Test
-    fun NoDataFails() = testApp {
+    fun noDataFails() = testApp {
         handleRequest(HttpMethod.Post, "/inntekt") {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(noData)
@@ -68,7 +68,7 @@ class invalidInputTests {
     }
 
     @Test
-    fun LackingFieldsDataFails() = testApp {
+    fun lackingFieldsDataFails() = testApp {
         handleRequest(HttpMethod.Post, "/inntekt") {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(lackingFieldsData)
@@ -90,7 +90,7 @@ class invalidInputTests {
 //    }
 
     @Test
-    fun PartialDataFails() = testApp {
+    fun partialDataFails() = testApp {
         handleRequest(HttpMethod.Post, "/inntekt") {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(partialData)
@@ -100,9 +100,9 @@ class invalidInputTests {
         }
     }
 
-    private fun testApp(callback: TestApplicationEngine.() -> Unit) {
-        withTestApplication({
-            (innsynAPI())
-        }) { callback() }
-    }
+}
+fun testApp(callback: TestApplicationEngine.() -> Unit) {
+    withTestApplication({
+        (innsynAPI())
+    }) { callback() }
 }

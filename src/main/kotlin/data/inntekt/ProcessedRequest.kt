@@ -16,7 +16,7 @@ data class EmployerSummary(
 )
 
 data class MonthIncomeInformation(
-        val month: YearMonth,
+        @parsing.YearMonth val month: YearMonth,
         val employers: List<Employer>
 )
 

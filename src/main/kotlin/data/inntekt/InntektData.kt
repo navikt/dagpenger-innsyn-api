@@ -1,6 +1,5 @@
 package data.inntekt
 
-import parsing.YearMonthDouble
 import java.time.YearMonth
 
 data class InntektsInformasjon(
@@ -20,13 +19,13 @@ data class Inntekt(
 
         val arbeidsInntektMaaned: List<ArbeidsInntektMaaned>,
         val ident: Ident,
-        @YearMonthDouble val fraDato: YearMonth,
-        @YearMonthDouble val tilDato: YearMonth
+        @parsing.YearMonth val fraDato: YearMonth,
+        @parsing.YearMonth val tilDato: YearMonth
 )
 
 data class ArbeidsInntektMaaned(
 
-        @YearMonthDouble val aarMaaned: YearMonth,
+        @parsing.YearMonth val aarMaaned: YearMonth,
         val arbeidsInntektInformasjon: ArbeidsInntektInformasjon
 )
 
@@ -39,13 +38,13 @@ data class InntektListe(
 
         val inntektType: String,
         val header: String,
-        @YearMonthDouble val beloep: Double,
+        @parsing.Double val beloep: Double,
         val fordel: String,
         val inntektskilde: String,
         val inntektsperiodetype: String,
         val inntektsstatus: String,
-        @YearMonthDouble val leveringstidspunkt: YearMonth,
-        @YearMonthDouble val utbetaltIMaaned: YearMonth,
+        @parsing.YearMonth val leveringstidspunkt: YearMonth,
+        @parsing.YearMonth val utbetaltIMaaned: YearMonth,
         val opplysningspliktig: Opplysningspliktig,
         val virksomhet: Virksomhet,
         val inntektsmottaker: Inntektsmottaker,

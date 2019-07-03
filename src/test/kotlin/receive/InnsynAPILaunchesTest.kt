@@ -8,7 +8,7 @@ import restapi.innsynAPI
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ServicesAPITests {
+class InnsynAPILaunchesTest {
 
     //TODO: Remove this and test that server is runnable another way
     @Test
