@@ -10,46 +10,81 @@ class ProcessingDataObjectTests {
 
     private val testDataBob = getJSONParsed("Bob")
     private val testDataPeter = getJSONParsed("Peter")
+    private val testDataGabriel = processing.getJSONParsed("Gabriel")
+
+    private val testYearMonths = listOf(YearMonth.of(2001, 1),YearMonth.of(2001, 2),YearMonth.of(2001, 3),YearMonth.of(2001, 4),YearMonth.of(2001, 5),
+            YearMonth.of(2001, 9), YearMonth.of(2001, 10), YearMonth.of(2001, 11), YearMonth.of(2001, 12))
+    private val testYearMonthsEdge = listOf(YearMonth.of(2000, 10),
+            YearMonth.of(2000, 12),YearMonth.of(2001, 1),
+            YearMonth.of(2001, 3),YearMonth.of(2001, 4),
+            YearMonth.of(2001, 12), YearMonth.of(2002, 1),
+            YearMonth.of(1999, 12), YearMonth.of(2000, 1))
+
+    private val expectedResultTestMonths = listOf<Pair<YearMonth, YearMonth>>(
+            Pair(YearMonth.of(2001, 1), YearMonth.of(2001, 5)),
+            Pair(YearMonth.of(2001, 9), YearMonth.of(2001, 12)))
+    private val expectedResultTestMonthsEdge = listOf<Pair<YearMonth, YearMonth>>(
+            Pair(YearMonth.of(1999, 12), YearMonth.of(2000, 1)),
+            Pair(YearMonth.of(2000, 10), YearMonth.of(2000, 10)),
+            Pair(YearMonth.of(2000, 12), YearMonth.of(2001, 1)),
+            Pair(YearMonth.of(2001, 3), YearMonth.of(2001, 4)),
+            Pair(YearMonth.of(2001, 12), YearMonth.of(2002, 1)))
+
+    private val expectedPeriodsGabriel = "[ArbeidsgiverOgPeriode(arbeidsgiver=222222, perioder=[(2017-09, 2017-09), (2017-12, 2017-12)]), ArbeidsgiverOgPeriode(arbeidsgiver=2222221, perioder=[(2017-09, 2017-09)]), ArbeidsgiverOgPeriode(arbeidsgiver=55555, perioder=[(2017-10, 2017-10)]), ArbeidsgiverOgPeriode(arbeidsgiver=666666, perioder=[(2017-10, 2017-10)]), ArbeidsgiverOgPeriode(arbeidsgiver=11111, perioder=[(2017-11, 2017-12)])]"
 
     @Test
-    fun InntektForFirstMonthTest() {
-        assertEquals(5.83, getInntektForFirstMonth(testDataPeter))
+    fun inntektForFirstMonthTest() {
+        assertEquals(getInntektForFirstMonth(testDataPeter), 5.83)
     }
 
     @Test
-    fun AllInntektForOneMonthWithOneInntekt() {
+    fun allInntektForOneMonthWithOneInntekt() {
         assertEquals(50.83, getInntektForOneMonth(testDataBob, YearMonth.of(2017, 10)))
     }
 
     @Test
-    fun AllInntektForOneMonthWithTwoInntekts() {
+    fun allInntektForOneMonthWithTwoInntekts() {
         assertEquals(5600.0, getInntektForOneMonth(testDataBob, YearMonth.of(2017, 9)))
     }
 
     @Test
-    fun AllInntekt36LastMonths() {
+    fun allInntekt36LastMonths() {
         assertEquals(5650.83, getInntektForTheLast36LastMoths(testDataBob))
     }
 
     @Test
-    fun GetListOfArbeidsgiverTest() {
-
-        assertEquals(getInntektPerArbeidsgiverList(testDataBob)[0].arbeidsgiver, "222222")
-
+    fun getListOfArbeidsgiverTest() {
+        assertEquals("222222", getInntektPerArbeidsgiverList(testDataBob)[0].arbeidsgiver)
     }
 
     @Test
-    fun GetListOfInntektForEachArbeidsgiverTest() {
+    fun getListOfInntektForEachArbeidsgiverTest() {
 
-        assertEquals(getInntektPerArbeidsgiverList(testDataBob).get(0).inntekt, 5099.00)
-        assertEquals(getInntektPerArbeidsgiverList(testDataBob).get(1).inntekt, 501.00)
+        assertEquals(5099.00, getInntektPerArbeidsgiverList(testDataBob).get(0).inntekt)
+        assertEquals(501.00, getInntektPerArbeidsgiverList(testDataBob).get(1).inntekt)
     }
 
     @Test
-    fun GetTotalListOfInntektForEachArbeidsgiverTest() {
+    fun getTotalListOfInntektForEachArbeidsgiverTest() {
 
-        assertEquals(getTotalInntektPerArbeidsgiver(testDataBob).get(0).inntekt, 5149.83)
-        assertEquals(getTotalInntektPerArbeidsgiver(testDataBob).get(1).inntekt, 501.0)
+        assertEquals(5149.83, getTotalInntektPerArbeidsgiver(testDataBob).get(0).inntekt)
+        assertEquals(501.0, getTotalInntektPerArbeidsgiver(testDataBob).get(1).inntekt)
     }
+
+    @Test
+    fun  checkGroupingWorks() {
+        assertEquals(expectedResultTestMonths, groupYearMonthIntoPeriods(testYearMonths))
+    }
+
+    @Test
+    fun checkGroupingWorksEdgeCase() {
+        assertEquals(expectedResultTestMonthsEdge, groupYearMonthIntoPeriods(testYearMonthsEdge))
+    }
+
+    @Test
+    fun checkPeriodSortingWorks() {
+        assertEquals(expectedPeriodsGabriel, getPeriodForEachEmployer(testDataGabriel).toString())
+    }
+
 
 }

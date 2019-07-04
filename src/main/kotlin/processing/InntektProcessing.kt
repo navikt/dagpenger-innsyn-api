@@ -47,11 +47,12 @@ fun getPeriodForEachEmployer(inntektData: InntektsInformasjon): List<Arbeidsgive
 fun groupYearMonthIntoPeriods(yearMonths: List<YearMonth>): List<Pair<YearMonth, YearMonth>> {
     return yearMonths
             .sorted()
-            .drop(1)
-            .fold(listOf(Pair(yearMonths.first(), yearMonths.first())), { list, yearMonth ->
-                if (list.last().second.plusMonths(1).equals(yearMonth))
-                    list.dropLast(1) + Pair(list.last().first, yearMonth)
-                else list + Pair(yearMonth, yearMonth)
+            .fold(emptyList(), { list, yearMonth ->
+                if(list.isEmpty()) list + Pair(yearMonth, yearMonth)
+                else
+                    if (list.last().second.plusMonths(1).equals(yearMonth))
+                        list.dropLast(1) + Pair(list.last().first, yearMonth)
+                    else list + Pair(yearMonth, yearMonth)
             })
 }
 
