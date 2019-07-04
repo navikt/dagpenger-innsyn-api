@@ -25,6 +25,8 @@ class Opptjeningsperiode(beregningsdato: LocalDate) {
         )
     }
 
+    fun get36MonthRange(): ClosedRange<YearMonth> = foersteMaaned..sisteAvsluttendeKalenderMaaned
+
     private fun LocalDate.erArbeidsdag(): Boolean =
             NorwegianDateUtil.isWorkingDay(Date.from(this.atStartOfDay(ZoneId.systemDefault()).toInstant()))
 
