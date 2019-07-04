@@ -6,23 +6,48 @@ import java.time.YearMonth
 fun getExample(): ProcessedRequest {
 
     return ProcessedRequest(
-            personnummer = "1432523",
+            personnummer = "18069637988",
             totalIncome = 25542.12,
             employerSummaries = listOf(
                     EmployerSummary(
                             name = "NAV",
                             orgID = "451123",
-                            income = 7300.0
+                            income = 7300.0,
+                            employmentPeriodes = listOf(
+                                    EmploymentPeriode(
+                                            startDateYearMonth = YearMonth.of(2019, 4),
+                                            endDateYearMonth = YearMonth.now()
+                                    )
+
+                            )
                     ),
                     EmployerSummary(
                             name = "BEKK",
                             orgID = "112300",
-                            income = 11231.12
+                            income = 11231.120,
+                            employmentPeriodes = listOf(
+                                    EmploymentPeriode(
+                                            startDateYearMonth = YearMonth.of(2019, 4),
+                                            endDateYearMonth = YearMonth.now()
+                                    )
+
+                            )
                     ),
                     EmployerSummary(
                             name = "Visma Consulting",
                             orgID = "661298",
-                            income = 7011.0
+                            income = 7011.00,
+                            employmentPeriodes = listOf(
+                                    EmploymentPeriode(
+                                            startDateYearMonth = YearMonth.of(2019, 4),
+                                            endDateYearMonth = YearMonth.now()
+                                    ),
+                                    EmploymentPeriode(
+                                            startDateYearMonth = YearMonth.of(2019, 4),
+                                            endDateYearMonth = YearMonth.now()
+                                    )
+
+                            )
                     )
             ),
             monthsIncomeInformation = listOf(

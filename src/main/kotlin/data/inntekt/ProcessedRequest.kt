@@ -12,7 +12,13 @@ data class ProcessedRequest(
 data class EmployerSummary(
         val name: String,
         val orgID: String,
-        val income: Double
+        val income: Double,
+        val employmentPeriodes: List<EmploymentPeriode>
+)
+
+data class EmploymentPeriode(
+        val startDateYearMonth: YearMonth,
+        val endDateYearMonth: YearMonth
 )
 
 data class MonthIncomeInformation(
