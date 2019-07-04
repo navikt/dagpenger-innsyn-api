@@ -11,7 +11,7 @@ Content-Type: application/json
 {
   "personnummer": "15118512351",
   "beregningsdato": "2019-03-01",
-  "token":"ah82638419gvh123bn"
+  "token": "ah82638419gvh123bn"
 }
 
 ###

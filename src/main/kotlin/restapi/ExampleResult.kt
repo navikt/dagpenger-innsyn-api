@@ -27,7 +27,7 @@ fun getExample(): ProcessedRequest {
             ),
             monthsIncomeInformation = listOf(
                     MonthIncomeInformation(
-                            month = YearMonth.of(2019,1),
+                            month = YearMonth.of(2019, 1),
                             employers = listOf(
                                     Employer(
                                             name = "NAV",

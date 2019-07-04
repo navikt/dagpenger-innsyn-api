@@ -1,7 +1,7 @@
 package parsing
 
 import com.beust.klaxon.Klaxon
-import data.inntekt.*
+import data.inntekt.InntektsInformasjon
 import data.objects.APITestRequest
 import data.objects.OnlyLocalDate
 import data.requests.APIPostRequest
@@ -21,7 +21,6 @@ class JSONParseTestClass {
     private val testDataPeter = getJSONParsed("Peter")
 
 
-
     @Test
     fun JSONParsesToYearMonthTest() {
         assertTrue(testDataPeter.inntekt.fraDato == YearMonth.parse("2017-08"))
@@ -37,10 +36,6 @@ class JSONParseTestClass {
     fun JSONParsesToDoubleTest() {
         assertTrue(testDataPeter.inntekt.arbeidsInntektMaaned[0].arbeidsInntektInformasjon.inntektListe[0].beloep == 5.83)
     }
-
-
-
-
 
 
     @Test
@@ -75,8 +70,6 @@ class JSONParseTestClass {
                         Klaxon().toJsonString(OnlyLocalDate(java.time.LocalDate.now()))
                 )
     }
-
-
 
 
 }

@@ -31,12 +31,14 @@ fun getInntektForOneMonth(inntektData: InntektsInformasjon, yearMonth: YearMonth
             .sumByDouble { inntektListe -> inntektListe.beloep }
 }
 
-fun getPeriodForEachEmployer (inntektData: InntektsInformasjon) : List<ArbeidsgiverOgPeriode>? {
+fun getPeriodForEachEmployer(inntektData: InntektsInformasjon): List<ArbeidsgiverOgPeriode>? {
     return inntektData.inntekt.arbeidsInntektMaaned
             .filter { arbeidsInntektMaaned -> arbeidsInntektMaaned.aarMaaned in Opptjeningsperiode(LocalDate.now()).get36MonthRange() }
-            .flatMap { arbeidsInntektMaaned -> arbeidsInntektMaaned.arbeidsInntektInformasjon.inntektListe
-                    .map { inntektListe -> Pair(inntektListe.virksomhet.identifikator, arbeidsInntektMaaned.aarMaaned) }
-                    .toList()}
+            .flatMap { arbeidsInntektMaaned ->
+                arbeidsInntektMaaned.arbeidsInntektInformasjon.inntektListe
+                        .map { inntektListe -> Pair(inntektListe.virksomhet.identifikator, arbeidsInntektMaaned.aarMaaned) }
+                        .toList()
+            }
             .groupBy { pair -> pair.first }
             .mapValues { element -> element.value.map { pair -> pair.second }.toList() }
             .map { element -> ArbeidsgiverOgPeriode(element.key, groupYearMonthIntoPeriods(element.value)) }
@@ -49,7 +51,8 @@ fun groupYearMonthIntoPeriods(yearMonths: List<YearMonth>): List<Pair<YearMonth,
             .fold(listOf(Pair(yearMonths.first(), yearMonths.first())), { list, yearMonth ->
                 if (list.last().second.plusMonths(1).equals(yearMonth))
                     list.dropLast(1) + Pair(list.last().first, yearMonth)
-                else list + Pair(yearMonth, yearMonth)})
+                else list + Pair(yearMonth, yearMonth)
+            })
 }
 
 

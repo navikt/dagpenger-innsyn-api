@@ -24,7 +24,10 @@ import io.ktor.routing.post
 import io.ktor.routing.routing
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import parsing.*
+import parsing.LocalDate
+import parsing.doubleParser
+import parsing.localDateParser
+import parsing.yearMonthParser
 import java.time.DateTimeException
 
 val logger: Logger = LogManager.getLogger()
@@ -62,11 +65,9 @@ fun Application.innsynAPI() {
 
             if (postRequest == null) {
                 logger.info("PostRequest not successfully parsed. Terminating operation")
-            }
-            else if (! isValidPostRequest(postRequest)) {
+            } else if (!isValidPostRequest(postRequest)) {
                 logger.info("PostRequest is not valid. Terminating operation")
-            }
-            else {
+            } else {
                 logger.info("Received valid POST Request. Responding with sample text for now")
                 call.respond(HttpStatusCode.OK, Klaxon()
                         .fieldConverter(parsing.YearMonth::class, yearMonthParser)
@@ -80,7 +81,7 @@ fun Application.innsynAPI() {
 
 fun isValidPostRequest(postRequest: APIPostRequest): Boolean {
     if (postRequest.beregningsdato > java.time.LocalDate.now()) {
-        logger.info ("Mottok beregningsdato i fremtiden")
+        logger.info("Mottok beregningsdato i fremtiden")
     } else if (postRequest.beregningsdato < java.time.LocalDate.of(1970, 1, 1)) {
         logger.info("Mottok beregningsdato før epoch")
     } else if (postRequest.personnummer == "") {
@@ -89,7 +90,7 @@ fun isValidPostRequest(postRequest: APIPostRequest): Boolean {
         logger.info("Mottok personnummer av ugyldig lengde")
     } else if (!Regex("[0-6][0-9][0-1][0-9]{8}").matches(postRequest.personnummer)) {
         logger.info("Mottok irregulert personnummer")
-    } else if (! postRequest.token.equals("1234567890ABCDEFghijkl")) {
+    } else if (!postRequest.token.equals("1234567890ABCDEFghijkl")) {
         logger.info("Mottok ugyldig token")
     } else {
         return true
@@ -100,7 +101,7 @@ fun isValidPostRequest(postRequest: APIPostRequest): Boolean {
 suspend fun parsePOST(call: ApplicationCall): APIPostRequest? {
     try {
         val payload: String = call.receiveText()
-        return  Klaxon()
+        return Klaxon()
                 .fieldConverter(LocalDate::class, localDateParser)
                 .parse<APIPostRequest>(payload)
     } catch (exception: KlaxonException) {

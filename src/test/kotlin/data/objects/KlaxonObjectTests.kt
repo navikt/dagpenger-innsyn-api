@@ -7,6 +7,6 @@ data class APITestRequest(
         val token: String
 )
 
-data class OnlyLocalDate (
+data class OnlyLocalDate(
         @LocalDate val localDate: java.time.LocalDate
 )

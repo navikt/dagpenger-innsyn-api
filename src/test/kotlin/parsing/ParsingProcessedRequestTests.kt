@@ -20,20 +20,20 @@ class ParsingProcessedRequestTests {
             incomes = listOf(testDataIncome)
     )
 
-    private val testDataMonthIncomeInformation = MonthIncomeInformation (
+    private val testDataMonthIncomeInformation = MonthIncomeInformation(
             month = YearMonth.of(2019, 1),
             employers = listOf(testDataEmployer)
     )
 
-    private val testDataEmployerSummary = EmployerSummary (
+    private val testDataEmployerSummary = EmployerSummary(
             name = "NAV",
             orgID = "114235",
             income = 155.13
     )
 
-    private val testDataProcessedRequest = ProcessedRequest (
+    private val testDataProcessedRequest = ProcessedRequest(
             personnummer = "131165542135",
-            totalIncome =  155.13,
+            totalIncome = 155.13,
             employerSummaries = listOf(testDataEmployerSummary),
             monthsIncomeInformation = listOf(testDataMonthIncomeInformation)
     )

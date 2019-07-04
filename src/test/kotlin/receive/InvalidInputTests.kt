@@ -101,6 +101,7 @@ class InvalidInputTests {
     }
 
 }
+
 fun testApp(callback: TestApplicationEngine.() -> Unit) {
     withTestApplication({
         (innsynAPI())
