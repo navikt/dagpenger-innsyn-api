@@ -7,6 +7,7 @@ fun convertInntektDataIntoProcessedRequest(inntektsInformasjon: InntektsInformas
     return ProcessedRequest(
             personnummer = inntektsInformasjon.inntektId.id,
             totalIncome = getInntektForTheLast36LastMoths(inntektsInformasjon),
+            totalIncome12 = getInntektForTheLast12LastMoths(inntektsInformasjon),
             employerSummaries = getEmployerSummaries(inntektsInformasjon),
             monthsIncomeInformation = getMonthsIncomeInformation(inntektsInformasjon)
     )

@@ -8,6 +8,7 @@ fun getExample(): ProcessedRequest {
     return ProcessedRequest(
             personnummer = "18069637988",
             totalIncome = 25542.12,
+            totalIncome12 = 122234.3,
             employerSummaries = listOf(
                     EmployerSummary(
                             name = "NAV",
@@ -89,7 +90,36 @@ fun getExample(): ProcessedRequest {
                                             )
                                     )
                             )
+                    ),
+                    MonthIncomeInformation(
+                    month = YearMonth.of(2018, 1),
+                    employers = listOf(
+                            Employer(
+                                    name = "NAV",
+                                    orgID = "451123",
+                                    incomes = listOf(
+                                            Income(
+                                                    income = 8300.0,
+                                                    verdikode = "Fastlønn"
+                                            ),
+                                            Income(
+                                                    income = 3300.0,
+                                                    verdikode = "Feriepenger"
+                                            )
+                                    )
+                            ),
+                            Employer(
+                                    name = "BEKK",
+                                    orgID = "112300",
+                                    incomes = listOf(
+                                            Income(
+                                                    income = 5552.0,
+                                                    verdikode = "Bil"
+                                            )
+                                    )
+                            )
                     )
+            )
             )
     )
 }

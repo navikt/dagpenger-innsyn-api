@@ -80,6 +80,14 @@ fun getInntektForTheLast36LastMoths(inntektData: InntektsInformasjon): Double {
                         .sumByDouble { it.beloep }
             }
 }
+fun getInntektForTheLast12LastMoths(inntektData: InntektsInformasjon): Double {
+    return inntektData.inntekt.arbeidsInntektMaaned
+            .filter { it.aarMaaned in Opptjeningsperiode(LocalDate.now()).get12MonthRange() }
+            .sumByDouble {
+                it.arbeidsInntektInformasjon.inntektListe
+                        .sumByDouble { it.beloep }
+            }
+}
 
 fun getInntektPerArbeidsgiverList(inntektData: InntektsInformasjon): List<ArbeidsgiverOgInntekt> {
     return inntektData.inntekt.arbeidsInntektMaaned.stream()
