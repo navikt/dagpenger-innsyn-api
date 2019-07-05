@@ -5,6 +5,8 @@ import java.time.YearMonth
 
 fun getExample(): ProcessedRequest {
 
+    val fastloennConst = "Fastlønn"
+
     return ProcessedRequest(
             personnummer = "18069637988",
             totalIncome = 25542.12,
@@ -61,7 +63,7 @@ fun getExample(): ProcessedRequest {
                                             incomes = listOf(
                                                     Income(
                                                             income = 7300.0,
-                                                            verdikode = "Fastlønn"
+                                                            verdikode = fastloennConst
                                                     ),
                                                     Income(
                                                             income = 7300.0,
@@ -85,41 +87,41 @@ fun getExample(): ProcessedRequest {
                                             incomes = listOf(
                                                     Income(
                                                             income = 7300.0,
-                                                            verdikode = "Fastlønn"
+                                                            verdikode = fastloennConst
                                                     )
                                             )
                                     )
                             )
                     ),
                     MonthIncomeInformation(
-                    month = YearMonth.of(2018, 1),
-                    employers = listOf(
-                            Employer(
-                                    name = "NAV",
-                                    orgID = "451123",
-                                    incomes = listOf(
-                                            Income(
-                                                    income = 8300.0,
-                                                    verdikode = "Fastlønn"
-                                            ),
-                                            Income(
-                                                    income = 3300.0,
-                                                    verdikode = "Feriepenger"
+                            month = YearMonth.of(2018, 1),
+                            employers = listOf(
+                                    Employer(
+                                            name = "NAV",
+                                            orgID = "451123",
+                                            incomes = listOf(
+                                                    Income(
+                                                            income = 8300.0,
+                                                            verdikode = fastloennConst
+                                                    ),
+                                                    Income(
+                                                            income = 3300.0,
+                                                            verdikode = "Feriepenger"
+                                                    )
                                             )
-                                    )
-                            ),
-                            Employer(
-                                    name = "BEKK",
-                                    orgID = "112300",
-                                    incomes = listOf(
-                                            Income(
-                                                    income = 5552.0,
-                                                    verdikode = "Bil"
+                                    ),
+                                    Employer(
+                                            name = "BEKK",
+                                            orgID = "112300",
+                                            incomes = listOf(
+                                                    Income(
+                                                            income = 5552.0,
+                                                            verdikode = "Bil"
+                                                    )
                                             )
                                     )
                             )
                     )
-            )
             )
     )
 }

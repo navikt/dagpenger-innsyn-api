@@ -3,6 +3,7 @@ package restapi
 import com.beust.klaxon.Klaxon
 import com.beust.klaxon.KlaxonException
 import com.fasterxml.jackson.databind.SerializationFeature
+import data.inntekt.ProcessedRequest
 import data.requests.APIPostRequest
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
@@ -24,10 +25,8 @@ import io.ktor.routing.post
 import io.ktor.routing.routing
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import parsing.LocalDate
-import parsing.doubleParser
-import parsing.localDateParser
-import parsing.yearMonthParser
+import parsing.*
+import processing.convertInntektDataIntoProcessedRequest
 import java.time.DateTimeException
 
 val logger: Logger = LogManager.getLogger()
@@ -70,10 +69,7 @@ fun Application.innsynAPI() {
                 call.respond(HttpStatusCode.NotAcceptable, "Invalid JSON received")
             } else {
                 logger.info("Received valid POST Request. Responding with sample text for now")
-                call.respond(HttpStatusCode.OK, Klaxon()
-                        .fieldConverter(parsing.YearMonth::class, yearMonthParser)
-                        .fieldConverter(parsing.Double::class, doubleParser)
-                        .toJsonString(getExample()))
+                call.respond(HttpStatusCode.OK, defaultParser.toJsonString(convertInntektDataIntoProcessedRequest(getJSONParsed("Gabriel"))))
             }
 
         }

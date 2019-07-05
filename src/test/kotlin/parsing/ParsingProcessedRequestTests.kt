@@ -39,88 +39,52 @@ class ParsingProcessedRequestTests {
     private val testDataProcessedRequest = ProcessedRequest(
             personnummer = "131165542135",
             totalIncome = 155.13,
+            totalIncome12 = 80.25,
             employerSummaries = listOf(testDataEmployerSummary),
             monthsIncomeInformation = listOf(testDataMonthIncomeInformation)
     )
 
     @Test
     fun KlaxonParsesIncome() {
-        println(testDataIncome)
-        Klaxon()
-                .fieldConverter(parsing.YearMonth::class, yearMonthParser)
-                .fieldConverter(parsing.Double::class, doubleParser)
+        defaultParser
                 .parse<Income>(
-                        Klaxon()
-                                .fieldConverter(parsing.YearMonth::class, yearMonthParser)
-                                .fieldConverter(parsing.Double::class, doubleParser)
+                        defaultParser
                                 .toJsonString(testDataIncome)
                 )
     }
 
     @Test
     fun KlaxonParsesEmployer() {
-        println(testDataEmployer)
-        Klaxon()
-                .fieldConverter(parsing.YearMonth::class, yearMonthParser)
-                .fieldConverter(parsing.Double::class, doubleParser)
+        defaultParser
                 .parse<Employer>(
-                        Klaxon()
-                                .fieldConverter(parsing.YearMonth::class, yearMonthParser)
-                                .fieldConverter(parsing.Double::class, doubleParser)
+                        defaultParser
                                 .toJsonString(testDataEmployer)
                 )
     }
 
     @Test
     fun KlaxonParsesMonthIncomeInformation() {
-        println(testDataMonthIncomeInformation)
-        println(Klaxon()
-                .fieldConverter(parsing.YearMonth::class, yearMonthParser)
-                .fieldConverter(parsing.Double::class, doubleParser)
-                .toJsonString(testDataMonthIncomeInformation)
-        )
-        Klaxon()
-                .fieldConverter(parsing.YearMonth::class, yearMonthParser)
-                .fieldConverter(parsing.Double::class, doubleParser)
+        defaultParser
                 .parse<MonthIncomeInformation>(
-                        Klaxon()
-                                .fieldConverter(parsing.YearMonth::class, yearMonthParser)
-                                .fieldConverter(parsing.Double::class, doubleParser)
+                        defaultParser
                                 .toJsonString(testDataMonthIncomeInformation)
                 )
     }
 
     @Test
     fun KlaxonParsesEmployerSummary() {
-        println(testDataEmployerSummary)
-        println(Klaxon().fieldConverter(parsing.Double::class, doubleParser).toJsonString(testDataEmployerSummary))
-        println("still here?")
-        Klaxon()
-                .fieldConverter(parsing.YearMonth::class, yearMonthParser)
-                .fieldConverter(parsing.Double::class, doubleParser)
+        defaultParser
                 .parse<EmployerSummary>(
-                        Klaxon()
-                                .fieldConverter(parsing.YearMonth::class, yearMonthParser)
-                                .fieldConverter(parsing.Double::class, doubleParser)
+                        defaultParser
                                 .toJsonString(testDataEmployerSummary)
                 )
     }
 
     @Test
     fun KlaxonParsesProcessedRequest() {
-        println("Test")
-        println(testDataProcessedRequest.toString())
-        println("MoreTest")
-        println(Klaxon()
-                .fieldConverter(parsing.YearMonth::class, yearMonthParser)
-                .fieldConverter(parsing.Double::class, doubleParser)
-                .toJsonString(testDataProcessedRequest))
-        Klaxon().fieldConverter(parsing.YearMonth::class, yearMonthParser)
-                .fieldConverter(parsing.Double::class, doubleParser)
+        defaultParser
                 .parse<ProcessedRequest>(
-                        Klaxon()
-                                .fieldConverter(parsing.YearMonth::class, yearMonthParser)
-                                .fieldConverter(parsing.Double::class, doubleParser)
+                        defaultParser
                                 .toJsonString(testDataProcessedRequest)
                 )
     }

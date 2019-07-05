@@ -36,10 +36,10 @@ val yearMonthParser = object : Converter {
             if (jv.string != null) {
                 YearMonth.parse(jv.string, DateTimeFormatter.ofPattern("yyyy-MM"))
             } else {
-                throw KlaxonException("Could not parse YearMonth: ${jv.string}")
+                throw KlaxonException("Could not parse YearMonth: ${jv}")
             }
 
-    override fun toJson(value: Any) = """"$value""""
+    override fun toJson(value: Any) = """"${(value as YearMonth)}""""
 }
 
 @Target(AnnotationTarget.FIELD)
