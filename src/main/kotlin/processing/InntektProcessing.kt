@@ -1,15 +1,8 @@
 package processing
 
 
-import com.beust.klaxon.Klaxon
 import data.inntekt.InntektsInformasjon
 import data.objects.Opptjeningsperiode
-import parsing.doubleParser
-import parsing.yearMonthParser
-import java.io.File
-import java.io.InputStreamReader
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.time.LocalDate
 import java.time.YearMonth
 import kotlin.streams.toList
@@ -48,7 +41,7 @@ fun groupYearMonthIntoPeriods(yearMonths: List<YearMonth>): List<Pair<YearMonth,
     return yearMonths
             .sorted()
             .fold(emptyList(), { list, yearMonth ->
-                if(list.isEmpty()) list + Pair(yearMonth, yearMonth)
+                if (list.isEmpty()) list + Pair(yearMonth, yearMonth)
                 else
                     if (list.last().second.plusMonths(1).equals(yearMonth))
                         list.dropLast(1) + Pair(list.last().first, yearMonth)
@@ -88,24 +81,6 @@ fun getTotalInntektPerArbeidsgiver(inntektData: InntektsInformasjon): List<Arbei
             .map { (arbeidsgiver, inntekt) -> ArbeidsgiverOgInntekt(arbeidsgiver, inntekt) }
             .toList()
 }
-
-fun main() {
-    println(getPeriodForEachEmployer(getJSONParsed("Peter")))
-    println(getPeriodForEachEmployer(getJSONParsed("Bob")))
-    println(getPeriodForEachEmployer(getJSONParsed("Gabriel")))
-}
-
-fun getJSONParsed(userName: String): InntektsInformasjon {
-    return Klaxon()
-            .fieldConverter(parsing.YearMonth::class, yearMonthParser)
-            .fieldConverter(parsing.Double::class, doubleParser)
-            .parse<InntektsInformasjon>(InputStreamReader(Files
-                    .newInputStream(Paths
-                            .get(("src%stest%sresources%sresults%sjson%sExpectedJSONResultForUser%s.json"
-                                    .format(File.separator, File.separator, File.separator, File.separator, File.separator, userName))))))!!
-}
-
-
 
 
 

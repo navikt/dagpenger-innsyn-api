@@ -67,6 +67,7 @@ fun Application.innsynAPI() {
                 logger.info("PostRequest not successfully parsed. Terminating operation")
             } else if (!isValidPostRequest(postRequest)) {
                 logger.info("PostRequest is not valid. Terminating operation")
+                call.respond(HttpStatusCode.NotAcceptable, "Invalid JSON received")
             } else {
                 logger.info("Received valid POST Request. Responding with sample text for now")
                 call.respond(HttpStatusCode.OK, Klaxon()

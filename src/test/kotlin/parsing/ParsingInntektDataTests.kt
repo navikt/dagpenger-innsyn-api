@@ -76,9 +76,7 @@ class JSONParseTestClass {
 
 
 fun getJSONParsed(userName: String): InntektsInformasjon {
-    return Klaxon()
-            .fieldConverter(parsing.YearMonth::class, yearMonthParser)
-            .fieldConverter(parsing.Double::class, doubleParser)
+    return defaultParser
             .parse<InntektsInformasjon>(InputStreamReader(Files
                     .newInputStream(Paths
                             .get(("src%stest%sresources%sresults%sjson%sExpectedJSONResultForUser%s.json"

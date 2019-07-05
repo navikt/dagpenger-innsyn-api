@@ -28,7 +28,12 @@ class ParsingProcessedRequestTests {
     private val testDataEmployerSummary = EmployerSummary(
             name = "NAV",
             orgID = "114235",
-            income = 155.13
+            income = 155.13,
+            employmentPeriodes = listOf(EmploymentPeriode(
+                    startDateYearMonth = YearMonth.of(2019, 1),
+                    endDateYearMonth = YearMonth.of(2019, 3)
+            )
+            )
     )
 
     private val testDataProcessedRequest = ProcessedRequest(
@@ -106,6 +111,10 @@ class ParsingProcessedRequestTests {
         println("Test")
         println(testDataProcessedRequest.toString())
         println("MoreTest")
+        println(Klaxon()
+                .fieldConverter(parsing.YearMonth::class, yearMonthParser)
+                .fieldConverter(parsing.Double::class, doubleParser)
+                .toJsonString(testDataProcessedRequest))
         Klaxon().fieldConverter(parsing.YearMonth::class, yearMonthParser)
                 .fieldConverter(parsing.Double::class, doubleParser)
                 .parse<ProcessedRequest>(

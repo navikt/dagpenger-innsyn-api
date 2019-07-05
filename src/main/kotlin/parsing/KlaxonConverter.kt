@@ -2,6 +2,7 @@ package parsing
 
 import com.beust.klaxon.Converter
 import com.beust.klaxon.JsonValue
+import com.beust.klaxon.Klaxon
 import com.beust.klaxon.KlaxonException
 import java.time.LocalDate
 import java.time.YearMonth
@@ -56,3 +57,7 @@ val localDateParser = object : Converter {
 
     override fun toJson(value: Any) = """"$value""""
 }
+
+val defaultParser = Klaxon()
+        .fieldConverter(parsing.Double::class, doubleParser)
+        .fieldConverter(parsing.YearMonth::class, yearMonthParser)

@@ -17,8 +17,8 @@ data class EmployerSummary(
 )
 
 data class EmploymentPeriode(
-        val startDateYearMonth: YearMonth,
-        val endDateYearMonth: YearMonth
+        @parsing.YearMonth val startDateYearMonth: YearMonth,
+        @parsing.YearMonth val endDateYearMonth: YearMonth
 )
 
 data class MonthIncomeInformation(
