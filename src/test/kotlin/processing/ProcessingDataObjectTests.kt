@@ -1,5 +1,6 @@
 package processing
 
+import data.inntekt.EmploymentPeriode
 import org.junit.jupiter.api.Test
 import parsing.getJSONParsed
 import java.time.YearMonth
@@ -20,17 +21,17 @@ class ProcessingDataObjectTests {
             YearMonth.of(2001, 12), YearMonth.of(2002, 1),
             YearMonth.of(1999, 12), YearMonth.of(2000, 1))
 
-    private val expectedResultTestMonths = listOf<Pair<YearMonth, YearMonth>>(
-            Pair(YearMonth.of(2001, 1), YearMonth.of(2001, 5)),
-            Pair(YearMonth.of(2001, 9), YearMonth.of(2001, 12)))
-    private val expectedResultTestMonthsEdge = listOf<Pair<YearMonth, YearMonth>>(
-            Pair(YearMonth.of(1999, 12), YearMonth.of(2000, 1)),
-            Pair(YearMonth.of(2000, 10), YearMonth.of(2000, 10)),
-            Pair(YearMonth.of(2000, 12), YearMonth.of(2001, 1)),
-            Pair(YearMonth.of(2001, 3), YearMonth.of(2001, 4)),
-            Pair(YearMonth.of(2001, 12), YearMonth.of(2002, 1)))
+    private val expectedResultTestMonths = listOf(
+            EmploymentPeriode(YearMonth.of(2001, 1), YearMonth.of(2001, 5)),
+            EmploymentPeriode(YearMonth.of(2001, 9), YearMonth.of(2001, 12)))
+    private val expectedResultTestMonthsEdge = listOf(
+            EmploymentPeriode(YearMonth.of(1999, 12), YearMonth.of(2000, 1)),
+            EmploymentPeriode(YearMonth.of(2000, 10), YearMonth.of(2000, 10)),
+            EmploymentPeriode(YearMonth.of(2000, 12), YearMonth.of(2001, 1)),
+            EmploymentPeriode(YearMonth.of(2001, 3), YearMonth.of(2001, 4)),
+            EmploymentPeriode(YearMonth.of(2001, 12), YearMonth.of(2002, 1)))
 
-    private val expectedPeriodsGabriel = "[ArbeidsgiverOgPeriode(arbeidsgiver=222222, perioder=[(2017-09, 2017-09), (2017-12, 2017-12)]), ArbeidsgiverOgPeriode(arbeidsgiver=2222221, perioder=[(2017-09, 2017-09)]), ArbeidsgiverOgPeriode(arbeidsgiver=55555, perioder=[(2017-10, 2017-10)]), ArbeidsgiverOgPeriode(arbeidsgiver=666666, perioder=[(2017-10, 2017-10)]), ArbeidsgiverOgPeriode(arbeidsgiver=11111, perioder=[(2017-11, 2017-12)])]"
+    private val expectedPeriodsGabriel = "[ArbeidsgiverOgPeriode(arbeidsgiver=222222, perioder=[EmploymentPeriode(startDateYearMonth=2017-09, endDateYearMonth=2017-09), EmploymentPeriode(startDateYearMonth=2017-12, endDateYearMonth=2017-12)]), ArbeidsgiverOgPeriode(arbeidsgiver=2222221, perioder=[EmploymentPeriode(startDateYearMonth=2017-09, endDateYearMonth=2017-09)]), ArbeidsgiverOgPeriode(arbeidsgiver=55555, perioder=[EmploymentPeriode(startDateYearMonth=2017-10, endDateYearMonth=2017-10)]), ArbeidsgiverOgPeriode(arbeidsgiver=666666, perioder=[EmploymentPeriode(startDateYearMonth=2017-10, endDateYearMonth=2017-10)]), ArbeidsgiverOgPeriode(arbeidsgiver=11111, perioder=[EmploymentPeriode(startDateYearMonth=2017-11, endDateYearMonth=2017-12)])]"//TODO: Fix this nonsense
 
     @Test
     fun inntektForFirstMonthTest() {
