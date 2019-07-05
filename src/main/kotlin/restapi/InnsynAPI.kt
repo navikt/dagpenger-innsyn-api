@@ -1,7 +1,6 @@
 package restapi
 
 import com.fasterxml.jackson.databind.SerializationFeature
-import data.requests.APIPostRequest
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -18,16 +17,43 @@ import io.ktor.response.respondText
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.routing
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import restapi.streams.*
+import restapi.streams.InnsynProducer
+import restapi.streams.KafkaInnsynProducer
+import restapi.streams.KafkaInntektConsumer
+import restapi.streams.producerConfig
+import java.util.concurrent.TimeUnit
 
 val logger: Logger = LogManager.getLogger()
+val APPLICATION_NAME = "dp-inntekt-innsyn"
 
-fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+fun main() {
+    val kafkaConsumer = KafkaInntektConsumer(consumerConfig(APPLICATION_NAME, "localhost:9092"))
+            .also {
+        it.start()
+    }
 
+    val kafkaProducer = KafkaInnsynProducer(producerConfig(
+            APPLICATION_NAME,
+            "localhost:9092"))
 
-@Suppress("unused") // Referenced in application.conf
-fun Application.module() {
+    val app = embeddedServer(Netty, port = 8092) {
+        api(kafkaProducer, kafkaConsumer)
+    }.also {
+        it.start(wait = false)
+    }
+
+    Runtime.getRuntime().addShutdownHook(Thread {
+        kafkaConsumer.stop()
+        app.stop(10, 60, TimeUnit.SECONDS)
+    })
+}
+
+internal fun Application.api(kafkaProducer: InnsynProducer, kafkaConsumer: KafkaInntektConsumer) {
     install(Authentication) {
     }
 
@@ -54,12 +80,29 @@ fun Application.module() {
         }
 
         post("/inntekt") {
-            val post = call.receive<APIPostRequest>()
-            logger.info("Received new request from somewhere")
-            logger.info(post)
-            call.respond(getExample())
+            mapRequestToBehov(call.receive()).apply {
+                logger.info("Received new request from somewhere")
+                // TODO: Log the whole request
+                // TODO: Handle token
+                logger.info(this)
+                kafkaProducer.produceEvent(this)
+            }.also {
+                kafkaConsumer.consume(it.aktørId)
+                call.respond(getExample())
+            }
         }
     }
 }
+
+internal fun mapRequestToBehov(request: BehovRequest): Behov = Behov(
+        aktørId = request.aktørId,
+        beregningsDato = request.beregningsdato
+)
+
+internal data class BehovRequest(
+        val aktørId: String,
+        val beregningsdato: String,
+        val token: String
+)
 
 
