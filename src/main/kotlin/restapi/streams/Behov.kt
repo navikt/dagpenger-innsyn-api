@@ -12,7 +12,12 @@ data class Behov(
     companion object Mapper {
         private val ulidGenerator = ULID()
 
+        fun toJson(behov: Behov): String = toJson(behov)
+
+        fun fromJson(behov: Behov): String = fromJson(behov)
+
         fun toPacket(behov: Behov): Packet = Packet("{}").apply {
+            this.putValue(PacketKeys.BEHOV_ID, behov.behovId)
             this.putValue(PacketKeys.AKTØR_ID, behov.aktørId)
             this.putValue(PacketKeys.BEREGNINGS_DATO, behov.beregningsDato)}
         }

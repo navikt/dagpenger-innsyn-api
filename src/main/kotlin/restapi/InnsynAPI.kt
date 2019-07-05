@@ -41,7 +41,7 @@ fun main() {
             APPLICATION_NAME,
             "localhost:9092"))
 
-    val app = embeddedServer(Netty, port = 8092) {
+    val app = embeddedServer(Netty, port = 8080) {
         api(kafkaProducer, kafkaConsumer)
     }.also {
         it.start(wait = false)

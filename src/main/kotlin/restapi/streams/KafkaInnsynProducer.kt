@@ -2,13 +2,17 @@ package restapi.streams
 
 import no.nav.dagpenger.events.Packet
 import no.nav.dagpenger.streams.Topics
+import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.producer.KafkaProducer
 import java.util.*
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
+import org.apache.kafka.common.config.SaslConfigs
+import org.apache.kafka.common.config.SslConfigs
 import restapi.APPLICATION_NAME
 import restapi.logger
+import java.io.File
 import java.util.concurrent.Future
 
 internal fun producerConfig(
@@ -30,7 +34,27 @@ internal fun producerConfig(
                         ProducerConfig.BATCH_SIZE_CONFIG to 32.times(1024).toString() // 32Kb (default is 16 Kb)
                 )
         )
+        credential?.let { credential ->
+            logger.info("Using user name ${credential.username} to authenticate against Kafka brokers ")
+            put(SaslConfigs.SASL_MECHANISM, "PLAIN")
+            put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_PLAINTEXT")
+            put(
+                    SaslConfigs.SASL_JAAS_CONFIG,
+                    "org.apache.kafka.common.security.plain.PlainLoginModule required username=\"${credential.username}\" password=\"${credential.password}\";"
+            )
 
+            val trustStoreLocation = System.getenv("NAV_TRUSTSTORE_PATH")
+            trustStoreLocation?.let {
+                try {
+                    put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL")
+                    put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, File(it).absolutePath)
+                    put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, System.getenv("NAV_TRUSTSTORE_PASSWORD"))
+                    logger.info("Configured '${SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG}' location ")
+                } catch (e: Exception) {
+                    logger.error("Failed to set '${SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG}' location ")
+                }
+            }
+        }
     }
 }
 
@@ -56,7 +80,7 @@ internal class KafkaInnsynProducer(kafkaProps: Properties) : InnsynProducer {
         return kafkaProducer.send(
                 ProducerRecord(Topics.DAGPENGER_BEHOV_PACKET_EVENT.name, behov.behovId, Behov.toPacket(behov))
         ) { metadata, exception ->
-            exception?.let {logger.error("Failed to produce dagpenger behov")}
+            exception?.let {logger.error("Failed to produce dagpenger behov with exception $exception")}
             metadata?.let {logger.info ("Produced dagpenger behov on topic ${metadata.topic()} to offset ${metadata.offset()} with the key key") }
         }
     }
