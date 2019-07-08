@@ -72,6 +72,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.21")
     implementation("no.bekk.bekkopen:nocommons:0.8.2")
 
+    implementation("com.github.jkcclemens:khttp:0.1.0")
+
     testImplementation(kotlin("test"))
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$jupiterVersion")
