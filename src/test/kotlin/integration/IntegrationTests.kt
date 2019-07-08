@@ -9,6 +9,7 @@ import processing.convertInntektDataIntoProcessedRequest
 class IntegrationTests {
 
 
+    //TODO: Add tests here that actually check that things work
     @Test
     fun canConvertInntektDataIntoProcessedRequest() {
         println(convertInntektDataIntoProcessedRequest(getJSONParsed("Gabriel")))

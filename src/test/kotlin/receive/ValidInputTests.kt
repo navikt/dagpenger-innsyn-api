@@ -36,7 +36,6 @@ class ValidDataTests {
         }.apply {
             assertTrue(requestHandled)
             Assertions.assertEquals(HttpStatusCode.OK, response.status())
-            println(response.content)
             //TODO: Fix this test. Need correct object mappings and repsonses to test
         }
     }

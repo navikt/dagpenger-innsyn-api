@@ -3,6 +3,7 @@ package processing
 
 import data.inntekt.*
 import data.objects.Opptjeningsperiode
+import lookup.getNameFromID
 import java.time.LocalDate
 import java.time.YearMonth
 import kotlin.streams.toList
@@ -49,20 +50,11 @@ fun groupYearMonthIntoPeriods(yearMonths: List<YearMonth>): List<EmploymentPerio
             })
 }
 
-fun getNameFromId(inntektData: InntektsInformasjon, id: String): String {
-    return inntektData.inntekt.arbeidsInntektMaaned.stream()
-            .flatMap { arbeidsInntektMaaned -> arbeidsInntektMaaned.arbeidsInntektInformasjon.inntektListe.stream() }
-            .filter { inntektListe -> inntektListe.virksomhet.identifikator.equals(id) }
-            .findFirst()
-            .orElseThrow(() -> throw Exception("No valid employer found"))
-            .virksomhet.aktoerType
-}
-
 fun getEmployerSummaries(inntektData: InntektsInformasjon): List<EmployerSummary> {
     return getPeriodForEachEmployer(inntektData)
             .map { periods ->
                 EmployerSummary(
-                        name = getNameFromId(inntektData, periods.arbeidsgiver),
+                        name = getNameFromID(periods.arbeidsgiver),
                         orgID = periods.arbeidsgiver,
                         employmentPeriodes = periods.perioder,
                         income = getInntektPerArbeidsgiverList(inntektData)

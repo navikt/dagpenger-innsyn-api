@@ -8,8 +8,8 @@ import java.nio.file.Paths
 
 fun getJSONParsed(userName: String): InntektsInformasjon {
     return defaultParser
-            .parse<InntektsInformasjon>(InputStreamReader(Files
-                    .newInputStream(Paths
+            .parse<InntektsInformasjon>(InputStreamReader(
+                    Files.newInputStream(Paths
                             .get(("src%stest%sresources%sresults%sjson%sExpectedJSONResultForUser%s.json"
                                     .format(File.separator, File.separator, File.separator, File.separator, File.separator, userName))))))!!
 }
