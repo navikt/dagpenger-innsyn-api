@@ -1,12 +1,13 @@
-package processing
+package parsing
 
 import com.beust.klaxon.Klaxon
 import data.inntekt.InntektsInformasjon
+import data.objects.APITestRequest
+import data.objects.OnlyLocalDate
+import data.requests.APIPostRequest
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import parsing.YearMonthDouble
-import parsing.klaxonConverter
 import java.io.File
 import java.io.InputStreamReader
 import java.nio.file.Files
@@ -18,6 +19,7 @@ import java.time.YearMonth
 class JSONParseTestClass {
 
     private val testDataPeter = getJSONParsed("Peter")
+
 
     @Test
     fun JSONParsesToYearMonthTest() {
@@ -35,15 +37,43 @@ class JSONParseTestClass {
         assertTrue(testDataPeter.inntekt.arbeidsInntektMaaned[0].arbeidsInntektInformasjon.inntektListe[0].beloep == 5.83)
     }
 
+
+    @Test
+    fun KlaxonParsesLocalDate() {
+        Klaxon()
+                .fieldConverter(LocalDate::class, localDateParser)
+                .parse<APIPostRequest>("""
+                    {
+                        "personnummer": "15118512351",
+                        "beregningsdato": "2019-03-01",
+                        "token":"ah82638419gvh123bn"
+                    }
+                """.trimIndent())
+    }
+
+    @Test
+    fun KlaxonParsesWithoutLocalDate() {
+        Klaxon()
+                .parse<APITestRequest>("""
+                    {
+                        "personnummer": "15118512351",
+                        "token":"ah82638419gvh123bn"
+                    }
+                """.trimIndent())
+    }
+
+    @Test
+    fun KlaxonParsesBackToLocalDate() {
+        Klaxon()
+                .fieldConverter(LocalDate::class, localDateParser)
+                .parse<OnlyLocalDate>(
+                        Klaxon().toJsonString(OnlyLocalDate(java.time.LocalDate.now()))
+                )
+    }
+
+
 }
 
 
-fun getJSONParsed(userName: String): InntektsInformasjon {
-    return Klaxon()
-            .fieldConverter(YearMonthDouble::class, klaxonConverter)
-            .parse<InntektsInformasjon>(InputStreamReader(Files
-                    .newInputStream(Paths
-                            .get(("src%stest%sresources%sExpectedJSONResultForUser%s.json"
-                                    .format(File.separator, File.separator, File.separator, userName))))))!!
-}
+
 

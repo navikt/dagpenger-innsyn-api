@@ -5,6 +5,7 @@ import java.time.YearMonth
 data class ProcessedRequest(
         val personnummer: String,
         val totalIncome: Double,
+        val totalIncome12: Double,
         val employerSummaries: List<EmployerSummary>,
         val monthsIncomeInformation: List<MonthIncomeInformation>
 )
@@ -12,11 +13,17 @@ data class ProcessedRequest(
 data class EmployerSummary(
         val name: String,
         val orgID: String,
-        val income: Double
+        val income: Double,
+        val employmentPeriodes: List<EmploymentPeriode>
+)
+
+data class EmploymentPeriode(
+        @parsing.YearMonth val startDateYearMonth: YearMonth,
+        @parsing.YearMonth val endDateYearMonth: YearMonth
 )
 
 data class MonthIncomeInformation(
-        val month: YearMonth,
+        @parsing.YearMonth val month: YearMonth,
         val employers: List<Employer>
 )
 

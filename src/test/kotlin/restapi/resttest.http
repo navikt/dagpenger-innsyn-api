@@ -9,7 +9,9 @@ POST http://127.0.0.1:8080/inntekt
 Content-Type: application/json
 
 {
-  "personnummer": "28059747942"
+  "personnummer": "15118512351",
+  "beregningsdato": "2019-03-01",
+  "token": "ah82638419gvh123bn"
 }
 
 ###

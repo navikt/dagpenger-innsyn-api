@@ -18,12 +18,17 @@ class Opptjeningsperiode(beregningsdato: LocalDate) {
 
     val sisteAvsluttendeKalenderMaaned: YearMonth = beregningsdato.minusMonths(maanedSubtraksjon).toYearMonth()
     val foersteMaaned: YearMonth = sisteAvsluttendeKalenderMaaned.minusMonths(36)
+    val foersteMaaned12: YearMonth = sisteAvsluttendeKalenderMaaned.minusMonths(12)
 
     private fun finnFoersteArbeidsdagEtterRapporterteringsFrist(rapporteringsFrist: LocalDate): LocalDate {
         return if (rapporteringsFrist.erArbeidsdag()) rapporteringsFrist else finnFoersteArbeidsdagEtterRapporterteringsFrist(
                 rapporteringsFrist.plusDays(1)
         )
     }
+
+    fun get36MonthRange(): ClosedRange<YearMonth> = foersteMaaned..sisteAvsluttendeKalenderMaaned
+
+    fun get12MonthRange(): ClosedRange<YearMonth> = foersteMaaned12..sisteAvsluttendeKalenderMaaned
 
     private fun LocalDate.erArbeidsdag(): Boolean =
             NorwegianDateUtil.isWorkingDay(Date.from(this.atStartOfDay(ZoneId.systemDefault()).toInstant()))

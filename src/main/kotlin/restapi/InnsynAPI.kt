@@ -1,7 +1,12 @@
 package restapi
 
+import com.beust.klaxon.Klaxon
+import com.beust.klaxon.KlaxonException
 import com.fasterxml.jackson.databind.SerializationFeature
+import data.inntekt.ProcessedRequest
+import data.requests.APIPostRequest
 import io.ktor.application.Application
+import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.auth.Authentication
@@ -10,8 +15,10 @@ import io.ktor.features.ContentNegotiation
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
 import io.ktor.request.receive
+import io.ktor.request.receiveText
 import io.ktor.response.respond
 import io.ktor.response.respondText
 import io.ktor.routing.get
@@ -21,11 +28,14 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import parsing.LocalDate
+import parsing.localDateParser
 import restapi.streams.*
 import restapi.streams.InnsynProducer
 import restapi.streams.KafkaInnsynProducer
 import restapi.streams.KafkaInntektConsumer
 import restapi.streams.producerConfig
+import java.time.DateTimeException
 import java.util.concurrent.TimeUnit
 
 val logger: Logger = LogManager.getLogger()
@@ -66,8 +76,6 @@ internal fun Application.api(kafkaProducer: InnsynProducer, kafkaConsumer: Kafka
     install(CORS) {
         method(HttpMethod.Options)
         method(HttpMethod.Put)
-        method(HttpMethod.Delete)
-        method(HttpMethod.Patch)
         header(HttpHeaders.Authorization)
         header("MyCustomHeader")
         allowCredentials = true
@@ -80,18 +88,64 @@ internal fun Application.api(kafkaProducer: InnsynProducer, kafkaConsumer: Kafka
         }
 
         post("/inntekt") {
-            mapRequestToBehov(call.receive()).apply {
-                logger.info("Received new request from somewhere")
-                // TODO: Log the whole request
-                // TODO: Handle token
-                logger.info(this)
-                kafkaProducer.produceEvent(this)
-            }.also {
-                kafkaConsumer.consume(it.aktørId)
-                call.respond(getExample())
+            val postRequest: APIPostRequest? = parsePOST(call)
+
+            if (postRequest == null) {
+                logger.info("PostRequest not successfully parsed. Terminating operation")
+            } else if (!isValidPostRequest(postRequest)) {
+                logger.info("PostRequest is not valid. Terminating operation")
+                call.respond(HttpStatusCode.NotAcceptable, "Invalid JSON received")
+            } else {
+                logger.info("Received valid POST Request. Responding with sample text for now")
+                mapRequestToBehov(call.receive()).apply {
+                    logger.info("Received new request from somewhere")
+                    // TODO: Log the whole request
+                    // TODO: Handle token
+                    logger.info(this)
+                    kafkaProducer.produceEvent(this)
+                }.also {
+                    kafkaConsumer.consume(it.aktørId)
+                    call.respond(getExample())
+                }
             }
+
         }
     }
+}
+
+fun isValidPostRequest(postRequest: APIPostRequest): Boolean {
+    if (postRequest.beregningsdato > java.time.LocalDate.now()) {
+        logger.info("Mottok beregningsdato i fremtiden")
+    } else if (postRequest.beregningsdato < java.time.LocalDate.of(1970, 1, 1)) {
+        logger.info("Mottok beregningsdato før epoch")
+    } else if (postRequest.personnummer == "") {
+        logger.info("Mottok tomt personnummer")
+    } else if (postRequest.personnummer.length != 11) {
+        logger.info("Mottok personnummer av ugyldig lengde")
+    } else if (!Regex("[0-6][0-9][0-1][0-9]{8}").matches(postRequest.personnummer)) {
+        logger.info("Mottok irregulert personnummer")
+    } else if (!postRequest.token.equals("1234567890ABCDEFghijkl")) {
+        logger.info("Mottok ugyldig token")
+    } else {
+        return true
+    }
+    return false
+}
+
+suspend fun parsePOST(call: ApplicationCall): APIPostRequest? {
+    try {
+        val payload: String = call.receiveText()
+        return Klaxon()
+                .fieldConverter(LocalDate::class, localDateParser)
+                .parse<APIPostRequest>(payload)
+    } catch (exception: KlaxonException) {
+        logger.info("Received incomplete JSON through POST request: " + call.receiveText())
+        call.respond(HttpStatusCode.NotAcceptable, "Invalid or incomplete JSON sent")
+    } catch (exception: DateTimeException) {
+        logger.info("Received incorrect Date format in JSON through POST request: " + call.receiveText())
+        call.respond(HttpStatusCode.NotAcceptable, "Invalid Date Format in JSON")
+    }
+    return null
 }
 
 internal fun mapRequestToBehov(request: BehovRequest): Behov = Behov(
@@ -104,5 +158,4 @@ internal data class BehovRequest(
         val beregningsdato: String,
         val token: String
 )
-
 
