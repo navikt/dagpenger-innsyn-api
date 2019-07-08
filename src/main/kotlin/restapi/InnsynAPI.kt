@@ -48,7 +48,7 @@ fun main() {
             APPLICATION_NAME,
             "localhost:9092"))
 
-    val app = embeddedServer(Netty, port = 8081) {
+    val app = embeddedServer(Netty, port = 8080) {
         api(kafkaProducer, kafkaConsumer)
     }.also {
         it.start(wait = false)
@@ -101,7 +101,7 @@ internal fun Application.api(kafkaProducer: InnsynProducer, kafkaConsumer: Kafka
                     logger.info(this)
                     kafkaProducer.produceEvent(this)
                 }.also {
-                    print(kafkaConsumer.consume(it.behovId))
+                    print(kafkaConsumer.consume(it.behovId).toJson())
                     // TODO: Respond with consumed packet
                 }
             }

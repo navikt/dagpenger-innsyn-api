@@ -22,7 +22,7 @@ internal class KafkaBehovProducerTest {
     @Test
     fun `Produce packet should success`() {
         KafkaInnsynProducer(producerConfig("APP", Kafka.instance.bootstrapServers, null)).apply {
-            val metadata = produceEvent(Behov("12345678901", LocalDate.now(), "token")).get(5, TimeUnit.SECONDS)
+            val metadata = produceEvent(Behov(aktørId = "12345678901", beregningsDato = LocalDate.now())).get(5, TimeUnit.SECONDS)
 
             assertNotNull(metadata)
             assertTrue(metadata.hasOffset())
