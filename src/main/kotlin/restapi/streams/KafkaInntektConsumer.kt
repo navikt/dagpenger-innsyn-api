@@ -55,20 +55,20 @@ internal class KafkaInntektConsumer(kafkaProps: Properties) {
         logger.info ("Shutting down $APPLICATION_NAME kafka consumer")
     }
 
-    fun consume(aktørId: String){
+    fun consume(behovId: String): Packet{
         while (true) {
             try {
                 val records = kafkaConsumer.poll(Duration.of(100, ChronoUnit.MILLIS))
-                records.asSequence()
+                return records.asSequence()
                         .onEach { r -> logger.info("Received packet with key ${r.key()} and will test it against filters.") }
+                        .filter { r -> r.value().getStringValue(PacketKeys.BEHOV_ID) == behovId}
                         .filterNot { r -> r.value().hasProblem() }
-                        .filter { r -> r.value().getStringValue(PacketKeys.AKTØR_ID) == aktørId}
-                        .filter { r -> r.value().hasField(PacketKeys.BEHOV_ID)}
                         .filter { r -> r.value().hasField(PacketKeys.INNTEKT)}
                         .filter { r -> r.value().hasField(PacketKeys.MINSTEINNTEKT_RESULTAT)}
                         .filter { r -> r.value().hasField(PacketKeys.MINSTEINNTEKT_INNTEKTSPERIODER)}
                         .filter { r -> r.value().hasField(PacketKeys.PERIODE_RESULTAT)}
-                        .forEach { r -> print(r.value()) }
+                        .first()
+                        .value()
             } catch (e: RetriableException) {
                 logger.warn("Kafka threw a retriable exception, will retry", e)
             }

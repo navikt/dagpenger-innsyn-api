@@ -3,7 +3,6 @@ package restapi
 import com.beust.klaxon.Klaxon
 import com.beust.klaxon.KlaxonException
 import com.fasterxml.jackson.databind.SerializationFeature
-import data.inntekt.ProcessedRequest
 import data.requests.APIPostRequest
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
@@ -17,7 +16,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
-import io.ktor.request.receive
 import io.ktor.request.receiveText
 import io.ktor.response.respond
 import io.ktor.response.respondText
@@ -29,12 +27,11 @@ import io.ktor.server.netty.Netty
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import parsing.LocalDate
+import parsing.defaultParser
+import parsing.getJSONParsed
 import parsing.localDateParser
+import processing.convertInntektDataIntoProcessedRequest
 import restapi.streams.*
-import restapi.streams.InnsynProducer
-import restapi.streams.KafkaInnsynProducer
-import restapi.streams.KafkaInntektConsumer
-import restapi.streams.producerConfig
 import java.time.DateTimeException
 import java.util.concurrent.TimeUnit
 
@@ -51,7 +48,7 @@ fun main() {
             APPLICATION_NAME,
             "localhost:9092"))
 
-    val app = embeddedServer(Netty, port = 8080) {
+    val app = embeddedServer(Netty, port = 8081) {
         api(kafkaProducer, kafkaConsumer)
     }.also {
         it.start(wait = false)
@@ -97,15 +94,15 @@ internal fun Application.api(kafkaProducer: InnsynProducer, kafkaConsumer: Kafka
                 call.respond(HttpStatusCode.NotAcceptable, "Invalid JSON received")
             } else {
                 logger.info("Received valid POST Request. Responding with sample text for now")
-                mapRequestToBehov(call.receive()).apply {
-                    logger.info("Received new request from somewhere")
-                    // TODO: Log the whole request
+                call.respond(HttpStatusCode.OK, defaultParser.toJsonString(convertInntektDataIntoProcessedRequest(getJSONParsed("Gabriel"))))
+
+                mapRequestToBehov(postRequest).apply {
                     // TODO: Handle token
                     logger.info(this)
                     kafkaProducer.produceEvent(this)
                 }.also {
-                    kafkaConsumer.consume(it.aktørId)
-                    call.respond(getExample())
+                    print(kafkaConsumer.consume(it.behovId))
+                    // TODO: Respond with consumed packet
                 }
             }
 
@@ -148,8 +145,9 @@ suspend fun parsePOST(call: ApplicationCall): APIPostRequest? {
     return null
 }
 
-internal fun mapRequestToBehov(request: BehovRequest): Behov = Behov(
-        aktørId = request.aktørId,
+internal fun mapRequestToBehov(request: APIPostRequest): Behov = Behov(
+        // TODO: Map personnummer to aktørId
+        aktørId = request.personnummer,
         beregningsDato = request.beregningsdato
 )
 

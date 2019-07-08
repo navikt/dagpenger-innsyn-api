@@ -2,12 +2,13 @@ package restapi.streams
 
 import no.nav.dagpenger.events.Packet
 import de.huxhorn.sulky.ulid.ULID
+import java.time.LocalDate
 
 data class Behov(
         val behovId: String = ulidGenerator.nextULID(),
         val aktørId: String,
         // TODO: Change to LocalDate
-        val beregningsDato: String
+        val beregningsDato: LocalDate
 ){
     companion object Mapper {
         private val ulidGenerator = ULID()
