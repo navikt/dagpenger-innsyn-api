@@ -10,7 +10,12 @@ import io.ktor.server.testing.withTestApplication
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import restapi.innsynAPI
+import restapi.APPLICATION_NAME
+import restapi.api
+import restapi.streams.KafkaInnsynProducer
+import restapi.streams.KafkaInntektConsumer
+import restapi.streams.consumerConfig
+import restapi.streams.producerConfig
 import kotlin.test.assertTrue
 
 
@@ -104,6 +109,9 @@ class InvalidInputTests {
 
 fun testApp(callback: TestApplicationEngine.() -> Unit) {
     withTestApplication({
-        (innsynAPI())
+        (api(KafkaInnsynProducer(
+                producerConfig(APPLICATION_NAME, "localhost:9092")),
+                KafkaInntektConsumer(
+                        consumerConfig(APPLICATION_NAME, "localhost:9092"))))
     }) { callback() }
 }
