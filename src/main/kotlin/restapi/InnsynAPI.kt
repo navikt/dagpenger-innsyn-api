@@ -3,7 +3,6 @@ package restapi
 import com.beust.klaxon.Klaxon
 import com.beust.klaxon.KlaxonException
 import com.fasterxml.jackson.databind.SerializationFeature
-import data.inntekt.ProcessedRequest
 import data.requests.APIPostRequest
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
@@ -25,7 +24,10 @@ import io.ktor.routing.post
 import io.ktor.routing.routing
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import parsing.*
+import parsing.LocalDate
+import parsing.defaultParser
+import parsing.getJSONParsed
+import parsing.localDateParser
 import processing.convertInntektDataIntoProcessedRequest
 import java.time.DateTimeException
 

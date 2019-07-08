@@ -1,7 +1,5 @@
 package receive
 
-import com.beust.klaxon.Klaxon
-import data.inntekt.ProcessedRequest
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -10,17 +8,13 @@ import io.ktor.server.testing.setBody
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import parsing.defaultParser
-import parsing.doubleParser
-import parsing.yearMonthParser
-import restapi.getExample
 import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ValidDataTests {
 
 
-    val typicalData = """
+    private val typicalData = """
         {
             "personnummer": "15118512351",
             "beregningsdato": "2019-03-01",
@@ -40,6 +34,7 @@ class ValidDataTests {
         }
     }
 
+    //TODO: Fix this test
     @Test
     fun testEdgeData() = testApp {
         handleRequest(HttpMethod.Post, "/inntekt") {
@@ -51,6 +46,7 @@ class ValidDataTests {
         }
     }
 
+    //TODO: Fix this test
     @Test
     fun testUntypicalData() = testApp {
         handleRequest(HttpMethod.Post, "/inntekt") {
@@ -62,6 +58,7 @@ class ValidDataTests {
         }
     }
 
+    //TODO: Fix this test
     @Test
     fun testValidButNotRealData() = testApp {
         handleRequest(HttpMethod.Post, "/inntekt") {

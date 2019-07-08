@@ -3,6 +3,7 @@ package restapi
 import data.inntekt.*
 import java.time.YearMonth
 
+//TODO: Move to test when we have MVP
 fun getExample(): ProcessedRequest {
 
     val fastloennConst = "Fastlønn"

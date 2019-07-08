@@ -1,6 +1,5 @@
 package parsing
 
-import com.beust.klaxon.Klaxon
 import data.inntekt.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -45,7 +44,7 @@ class ParsingProcessedRequestTests {
     )
 
     @Test
-    fun KlaxonParsesIncome() {
+    fun klaxonParsesIncome() {
         defaultParser
                 .parse<Income>(
                         defaultParser
@@ -54,7 +53,7 @@ class ParsingProcessedRequestTests {
     }
 
     @Test
-    fun KlaxonParsesEmployer() {
+    fun klaxonParsesEmployer() {
         defaultParser
                 .parse<Employer>(
                         defaultParser
@@ -63,7 +62,7 @@ class ParsingProcessedRequestTests {
     }
 
     @Test
-    fun KlaxonParsesMonthIncomeInformation() {
+    fun klaxonParsesMonthIncomeInformation() {
         defaultParser
                 .parse<MonthIncomeInformation>(
                         defaultParser
@@ -72,7 +71,7 @@ class ParsingProcessedRequestTests {
     }
 
     @Test
-    fun KlaxonParsesEmployerSummary() {
+    fun klaxonParsesEmployerSummary() {
         defaultParser
                 .parse<EmployerSummary>(
                         defaultParser
@@ -81,7 +80,7 @@ class ParsingProcessedRequestTests {
     }
 
     @Test
-    fun KlaxonParsesProcessedRequest() {
+    fun klaxonParsesProcessedRequest() {
         defaultParser
                 .parse<ProcessedRequest>(
                         defaultParser

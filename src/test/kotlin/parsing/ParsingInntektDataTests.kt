@@ -1,17 +1,12 @@
 package parsing
 
 import com.beust.klaxon.Klaxon
-import data.inntekt.InntektsInformasjon
 import data.objects.APITestRequest
 import data.objects.OnlyLocalDate
 import data.requests.APIPostRequest
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import java.io.File
-import java.io.InputStreamReader
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.time.YearMonth
 
 
@@ -22,7 +17,7 @@ class JSONParseTestClass {
 
 
     @Test
-    fun JSONParsesToYearMonthTest() {
+    fun parseJSONToYearMonthTest() {
         assertTrue(testDataPeter.inntekt.fraDato == YearMonth.parse("2017-08"))
         assertTrue(testDataPeter.inntekt.tilDato == YearMonth.parse("2017-08"))
         assertTrue(testDataPeter.inntekt.arbeidsInntektMaaned[0].aarMaaned == YearMonth.parse("2017-08"))
@@ -33,13 +28,13 @@ class JSONParseTestClass {
     }
 
     @Test
-    fun JSONParsesToDoubleTest() {
+    fun parseJSONToDoubleTest() {
         assertTrue(testDataPeter.inntekt.arbeidsInntektMaaned[0].arbeidsInntektInformasjon.inntektListe[0].beloep == 5.83)
     }
 
 
     @Test
-    fun KlaxonParsesLocalDate() {
+    fun klaxonParsesLocaclDate() {
         Klaxon()
                 .fieldConverter(LocalDate::class, localDateParser)
                 .parse<APIPostRequest>("""
@@ -52,7 +47,7 @@ class JSONParseTestClass {
     }
 
     @Test
-    fun KlaxonParsesWithoutLocalDate() {
+    fun klaxonParsesWithoutLocalDate() {
         Klaxon()
                 .parse<APITestRequest>("""
                     {
@@ -63,7 +58,7 @@ class JSONParseTestClass {
     }
 
     @Test
-    fun KlaxonParsesBackToLocalDate() {
+    fun klaxonParsesBackToLocalDate() {
         Klaxon()
                 .fieldConverter(LocalDate::class, localDateParser)
                 .parse<OnlyLocalDate>(

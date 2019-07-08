@@ -17,12 +17,12 @@ import kotlin.test.assertTrue
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class InvalidInputTests {
 
-    val noData = """
+    private val noData = """
         {
         }
     """.trimIndent()
 
-    val lackingData = """
+    private val lackingData = """
         {
             "personnummer":"",
             "beregningsdato":"",
@@ -30,7 +30,7 @@ class InvalidInputTests {
         }
     """.trimIndent()
 
-    val partialData = """
+    private val partialData = """
         {
             "personnummer": "15118512351",
             "beregningsdato": "2019-03-01",
@@ -38,7 +38,7 @@ class InvalidInputTests {
         }
     """.trimIndent()
 
-    val lackingFieldsData = """
+    private val lackingFieldsData = """
         {
             "personnummer": "15118512351",
             "beregningsdato": "2019-03-01"
