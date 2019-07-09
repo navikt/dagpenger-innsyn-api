@@ -1,6 +1,11 @@
 package parsing
 
-import data.inntekt.*
+import data.inntekt.Employer
+import data.inntekt.EmployerSummary
+import data.inntekt.EmploymentPeriode
+import data.inntekt.Income
+import data.inntekt.MonthIncomeInformation
+import data.inntekt.ProcessedRequest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.time.YearMonth

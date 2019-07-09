@@ -1,7 +1,12 @@
 package processing
 
-
-import data.inntekt.*
+import data.inntekt.EmployerSummary
+import data.inntekt.Employer
+import data.inntekt.EmploymentPeriode
+import data.inntekt.InntektListe
+import data.inntekt.InntektsInformasjon
+import data.inntekt.Income
+import data.inntekt.MonthIncomeInformation
 import data.objects.Opptjeningsperiode
 import lookup.getNameFromID
 import java.time.LocalDate
@@ -16,7 +21,6 @@ fun getInntektForFirstMonth(inntektData: InntektsInformasjon): Double? {
             .first().arbeidsInntektInformasjon.inntektListe
             .first().beloep
 }
-
 
 fun getInntektForOneMonth(inntektData: InntektsInformasjon, yearMonth: YearMonth): Double {
     return inntektData.inntekt.arbeidsInntektMaaned
@@ -63,7 +67,6 @@ fun getEmployerSummaries(inntektData: InntektsInformasjon): List<EmployerSummary
                 )
             }
 }
-
 
 fun getInntektForTheLast36LastMoths(inntektData: InntektsInformasjon): Double {
     return inntektData.inntekt.arbeidsInntektMaaned
@@ -139,6 +142,3 @@ fun getMonthsIncomeInformation(inntektData: InntektsInformasjon): List<MonthInco
             }
             .toList()
 }
-
-
-

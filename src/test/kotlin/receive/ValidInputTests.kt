@@ -13,7 +13,6 @@ import kotlin.test.assertTrue
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ValidDataTests {
 
-
     private val typicalData = """
         {
             "personnummer": "15118512351",
@@ -30,7 +29,7 @@ class ValidDataTests {
         }.apply {
             assertTrue(requestHandled)
             Assertions.assertEquals(HttpStatusCode.OK, response.status())
-            //TODO: Fix this test. Need correct object mappings and repsonses to test
+            // TODO: Fix this test. Need correct object mappings and repsonses to test
         }
     }
 
