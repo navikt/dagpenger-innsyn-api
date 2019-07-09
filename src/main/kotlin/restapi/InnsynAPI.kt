@@ -24,6 +24,7 @@ import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import no.nav.dagpenger.events.Packet
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import parsing.LocalDate
@@ -34,22 +35,28 @@ import processing.convertInntektDataIntoProcessedRequest
 import restapi.streams.*
 import java.time.DateTimeException
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 val logger: Logger = LogManager.getLogger()
 val APPLICATION_NAME = "dp-inntekt-innsyn"
 
+val filteredPackages: HashMap<String, Packet> = HashMap()
+
+
 fun main() {
-    val kafkaConsumer = KafkaInntektConsumer(consumerConfig(APPLICATION_NAME, "localhost:9092"))
-            .also {
+    val config = Configuration()
+
+    val kafkaConsumer = KafkaInntektConsumer(config, InntektPond()).also {
         it.start()
     }
 
     val kafkaProducer = KafkaInnsynProducer(producerConfig(
             APPLICATION_NAME,
-            "localhost:9092"))
+            config.kafka.brokers))
 
-    val app = embeddedServer(Netty, port = 8080) {
-        api(kafkaProducer, kafkaConsumer)
+    val app = embeddedServer(Netty, port = config.application.httpPort) {
+        api(kafkaProducer)
     }.also {
         it.start(wait = false)
     }
@@ -60,7 +67,7 @@ fun main() {
     })
 }
 
-internal fun Application.api(kafkaProducer: InnsynProducer, kafkaConsumer: KafkaInntektConsumer) {
+internal fun Application.api(kafkaProducer: InnsynProducer) {
     install(Authentication) {
     }
 
@@ -94,15 +101,23 @@ internal fun Application.api(kafkaProducer: InnsynProducer, kafkaConsumer: Kafka
                 call.respond(HttpStatusCode.NotAcceptable, "Invalid JSON received")
             } else {
                 logger.info("Received valid POST Request. Responding with sample text for now")
-                call.respond(HttpStatusCode.OK, defaultParser.toJsonString(convertInntektDataIntoProcessedRequest(getJSONParsed("Gabriel"))))
 
                 mapRequestToBehov(postRequest).apply {
                     // TODO: Handle token
                     logger.info(this)
                     kafkaProducer.produceEvent(this)
                 }.also {
-                    print(kafkaConsumer.consume(it.behovId).toJson())
-                    // TODO: Respond with consumed packet
+                    val lock = ReentrantLock()
+                    val notDone = lock.newCondition()
+                    while (!filteredPackages.containsKey(it.behovId)) {
+                        lock.withLock {
+                            notDone.await()
+                        }
+                    }
+                    // TODO: Respond with processed inntektData
+                    print(filteredPackages[it.behovId]!!.toJson())
+                    call.respond(HttpStatusCode.OK, defaultParser.toJsonString(convertInntektDataIntoProcessedRequest(getJSONParsed("Gabriel"))))
+                    notDone.signal()
                 }
             }
 
@@ -151,9 +166,4 @@ internal fun mapRequestToBehov(request: APIPostRequest): Behov = Behov(
         beregningsDato = request.beregningsdato
 )
 
-internal data class BehovRequest(
-        val aktørId: String,
-        val beregningsdato: String,
-        val token: String
-)
 

@@ -55,12 +55,14 @@ val ktorMoshiVersion = "1.0.1"
 val orgJsonVersion = "20180813"
 val kafkaVersion = "2.0.1"
 val testcontainers_version = "1.11.2"
+val konfigVersion = "1.6.10.0"
 
 dependencies {
     implementation(kotlin("stdlib"))
 
     implementation("com.github.navikt:dagpenger-streams:2019.06.26-21.57.bdd7e296c753")
     implementation("de.huxhorn.sulky:de.huxhorn.sulky.ulid:8.2.0")
+    implementation("com.natpryce:konfig:$konfigVersion")
     implementation("io.ktor:ktor-server:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
