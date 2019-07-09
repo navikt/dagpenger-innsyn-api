@@ -22,9 +22,6 @@ class InnsynAPILaunchesTest {
     fun testRoot() {
         withTestApplication({
             innsynAPI(
-                    kafkaProducer = KafkaInnsynProducer(producerConfig(
-                            APPLICATION_NAME,
-                            Configuration().kafka.brokers)),
                     jwkProvider = JwkProviderBuilder(URL(Configuration().application.jwksUrl))
                             .cached(10, 24, TimeUnit.HOURS)
                             .rateLimited(10, 1, TimeUnit.MINUTES)

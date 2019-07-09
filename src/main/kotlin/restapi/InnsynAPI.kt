@@ -57,25 +57,19 @@ fun main() {
             .rateLimited(10, 1, TimeUnit.MINUTES)
             .build()
 
-    val kafkaConsumer = KafkaInntektConsumer(config, InntektPond()).also {
-        it.start()
-    }
-
-    val kafkaProducer = KafkaInnsynProducer(producerConfig(
-            APPLICATION_NAME,
-            config.kafka.brokers))
+//    val kafkaConsumer = KafkaInntektConsumer(config, InntektPond())
+//
+//    val kafkaProducer = KafkaInnsynProducer(producerConfig(
+//            APPLICATION_NAME,
+//            config.kafka.brokers))
 
     val app = embeddedServer(Netty, 8080) {
         innsynAPI(
-                jwkProvider = jwkProvider,
-                kafkaProducer = kafkaProducer
+                jwkProvider = jwkProvider
         )
-    }.also {
-        it.start(wait = false)
     }
 
     Runtime.getRuntime().addShutdownHook(Thread {
-        kafkaConsumer.stop()
         app.stop(10, 60, TimeUnit.SECONDS)
     })
 
@@ -85,7 +79,6 @@ fun main() {
 
 @Suppress("unused") // Referenced in application.conf
 internal fun Application.innsynAPI(
-        kafkaProducer: InnsynProducer,
         jwkProvider: JwkProvider
 ) {
 
@@ -152,23 +145,23 @@ internal fun Application.innsynAPI(
             } else {
                 logger.info("Received valid ID_token, extracting actor and making requirement")
                 val aktorID = getAktorIDFromIDToken(idToken)
-                mapRequestToBehov(aktorID, beregningsdato).apply {
-                    // TODO: Handle token
-                    logger.info(this)
-                    kafkaProducer.produceEvent(this)
-                }.also {
-                    val lock = ReentrantLock()
-                    val notDone = lock.newCondition()
-                    while (!filteredPackages.containsKey(it.behovId)) {
-                        lock.withLock {
-                            notDone.await()
-                        }
-                    }
-                    // TODO: Respond with processed inntektData
-                    print(filteredPackages[it.behovId]!!.toJson())
-                    call.respond(HttpStatusCode.OK, defaultParser.toJsonString(convertInntektDataIntoProcessedRequest(getJSONParsed("Gabriel"))))
-                    notDone.signal()
-                }
+//                mapRequestToBehov(aktorID, beregningsdato).apply {
+//                    // TODO: Handle token
+//                    logger.info(this)
+//                    kafkaProducer.produceEvent(this)
+//                }.also {
+//                    val lock = ReentrantLock()
+//                    val notDone = lock.newCondition()
+//                    while (!filteredPackages.containsKey(it.behovId)) {
+//                        lock.withLock {
+//                            notDone.await()
+//                        }
+//                    }
+//                    // TODO: Respond with processed inntektData
+//                    print(filteredPackages[it.behovId]!!.toJson())
+//                    call.respond(HttpStatusCode.OK, defaultParser.toJsonString(convertInntektDataIntoProcessedRequest(getJSONParsed("Gabriel"))))
+//                    notDone.signal()
+//                }
                 logger.info("Received a request, responding with sample text for now")
                 call.respond(HttpStatusCode.OK, defaultParser.toJsonString(convertInntektDataIntoProcessedRequest(getJSONParsed("Gabriel"))))
             }
