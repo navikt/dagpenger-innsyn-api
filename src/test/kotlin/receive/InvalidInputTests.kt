@@ -1,5 +1,7 @@
 package receive
 
+import com.auth0.jwk.JwkProviderBuilder
+import data.configuration.Configuration
 import data.configuration.testURL
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -11,9 +13,13 @@ import io.ktor.server.testing.withTestApplication
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import restapi.innsynAPITestNoSecurity
+import restapi.APPLICATION_NAME
+import restapi.innsynAPI
+import restapi.streams.KafkaInnsynProducer
+import restapi.streams.producerConfig
+import java.net.URL
+import java.util.concurrent.*
 import kotlin.test.assertTrue
-
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class InvalidInputTests {
@@ -78,7 +84,7 @@ class InvalidInputTests {
             Assertions.assertEquals(HttpStatusCode.NotAcceptable, response.status())
         }
     }
-    //TODO: Add in invalid data validation tests
+    // TODO: Add in invalid data validation tests
 //    @Test
 //    fun InvalidDataFails() = testApp{
 //        handleRequest (HttpMethod.Post, testURL ) {
@@ -100,11 +106,17 @@ class InvalidInputTests {
             Assertions.assertEquals(HttpStatusCode.NotAcceptable, response.status())
         }
     }
-
 }
 
 fun testApp(callback: TestApplicationEngine.() -> Unit) {
     withTestApplication({
-        (innsynAPITestNoSecurity())
+        (innsynAPI(
+                kafkaProducer = KafkaInnsynProducer(producerConfig(
+                    APPLICATION_NAME,
+                    Configuration().kafka.brokers)),
+                jwkProvider = JwkProviderBuilder(URL(Configuration().application.jwksUrl))
+                        .cached(10, 24, TimeUnit.HOURS)
+                        .rateLimited(10, 1, TimeUnit.MINUTES)
+                        .build()))
     }) { callback() }
 }

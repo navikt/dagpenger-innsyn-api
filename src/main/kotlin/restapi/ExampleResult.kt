@@ -1,6 +1,11 @@
 package restapi
 
-import data.inntekt.*
+import data.inntekt.Employer
+import data.inntekt.EmployerSummary
+import data.inntekt.EmploymentPeriode
+import data.inntekt.Income
+import data.inntekt.MonthIncomeInformation
+import data.inntekt.ProcessedRequest
 import java.time.YearMonth
 
 //TODO: Move to test when we have MVP

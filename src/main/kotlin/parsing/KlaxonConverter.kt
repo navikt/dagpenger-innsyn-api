@@ -23,7 +23,6 @@ val doubleParser = object : Converter {
     override fun canConvert(cls: Class<*>) = cls == Double::class.java
 
     override fun toJson(value: Any) = """"$value""""
-
 }
 
 @Target(AnnotationTarget.FIELD)

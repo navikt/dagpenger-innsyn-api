@@ -9,12 +9,10 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.time.YearMonth
 
-
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JSONParseTestClass {
 
     private val testDataPeter = getJSONParsed("Peter")
-
 
     @Test
     fun parseJSONToYearMonthTest() {
@@ -31,7 +29,6 @@ class JSONParseTestClass {
     fun parseJSONToDoubleTest() {
         assertTrue(testDataPeter.inntekt.arbeidsInntektMaaned[0].arbeidsInntektInformasjon.inntektListe[0].beloep == 5.83)
     }
-
 
     @Test
     fun klaxonParsesLocaclDate() {
@@ -65,10 +62,4 @@ class JSONParseTestClass {
                         Klaxon().toJsonString(OnlyLocalDate(java.time.LocalDate.now()))
                 )
     }
-
-
 }
-
-
-
-

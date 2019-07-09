@@ -1,11 +1,10 @@
 package data.objects
 
-
 import no.bekk.bekkopen.date.NorwegianDateUtil
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
-import java.util.*
+import java.util.Date
 
 class Opptjeningsperiode(beregningsdato: LocalDate) {
     private val antattRapporteringsFrist = LocalDate.of(beregningsdato.year, beregningsdato.month, 5)
@@ -35,4 +34,3 @@ class Opptjeningsperiode(beregningsdato: LocalDate) {
 
     private fun LocalDate.toYearMonth(): YearMonth = YearMonth.of(this.year, this.month)
 }
-

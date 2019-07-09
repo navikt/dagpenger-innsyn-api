@@ -53,10 +53,16 @@ val ktorVersion = "1.2.2"
 val moshiVersion = "1.8.0"
 val ktorMoshiVersion = "1.0.1"
 val orgJsonVersion = "20180813"
+val kafkaVersion = "2.0.1"
+val testcontainers_version = "1.11.2"
+val konfigVersion = "1.6.10.0"
 
 dependencies {
     implementation(kotlin("stdlib"))
 
+    implementation("com.github.navikt:dagpenger-streams:2019.06.26-21.57.bdd7e296c753")
+    implementation("de.huxhorn.sulky:de.huxhorn.sulky.ulid:8.2.0")
+    implementation("com.natpryce:konfig:$konfigVersion")
     implementation("io.ktor:ktor-server:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
@@ -68,6 +74,9 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
     implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
     implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version")
+    implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
+    implementation("org.apache.kafka:kafka-streams:$kafkaVersion")
+    implementation("io.confluent:kafka-streams-avro-serde:$confluentVersion")
     implementation("com.vlkan.log4j2:log4j2-logstash-layout-fatjar:0.15")
     implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.21")
     implementation("no.bekk.bekkopen:nocommons:0.8.2")
@@ -78,6 +87,8 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$jupiterVersion")
+    testImplementation("org.apache.kafka:kafka-streams-test-utils:$kafkaVersion")
+    testImplementation("org.testcontainers:kafka:$testcontainers_version")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jupiterVersion")
 }
 

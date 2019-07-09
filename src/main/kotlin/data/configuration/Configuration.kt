@@ -7,6 +7,7 @@ import com.natpryce.konfig.Key
 import com.natpryce.konfig.intType
 import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
+import no.nav.dagpenger.streams.KafkaCredential
 
 
 private val localProperties = ConfigurationMap(
@@ -14,6 +15,7 @@ private val localProperties = ConfigurationMap(
                 "application.profile" to "LOCAL",
                 "application.url" to "/inntekt",
                 "application.httpPort" to "8099",
+                "kafka.bootstrap.servers" to "localhost:9092",
                 "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api/enheter/",
                 "oppslag.url" to "https://localhost:8090/api",
                 "oidc.sts.issuerurl" to "http://localhost/",
@@ -26,6 +28,7 @@ private val devProperties = ConfigurationMap(
                 "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api/enheter/",
                 "oppslag.url" to "http://dagpenger-oppslag.default.svc.nais.local/api",
                 "oidc.sts.issuerurl" to "https://security-token-service-t4.nais.preprod.local/",
+                "kafka.bootstrap.servers" to "d26apvl00159.test.local:8443,d26apvl00160.test.local:8443,d26apvl00161.test.local:8443",
                 "jwks.url" to "https://isso-q.adeo.no:443/isso/oauth2/connect/jwk_uri",
                 "jwks.issuer" to "https://isso-q.adeo.no:443/isso/oauth2",
                 "application.profile" to "DEV",
@@ -38,6 +41,7 @@ private val prodProperties = ConfigurationMap(
                 "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api/enheter/",
                 "oppslag.url" to "http://dagpenger-oppslag.default.svc.nais.local/api",
                 "oidc.sts.issuerurl" to "https://security-token-service.nais.adeo.no/",
+                "kafka.bootstrap.servers" to "a01apvl00145.adeo.no:8443,a01apvl00146.adeo.no:8443,a01apvl00147.adeo.no:8443,a01apvl00148.adeo.no:8443,a01apvl00149.adeo.no:8443,a01apvl150.adeo.no:8443",
                 "jwks.url" to "https://isso.adeo.no:443/isso/oauth2/connect/jwk_uri",
                 "jwks.issuer" to "https://isso.adeo.no:443/isso/oauth2",
                 "application.profile" to "PROD",
@@ -47,7 +51,8 @@ private val prodProperties = ConfigurationMap(
 )
 
 data class Configuration(
-        val application: Application = Application()
+        val application: Application = Application(),
+        val kafka: Kafka = Kafka()
 
 ) {
 
@@ -61,6 +66,18 @@ data class Configuration(
             val jwksIssuer: String = config()[Key("jwks.issuer", stringType)],
             val name: String = "dagpenger-sommer"
     )
+
+    data class Kafka(
+            val brokers: String = config()[Key("kafka.bootstrap.servers", stringType)],
+            val user: String? = config().getOrNull(Key("srvdp.regel.api.username", stringType)),
+            val password: String? = config().getOrNull(Key("srvdp.regel.api.password", stringType))
+    ) {
+        fun credential(): KafkaCredential? {
+            return if (user != null && password != null) {
+                KafkaCredential(user, password)
+            } else null
+        }
+    }
 }
 
 enum class Profile {
