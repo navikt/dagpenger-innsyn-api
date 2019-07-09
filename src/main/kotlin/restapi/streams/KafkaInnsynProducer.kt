@@ -81,7 +81,7 @@ internal class KafkaInnsynProducer(kafkaProps: Properties) : InnsynProducer {
                 ProducerRecord(Topics.DAGPENGER_BEHOV_PACKET_EVENT.name, behov.behovId, Behov.toPacket(behov))
         ) { metadata, exception ->
             exception?.let { logger.error("Failed to produce dagpenger behov with exception $exception") }
-            metadata?.let { logger.info("Produced dagpenger behov on topic ${metadata.topic()} to offset ${metadata.offset()} with the key key") }
+            metadata?.let { logger.info("Produced dagpenger behov on topic ${metadata.topic()} to offset ${metadata.offset()} with the key ${behov.behovId}") }
         }
     }
 }

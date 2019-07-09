@@ -24,6 +24,7 @@ import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import no.nav.dagpenger.events.Packet
 import no.nav.dagpenger.streams.KafkaCredential
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -43,6 +44,7 @@ import java.util.concurrent.TimeUnit
 
 val logger: Logger = LogManager.getLogger()
 val APPLICATION_NAME = "dp-inntekt-innsyn"
+val filteredPackets: HashMap<String, Packet> = HashMap()
 
 fun main() {
     val config = Configuration()
