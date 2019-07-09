@@ -7,14 +7,11 @@ import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
+import io.mockk.mockk
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import restapi.APPLICATION_NAME
-import restapi.Configuration
-import restapi.api
 import restapi.streams.KafkaInnsynProducer
-import restapi.streams.producerConfig
 import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -102,12 +99,12 @@ class InvalidInputTests {
             Assertions.assertEquals(HttpStatusCode.NotAcceptable, response.status())
         }
     }
-}
 
-fun testApp(callback: TestApplicationEngine.() -> Unit) {
-    withTestApplication({
-        (api(KafkaInnsynProducer(producerConfig(
-                APPLICATION_NAME,
-                Configuration().kafka.brokers))))
-    }) { callback() }
+    fun testApp(callback: TestApplicationEngine.() -> Unit) {
+        val kafkaMock = mockk<KafkaInnsynProducer>(relaxed = true)
+
+        withTestApplication(
+            MockApi(kafkaMock)
+        ) { callback() }
+    }
 }

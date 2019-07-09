@@ -7,7 +7,6 @@ import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.kstream.Predicate
 import restapi.APPLICATION_NAME
 import restapi.Configuration
-import restapi.filteredPackages
 import restapi.logger
 import java.util.concurrent.TimeUnit
 
@@ -39,6 +38,8 @@ internal class KafkaInntektConsumer(
 }
 
 internal class InntektPond : Pond() {
+    private val filteredPackets: HashMap<String, Packet> = HashMap()
+
     override val SERVICE_APP_ID: String = APPLICATION_NAME
 
     override fun filterPredicates(): List<Predicate<String, Packet>> =
@@ -52,6 +53,6 @@ internal class InntektPond : Pond() {
             )
 
     override fun onPacket(packet: Packet) {
-        filteredPackages[ packet.getStringValue(PacketKeys.BEHOV_ID) ] = packet
+        filteredPackets[ packet.getStringValue(PacketKeys.BEHOV_ID) ] = packet
     }
 }

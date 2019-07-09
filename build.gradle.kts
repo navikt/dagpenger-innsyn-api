@@ -56,6 +56,7 @@ val orgJsonVersion = "20180813"
 val kafkaVersion = "2.0.1"
 val testcontainers_version = "1.11.2"
 val konfigVersion = "1.6.10.0"
+val mockkVersion = "1.9.3"
 
 dependencies {
     implementation(kotlin("stdlib"))
@@ -88,6 +89,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:$jupiterVersion")
     testImplementation("org.apache.kafka:kafka-streams-test-utils:$kafkaVersion")
     testImplementation("org.testcontainers:kafka:$testcontainers_version")
+    testImplementation("io.mockk:mockk:$mockkVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jupiterVersion")
 }
 

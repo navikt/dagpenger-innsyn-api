@@ -24,7 +24,7 @@ import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import no.nav.dagpenger.events.Packet
+import no.nav.dagpenger.streams.KafkaCredential
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import parsing.LocalDate
@@ -40,13 +40,9 @@ import restapi.streams.KafkaInntektConsumer
 import restapi.streams.producerConfig
 import java.time.DateTimeException
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 
 val logger: Logger = LogManager.getLogger()
 val APPLICATION_NAME = "dp-inntekt-innsyn"
-
-val filteredPackages: HashMap<String, Packet> = HashMap()
 
 fun main() {
     val config = Configuration()
@@ -57,10 +53,11 @@ fun main() {
 
     val kafkaProducer = KafkaInnsynProducer(producerConfig(
             APPLICATION_NAME,
-            config.kafka.brokers))
+            config.kafka.brokers,
+            KafkaCredential("igroup", "itest")))
 
     val app = embeddedServer(Netty, port = config.application.httpPort) {
-        api(kafkaProducer)
+        innsynAPI(kafkaProducer)
     }.also {
         it.start(wait = false)
     }
@@ -71,7 +68,7 @@ fun main() {
     })
 }
 
-internal fun Application.api(kafkaProducer: InnsynProducer) {
+fun Application.innsynAPI(kafkaProducer: InnsynProducer) {
     install(Authentication) {
     }
 
@@ -105,23 +102,13 @@ internal fun Application.api(kafkaProducer: InnsynProducer) {
                 call.respond(HttpStatusCode.NotAcceptable, "Invalid JSON received")
             } else {
                 logger.info("Received valid POST Request. Responding with sample text for now")
+                call.respond(HttpStatusCode.OK, defaultParser.toJsonString(convertInntektDataIntoProcessedRequest(getJSONParsed("Gabriel"))))
 
                 mapRequestToBehov(postRequest).apply {
                     // TODO: Handle token
                     logger.info(this)
                     kafkaProducer.produceEvent(this)
                 }.also {
-                    val lock = ReentrantLock()
-                    val notDone = lock.newCondition()
-                    while (!filteredPackages.containsKey(it.behovId)) {
-                        lock.withLock {
-                            notDone.await()
-                        }
-                    }
-                    // TODO: Respond with processed inntektData
-                    print(filteredPackages[it.behovId]!!.toJson())
-                    call.respond(HttpStatusCode.OK, defaultParser.toJsonString(convertInntektDataIntoProcessedRequest(getJSONParsed("Gabriel"))))
-                    notDone.signal()
                 }
             }
         }

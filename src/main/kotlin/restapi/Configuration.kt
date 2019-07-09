@@ -16,7 +16,9 @@ private val localProperties = ConfigurationMap(
         "application.profile" to "LOCAL",
         "application.httpPort" to "8092",
         "auth.secret" to "secret",
-        "auth.allowedKeys" to "secret1, secret2"
+        "auth.allowedKeys" to "secret1, secret2",
+        "srvdp.inntekt.innsyn.username" to "username",
+        "srvdp.inntekt.innsyn.password" to "password"
     )
 )
 private val devProperties = ConfigurationMap(
@@ -57,8 +59,8 @@ internal data class Configuration(
 
     data class Kafka(
         val brokers: String = config()[Key("kafka.bootstrap.servers", stringType)],
-        val user: String? = config().getOrNull(Key("srvdp.regel.api.username", stringType)),
-        val password: String? = config().getOrNull(Key("srvdp.regel.api.password", stringType))
+        val user: String? = config().getOrNull(Key("srvdp.innsyn.inntekt.username", stringType)),
+        val password: String? = config().getOrNull(Key("srvdp.innsyn.inntekt.password", stringType))
     ) {
         fun credential(): KafkaCredential? {
             return if (user != null && password != null) {

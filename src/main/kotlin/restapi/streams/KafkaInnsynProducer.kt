@@ -1,6 +1,7 @@
 package restapi.streams
 
 import no.nav.dagpenger.events.Packet
+import no.nav.dagpenger.streams.KafkaCredential
 import no.nav.dagpenger.streams.Topics
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -58,7 +59,7 @@ internal fun producerConfig(
     }
 }
 
-internal interface InnsynProducer {
+interface InnsynProducer {
     fun produceEvent(behov: Behov): Future<RecordMetadata>
 }
 
