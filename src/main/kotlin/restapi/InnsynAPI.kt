@@ -1,44 +1,70 @@
 package restapi
 
-import com.beust.klaxon.Klaxon
-import com.beust.klaxon.KlaxonException
+import com.auth0.jwk.JwkProvider
+import com.auth0.jwk.JwkProviderBuilder
 import com.fasterxml.jackson.databind.SerializationFeature
-import data.requests.APIPostRequest
+import data.configuration.Configuration
+import data.configuration.Profile
 import io.ktor.application.Application
-import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.auth.Authentication
+import io.ktor.auth.jwt.JWTPrincipal
+import io.ktor.auth.jwt.jwt
+import io.ktor.auth.parseAuthorizationHeader
 import io.ktor.features.CORS
+import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
-import io.ktor.http.ContentType
-import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.jackson.jackson
-import io.ktor.request.receiveText
+import io.ktor.request.RequestCookies
 import io.ktor.response.respond
-import io.ktor.response.respondText
 import io.ktor.routing.get
-import io.ktor.routing.post
 import io.ktor.routing.routing
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.netty.Netty
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import parsing.LocalDate
+import org.slf4j.event.Level
 import parsing.defaultParser
 import parsing.getJSONParsed
-import parsing.localDateParser
 import processing.convertInntektDataIntoProcessedRequest
-import java.time.DateTimeException
+import java.net.URL
+import java.util.concurrent.TimeUnit
 
-val logger: Logger = LogManager.getLogger()
+private val logger: Logger = LogManager.getLogger()
+private val config = Configuration()
+private val authorizedUsers = listOf("localhost")
 
-fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
+fun main() {
+    val jwkProvider = JwkProviderBuilder(URL(config.application.jwksUrl))
+            .cached(10, 24, TimeUnit.HOURS)
+            .rateLimited(10, 1, TimeUnit.MINUTES)
+            .build()
+
+    val app = embeddedServer(Netty, 8080) {
+        innsynAPI(
+                jwkProvider = jwkProvider
+        )
+    }
+
+    app.start(wait = false)
+
+}
 
 @Suppress("unused") // Referenced in application.conf
-fun Application.innsynAPI() {
-    install(Authentication) {
+fun Application.innsynAPI(
+        jwkProvider: JwkProvider
+) {
+
+    install(CORS) {
+        method(HttpMethod.Options)
+        header("MyCustomHeader")
+        allowCredentials = true
+        anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
     }
 
     install(ContentNegotiation) {
@@ -47,69 +73,64 @@ fun Application.innsynAPI() {
         }
     }
 
-    install(CORS) {
-        method(HttpMethod.Options)
-        method(HttpMethod.Put)
-        header(HttpHeaders.Authorization)
-        header("MyCustomHeader")
-        allowCredentials = true
-        anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
+    if(config.application.profile == Profile.LOCAL) {
+        logger.info("Not running with authentication, local build.")
+    } else {
+        logger.info("Running with authentication, not a local build")
+        install(Authentication) {
+            jwt {
+                realm = "dagpenger-sommer"
+                verifier(jwkProvider, config.application.jwksIssuer)
+                authHeader { call ->
+                    call.request.cookies["ID_token"]?.let {
+                        HttpAuthHeader.Single("Bearer", it)
+                    } ?: call.request.parseAuthorizationHeader()
+                }
+                validate { credentials ->
+                    if (credentials.payload.subject in authorizedUsers) {
+                        logger.info("authorization ok")
+                        return@validate JWTPrincipal(credentials.payload)
+                    } else {
+                        logger.info("authorization failed")
+                        return@validate null
+                    }
+                }
+            }
+        }
+    }
+
+    install(CallLogging) {
+        level = Level.INFO
     }
 
     routing {
-        get("/") {
-            call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
-        }
-
-        post("/inntekt") {
-            val postRequest: APIPostRequest? = parsePOST(call)
-
-            if (postRequest == null) {
-                logger.info("PostRequest not successfully parsed. Terminating operation")
-            } else if (!isValidPostRequest(postRequest)) {
-                logger.info("PostRequest is not valid. Terminating operation")
-                call.respond(HttpStatusCode.NotAcceptable, "Invalid JSON received")
+        get("/inntekt") {
+            logger.info("Attempting to retrieve token")
+            val idToken = call.request.cookies["ID_token"]
+            if(idToken == null) {
+                logger.error("Received invalid request without ID_token", call)
+                call.respond(HttpStatusCode.NotAcceptable, "Missing required cookies")
+            }
+            else if (!isValid(idToken)) {
+                logger.error("Submitted ID_token is not valid", call)
+                call.respond(HttpStatusCode.NotAcceptable, "Could not validate token")
             } else {
-                logger.info("Received valid POST Request. Responding with sample text for now")
+                logger.info("Received valid ID_token, extracting actor and making requirement")
+                val aktorID = getAktorIDFromIDToken(idToken)
+                //TODO: Add in Kafka stuff here
+                logger.info("Received a request, responding with sample text for now")
                 call.respond(HttpStatusCode.OK, defaultParser.toJsonString(convertInntektDataIntoProcessedRequest(getJSONParsed("Gabriel"))))
             }
-
         }
     }
 }
 
-fun isValidPostRequest(postRequest: APIPostRequest): Boolean {
-    if (postRequest.beregningsdato > java.time.LocalDate.now()) {
-        logger.info("Mottok beregningsdato i fremtiden")
-    } else if (postRequest.beregningsdato < java.time.LocalDate.of(1970, 1, 1)) {
-        logger.info("Mottok beregningsdato før epoch")
-    } else if (postRequest.personnummer == "") {
-        logger.info("Mottok tomt personnummer")
-    } else if (postRequest.personnummer.length != 11) {
-        logger.info("Mottok personnummer av ugyldig lengde")
-    } else if (!Regex("[0-6][0-9][0-1][0-9]{8}").matches(postRequest.personnummer)) {
-        logger.info("Mottok irregulert personnummer")
-    } else if (!postRequest.token.equals("1234567890ABCDEFghijkl")) {
-        logger.info("Mottok ugyldig token")
-    } else {
-        return true
-    }
-    return false
+//TODO: Implement this
+suspend fun getAktorIDFromIDToken(idToken: String): String {
+    return "123519375hkjsols90821"
 }
 
-suspend fun parsePOST(call: ApplicationCall): APIPostRequest? {
-    try {
-        val payload: String = call.receiveText()
-        return Klaxon()
-                .fieldConverter(LocalDate::class, localDateParser)
-                .parse<APIPostRequest>(payload)
-    } catch (exception: KlaxonException) {
-        logger.info("Received incomplete JSON through POST request: " + call.receiveText())
-        call.respond(HttpStatusCode.NotAcceptable, "Invalid or incomplete JSON sent")
-    } catch (exception: DateTimeException) {
-        logger.info("Received incorrect Date format in JSON through POST request: " + call.receiveText())
-        call.respond(HttpStatusCode.NotAcceptable, "Invalid Date Format in JSON")
-    }
-    return null
+//TODO: Implement this
+suspend fun isValid(token: String): Boolean {
+    return true
 }
-

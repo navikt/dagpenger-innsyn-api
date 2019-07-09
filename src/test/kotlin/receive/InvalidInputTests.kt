@@ -1,5 +1,6 @@
 package receive
 
+import data.configuration.testURL
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -10,14 +11,14 @@ import io.ktor.server.testing.withTestApplication
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import restapi.innsynAPI
+import restapi.innsynAPITestNoSecurity
 import kotlin.test.assertTrue
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class InvalidInputTests {
 
-    private val noData = """
+    val noData = """
         {
         }
     """.trimIndent()
@@ -47,7 +48,7 @@ class InvalidInputTests {
 
     @Test
     fun lackingDataFails() = testApp {
-        handleRequest(HttpMethod.Post, "/inntekt") {
+        handleRequest(HttpMethod.Post, testURL) {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(lackingData)
         }.apply {
@@ -58,7 +59,7 @@ class InvalidInputTests {
 
     @Test
     fun noDataFails() = testApp {
-        handleRequest(HttpMethod.Post, "/inntekt") {
+        handleRequest(HttpMethod.Post, testURL) {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(noData)
         }.apply {
@@ -69,7 +70,7 @@ class InvalidInputTests {
 
     @Test
     fun lackingFieldsDataFails() = testApp {
-        handleRequest(HttpMethod.Post, "/inntekt") {
+        handleRequest(HttpMethod.Post, testURL) {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(lackingFieldsData)
         }.apply {
@@ -80,7 +81,7 @@ class InvalidInputTests {
     //TODO: Add in invalid data validation tests
 //    @Test
 //    fun InvalidDataFails() = testApp{
-//        handleRequest (HttpMethod.Post, "/inntekt" ) {
+//        handleRequest (HttpMethod.Post, testURL ) {
 //            addHeader(HttpHeaders.ContentType, "application/json")
 //            setBody()
 //        }.apply {
@@ -91,7 +92,7 @@ class InvalidInputTests {
 
     @Test
     fun partialDataFails() = testApp {
-        handleRequest(HttpMethod.Post, "/inntekt") {
+        handleRequest(HttpMethod.Post, testURL) {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(partialData)
         }.apply {
@@ -104,6 +105,6 @@ class InvalidInputTests {
 
 fun testApp(callback: TestApplicationEngine.() -> Unit) {
     withTestApplication({
-        (innsynAPI())
+        (innsynAPITestNoSecurity())
     }) { callback() }
 }

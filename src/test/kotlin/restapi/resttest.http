@@ -5,13 +5,13 @@
 # * 'ptr' and 'ptrp' create a POST request with a simple or parameter-like body;
 # * 'mptr' and 'fptr' create a POST request to submit a form with a text or file field (multipart/form-data);
 
-POST http://127.0.0.1:8080/inntekt
+POST http://127.0.0.1:8080/inntektTest
 Content-Type: application/json
 
 {
   "personnummer": "15118512351",
   "beregningsdato": "2019-03-01",
-  "token": "ah82638419gvh123bn"
+  "token": "1234567890ABCDEFghijkl"
 }
 
 ###
