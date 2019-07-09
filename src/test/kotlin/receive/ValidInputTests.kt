@@ -13,7 +13,7 @@ import kotlin.test.assertTrue
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ValidDataTests {
 
-    val typicalData = """
+    private val typicalData = """
         {
             "personnummer": "15118512351",
             "beregningsdato": "2019-03-01",
@@ -33,6 +33,7 @@ class ValidDataTests {
         }
     }
 
+    //TODO: Fix this test
     @Test
     fun testEdgeData() = testApp {
         handleRequest(HttpMethod.Post, "/inntekt") {
@@ -44,6 +45,7 @@ class ValidDataTests {
         }
     }
 
+    //TODO: Fix this test
     @Test
     fun testUntypicalData() = testApp {
         handleRequest(HttpMethod.Post, "/inntekt") {
@@ -55,6 +57,7 @@ class ValidDataTests {
         }
     }
 
+    //TODO: Fix this test
     @Test
     fun testValidButNotRealData() = testApp {
         handleRequest(HttpMethod.Post, "/inntekt") {

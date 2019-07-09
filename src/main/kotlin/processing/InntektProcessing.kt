@@ -24,8 +24,8 @@ fun getInntektForFirstMonth(inntektData: InntektsInformasjon): Double? {
 
 fun getInntektForOneMonth(inntektData: InntektsInformasjon, yearMonth: YearMonth): Double {
     return inntektData.inntekt.arbeidsInntektMaaned
-            .filter { arbeidsInntektMaaned -> arbeidsInntektMaaned.aarMaaned.equals(yearMonth) }
-            .first().arbeidsInntektInformasjon.inntektListe
+            .first { arbeidsInntektMaaned -> arbeidsInntektMaaned.aarMaaned == yearMonth }
+            .arbeidsInntektInformasjon.inntektListe
             .sumByDouble { inntektListe -> inntektListe.beloep }
 }
 
@@ -46,10 +46,11 @@ fun groupYearMonthIntoPeriods(yearMonths: List<YearMonth>): List<EmploymentPerio
     return yearMonths
             .sorted()
             .fold(emptyList(), { list, yearMonth ->
-                if (list.isEmpty()) list + EmploymentPeriode(yearMonth, yearMonth)
-                else if (list.last().endDateYearMonth.plusMonths(1).equals(yearMonth))
-                        list.dropLast(1) + EmploymentPeriode(list.last().startDateYearMonth, yearMonth)
-                    else list + EmploymentPeriode(yearMonth, yearMonth)
+                when {
+                    list.isEmpty() -> list + EmploymentPeriode(yearMonth, yearMonth)
+                    list.last().endDateYearMonth.plusMonths(1) == yearMonth -> list.dropLast(1) + EmploymentPeriode(list.last().startDateYearMonth, yearMonth)
+                    else -> list + EmploymentPeriode(yearMonth, yearMonth)
+                }
             })
 }
 
@@ -61,8 +62,8 @@ fun getEmployerSummaries(inntektData: InntektsInformasjon): List<EmployerSummary
                         orgID = periods.arbeidsgiver,
                         employmentPeriodes = periods.perioder,
                         income = getInntektPerArbeidsgiverList(inntektData)
-                                .filter { arbeidsgiverOgInntekt -> arbeidsgiverOgInntekt.arbeidsgiver.equals(periods.arbeidsgiver) }
-                                .first().inntekt
+                                .first { arbeidsgiverOgInntekt -> arbeidsgiverOgInntekt.arbeidsgiver == periods.arbeidsgiver }
+                                .inntekt
                 )
             }
 }
@@ -70,8 +71,8 @@ fun getEmployerSummaries(inntektData: InntektsInformasjon): List<EmployerSummary
 fun getInntektForTheLast36LastMoths(inntektData: InntektsInformasjon): Double {
     return inntektData.inntekt.arbeidsInntektMaaned
             .filter { it.aarMaaned in Opptjeningsperiode(LocalDate.now()).get36MonthRange() }
-            .sumByDouble {
-                it.arbeidsInntektInformasjon.inntektListe
+            .sumByDouble { arbeidsInntektMaaned ->
+                arbeidsInntektMaaned.arbeidsInntektInformasjon.inntektListe
                         .sumByDouble { it.beloep }
             }
 }
@@ -79,8 +80,8 @@ fun getInntektForTheLast36LastMoths(inntektData: InntektsInformasjon): Double {
 fun getInntektForTheLast12LastMoths(inntektData: InntektsInformasjon): Double {
     return inntektData.inntekt.arbeidsInntektMaaned
             .filter { it.aarMaaned in Opptjeningsperiode(LocalDate.now()).get12MonthRange() }
-            .sumByDouble {
-                it.arbeidsInntektInformasjon.inntektListe
+            .sumByDouble { arbeidsInntektMaaned ->
+                arbeidsInntektMaaned.arbeidsInntektInformasjon.inntektListe
                         .sumByDouble { it.beloep }
             }
 }
@@ -122,7 +123,7 @@ fun getEmployerMonth(inntektListe: List<InntektListe>): List<Employer> {
             }
             .map { inntekt ->
                 Employer(
-                        name = inntekt.key.aktoerType,
+                        name = getNameFromID(inntekt.key.identifikator),
                         orgID = inntekt.key.identifikator,
                         incomes = inntekt.value
 

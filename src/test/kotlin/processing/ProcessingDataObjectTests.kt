@@ -61,15 +61,15 @@ class ProcessingDataObjectTests {
     @Test
     fun getListOfInntektForEachArbeidsgiverTest() {
 
-        assertEquals(5099.00, getInntektPerArbeidsgiverList(testDataBob).get(0).inntekt)
-        assertEquals(501.00, getInntektPerArbeidsgiverList(testDataBob).get(1).inntekt)
+        assertEquals(5099.00, getInntektPerArbeidsgiverList(testDataBob)[0].inntekt)
+        assertEquals(501.00, getInntektPerArbeidsgiverList(testDataBob)[1].inntekt)
     }
 
     @Test
     fun getTotalListOfInntektForEachArbeidsgiverTest() {
 
-        assertEquals(5149.83, getTotalInntektPerArbeidsgiver(testDataBob).get(0).inntekt)
-        assertEquals(501.0, getTotalInntektPerArbeidsgiver(testDataBob).get(1).inntekt)
+        assertEquals(5149.83, getTotalInntektPerArbeidsgiver(testDataBob)[0].inntekt)
+        assertEquals(501.0, getTotalInntektPerArbeidsgiver(testDataBob)[1].inntekt)
     }
 
     @Test

@@ -15,7 +15,7 @@ class JSONParseTestClass {
     private val testDataPeter = getJSONParsed("Peter")
 
     @Test
-    fun JSONParsesToYearMonthTest() {
+    fun parseJSONToYearMonthTest() {
         assertTrue(testDataPeter.inntekt.fraDato == YearMonth.parse("2017-08"))
         assertTrue(testDataPeter.inntekt.tilDato == YearMonth.parse("2017-08"))
         assertTrue(testDataPeter.inntekt.arbeidsInntektMaaned[0].aarMaaned == YearMonth.parse("2017-08"))
@@ -26,12 +26,12 @@ class JSONParseTestClass {
     }
 
     @Test
-    fun JSONParsesToDoubleTest() {
+    fun parseJSONToDoubleTest() {
         assertTrue(testDataPeter.inntekt.arbeidsInntektMaaned[0].arbeidsInntektInformasjon.inntektListe[0].beloep == 5.83)
     }
 
     @Test
-    fun KlaxonParsesLocalDate() {
+    fun klaxonParsesLocaclDate() {
         Klaxon()
                 .fieldConverter(LocalDate::class, localDateParser)
                 .parse<APIPostRequest>("""
@@ -44,7 +44,7 @@ class JSONParseTestClass {
     }
 
     @Test
-    fun KlaxonParsesWithoutLocalDate() {
+    fun klaxonParsesWithoutLocalDate() {
         Klaxon()
                 .parse<APITestRequest>("""
                     {
@@ -55,7 +55,7 @@ class JSONParseTestClass {
     }
 
     @Test
-    fun KlaxonParsesBackToLocalDate() {
+    fun klaxonParsesBackToLocalDate() {
         Klaxon()
                 .fieldConverter(LocalDate::class, localDateParser)
                 .parse<OnlyLocalDate>(
