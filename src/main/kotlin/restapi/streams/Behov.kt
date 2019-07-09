@@ -5,11 +5,11 @@ import de.huxhorn.sulky.ulid.ULID
 import java.time.LocalDate
 
 data class Behov(
-        val behovId: String = ulidGenerator.nextULID(),
-        val aktørId: String,
+    val behovId: String = ulidGenerator.nextULID(),
+    val aktørId: String,
         // TODO: Change to LocalDate
-        val beregningsDato: LocalDate
-){
+    val beregningsDato: LocalDate
+) {
     companion object Mapper {
         private val ulidGenerator = ULID()
 
@@ -20,7 +20,7 @@ data class Behov(
         fun toPacket(behov: Behov): Packet = Packet("{}").apply {
             this.putValue(PacketKeys.BEHOV_ID, behov.behovId)
             this.putValue(PacketKeys.AKTØR_ID, behov.aktørId)
-            this.putValue(PacketKeys.BEREGNINGS_DATO, behov.beregningsDato)}
+            this.putValue(PacketKeys.BEREGNINGS_DATO, behov.beregningsDato) }
         }
     fun toPacket(): Packet = Mapper.toPacket(this)
 }

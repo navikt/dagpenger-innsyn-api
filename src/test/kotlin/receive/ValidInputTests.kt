@@ -1,7 +1,5 @@
 package receive
 
-import com.beust.klaxon.Klaxon
-import data.inntekt.ProcessedRequest
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -10,15 +8,10 @@ import io.ktor.server.testing.setBody
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import parsing.defaultParser
-import parsing.doubleParser
-import parsing.yearMonthParser
-import restapi.getExample
 import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ValidDataTests {
-
 
     val typicalData = """
         {
@@ -36,7 +29,7 @@ class ValidDataTests {
         }.apply {
             assertTrue(requestHandled)
             Assertions.assertEquals(HttpStatusCode.OK, response.status())
-            //TODO: Fix this test. Need correct object mappings and repsonses to test
+            // TODO: Fix this test. Need correct object mappings and repsonses to test
         }
     }
 

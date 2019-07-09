@@ -4,7 +4,6 @@ import no.nav.dagpenger.events.Packet
 import no.nav.dagpenger.streams.Topics
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.producer.KafkaProducer
-import java.util.*
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
@@ -13,12 +12,13 @@ import org.apache.kafka.common.config.SslConfigs
 import restapi.APPLICATION_NAME
 import restapi.logger
 import java.io.File
+import java.util.Properties
 import java.util.concurrent.Future
 
 internal fun producerConfig(
-        appId: String,
-        bootStapServerUrl: String,
-        credential: KafkaCredential? = null
+    appId: String,
+    bootStapServerUrl: String,
+    credential: KafkaCredential? = null
 ): Properties {
     return Properties().apply {
         putAll(
@@ -75,13 +75,12 @@ internal class KafkaInnsynProducer(kafkaProps: Properties) : InnsynProducer {
         })
     }
 
-
     override fun produceEvent(behov: Behov): Future<RecordMetadata> {
         return kafkaProducer.send(
                 ProducerRecord(Topics.DAGPENGER_BEHOV_PACKET_EVENT.name, behov.behovId, Behov.toPacket(behov))
         ) { metadata, exception ->
-            exception?.let {logger.error("Failed to produce dagpenger behov with exception $exception")}
-            metadata?.let {logger.info ("Produced dagpenger behov on topic ${metadata.topic()} to offset ${metadata.offset()} with the key key") }
+            exception?.let { logger.error("Failed to produce dagpenger behov with exception $exception") }
+            metadata?.let { logger.info("Produced dagpenger behov on topic ${metadata.topic()} to offset ${metadata.offset()} with the key key") }
         }
     }
 }

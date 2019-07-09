@@ -1,25 +1,18 @@
 package parsing
 
 import com.beust.klaxon.Klaxon
-import data.inntekt.InntektsInformasjon
 import data.objects.APITestRequest
 import data.objects.OnlyLocalDate
 import data.requests.APIPostRequest
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import java.io.File
-import java.io.InputStreamReader
-import java.nio.file.Files
-import java.nio.file.Paths
 import java.time.YearMonth
-
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JSONParseTestClass {
 
     private val testDataPeter = getJSONParsed("Peter")
-
 
     @Test
     fun JSONParsesToYearMonthTest() {
@@ -36,7 +29,6 @@ class JSONParseTestClass {
     fun JSONParsesToDoubleTest() {
         assertTrue(testDataPeter.inntekt.arbeidsInntektMaaned[0].arbeidsInntektInformasjon.inntektListe[0].beloep == 5.83)
     }
-
 
     @Test
     fun KlaxonParsesLocalDate() {
@@ -70,10 +62,4 @@ class JSONParseTestClass {
                         Klaxon().toJsonString(OnlyLocalDate(java.time.LocalDate.now()))
                 )
     }
-
-
 }
-
-
-
-

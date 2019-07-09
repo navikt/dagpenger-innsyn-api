@@ -32,7 +32,12 @@ import parsing.defaultParser
 import parsing.getJSONParsed
 import parsing.localDateParser
 import processing.convertInntektDataIntoProcessedRequest
-import restapi.streams.*
+import restapi.streams.Behov
+import restapi.streams.InnsynProducer
+import restapi.streams.InntektPond
+import restapi.streams.KafkaInnsynProducer
+import restapi.streams.KafkaInntektConsumer
+import restapi.streams.producerConfig
 import java.time.DateTimeException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
@@ -42,7 +47,6 @@ val logger: Logger = LogManager.getLogger()
 val APPLICATION_NAME = "dp-inntekt-innsyn"
 
 val filteredPackages: HashMap<String, Packet> = HashMap()
-
 
 fun main() {
     val config = Configuration()
@@ -120,7 +124,6 @@ internal fun Application.api(kafkaProducer: InnsynProducer) {
                     notDone.signal()
                 }
             }
-
         }
     }
 }
@@ -165,5 +168,3 @@ internal fun mapRequestToBehov(request: APIPostRequest): Behov = Behov(
         aktørId = request.personnummer,
         beregningsDato = request.beregningsdato
 )
-
-

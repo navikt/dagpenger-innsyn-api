@@ -11,13 +11,11 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import restapi.APPLICATION_NAME
+import restapi.Configuration
 import restapi.api
 import restapi.streams.KafkaInnsynProducer
-import restapi.streams.KafkaInntektConsumer
-import restapi.streams.consumerConfig
 import restapi.streams.producerConfig
 import kotlin.test.assertTrue
-
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class InvalidInputTests {
@@ -82,7 +80,7 @@ class InvalidInputTests {
             Assertions.assertEquals(HttpStatusCode.NotAcceptable, response.status())
         }
     }
-    //TODO: Add in invalid data validation tests
+    // TODO: Add in invalid data validation tests
 //    @Test
 //    fun InvalidDataFails() = testApp{
 //        handleRequest (HttpMethod.Post, "/inntekt" ) {
@@ -104,14 +102,12 @@ class InvalidInputTests {
             Assertions.assertEquals(HttpStatusCode.NotAcceptable, response.status())
         }
     }
-
 }
 
 fun testApp(callback: TestApplicationEngine.() -> Unit) {
     withTestApplication({
-        (api(KafkaInnsynProducer(
-                producerConfig(APPLICATION_NAME, "localhost:9092")),
-                KafkaInntektConsumer(
-                        consumerConfig(APPLICATION_NAME, "localhost:9092"))))
+        (api(KafkaInnsynProducer(producerConfig(
+                APPLICATION_NAME,
+                Configuration().kafka.brokers))))
     }) { callback() }
 }

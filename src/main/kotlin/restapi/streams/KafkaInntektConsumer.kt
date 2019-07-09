@@ -12,8 +12,8 @@ import restapi.logger
 import java.util.concurrent.TimeUnit
 
 internal class KafkaInntektConsumer(
-        private val config: Configuration,
-        private val inntektPond: InntektPond
+    private val config: Configuration,
+    private val inntektPond: InntektPond
 ) {
 
     private val streams: KafkaStreams by lazy {
@@ -22,13 +22,13 @@ internal class KafkaInntektConsumer(
         }
     }
 
-    fun start() = streams.start().also { logger.info("Starting up $APPLICATION_NAME kafka consumer")}
+    fun start() = streams.start().also { logger.info("Starting up $APPLICATION_NAME kafka consumer") }
 
     fun stop() = with(streams) {
         close(3, TimeUnit.SECONDS)
         cleanUp()
     }.also {
-        logger.info ("Shutting down $APPLICATION_NAME kafka consumer")
+        logger.info("Shutting down $APPLICATION_NAME kafka consumer")
     }
 
     private fun getConfig() = streamConfig(
@@ -38,7 +38,7 @@ internal class KafkaInntektConsumer(
     )
 }
 
-internal class InntektPond: Pond() {
+internal class InntektPond : Pond() {
     override val SERVICE_APP_ID: String = APPLICATION_NAME
 
     override fun filterPredicates(): List<Predicate<String, Packet>> =

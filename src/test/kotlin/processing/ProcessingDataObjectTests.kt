@@ -6,7 +6,7 @@ import parsing.getJSONParsed
 import java.time.YearMonth
 import kotlin.test.assertEquals
 
-//@TestInstance
+// @TestInstance
 class ProcessingDataObjectTests {
 
     private val testDataBob = getJSONParsed("Bob")
@@ -31,7 +31,7 @@ class ProcessingDataObjectTests {
             EmploymentPeriode(YearMonth.of(2001, 3), YearMonth.of(2001, 4)),
             EmploymentPeriode(YearMonth.of(2001, 12), YearMonth.of(2002, 1)))
 
-    private val expectedPeriodsGabriel = "[ArbeidsgiverOgPeriode(arbeidsgiver=222222, perioder=[EmploymentPeriode(startDateYearMonth=2017-09, endDateYearMonth=2017-09), EmploymentPeriode(startDateYearMonth=2017-12, endDateYearMonth=2017-12)]), ArbeidsgiverOgPeriode(arbeidsgiver=2222221, perioder=[EmploymentPeriode(startDateYearMonth=2017-09, endDateYearMonth=2017-09)]), ArbeidsgiverOgPeriode(arbeidsgiver=55555, perioder=[EmploymentPeriode(startDateYearMonth=2017-10, endDateYearMonth=2017-10)]), ArbeidsgiverOgPeriode(arbeidsgiver=666666, perioder=[EmploymentPeriode(startDateYearMonth=2017-10, endDateYearMonth=2017-10)]), ArbeidsgiverOgPeriode(arbeidsgiver=11111, perioder=[EmploymentPeriode(startDateYearMonth=2017-11, endDateYearMonth=2017-12)])]"//TODO: Fix this nonsense
+    private val expectedPeriodsGabriel = "[ArbeidsgiverOgPeriode(arbeidsgiver=222222, perioder=[EmploymentPeriode(startDateYearMonth=2017-09, endDateYearMonth=2017-09), EmploymentPeriode(startDateYearMonth=2017-12, endDateYearMonth=2017-12)]), ArbeidsgiverOgPeriode(arbeidsgiver=2222221, perioder=[EmploymentPeriode(startDateYearMonth=2017-09, endDateYearMonth=2017-09)]), ArbeidsgiverOgPeriode(arbeidsgiver=55555, perioder=[EmploymentPeriode(startDateYearMonth=2017-10, endDateYearMonth=2017-10)]), ArbeidsgiverOgPeriode(arbeidsgiver=666666, perioder=[EmploymentPeriode(startDateYearMonth=2017-10, endDateYearMonth=2017-10)]), ArbeidsgiverOgPeriode(arbeidsgiver=11111, perioder=[EmploymentPeriode(startDateYearMonth=2017-11, endDateYearMonth=2017-12)])]" // TODO: Fix this nonsense
 
     @Test
     fun inntektForFirstMonthTest() {
@@ -86,6 +86,4 @@ class ProcessingDataObjectTests {
     fun checkPeriodSortingWorks() {
         assertEquals(expectedPeriodsGabriel, getPeriodForEachEmployer(testDataGabriel).toString())
     }
-
-
 }
