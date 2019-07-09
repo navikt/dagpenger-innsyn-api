@@ -1,19 +1,18 @@
 package restapi.streams
 
+import data.configuration.Configuration
 import no.nav.dagpenger.events.Packet
 import no.nav.dagpenger.streams.Pond
 import no.nav.dagpenger.streams.streamConfig
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.kstream.Predicate
 import restapi.APPLICATION_NAME
-import restapi.Configuration
 import restapi.filteredPackages
-import restapi.logger
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 
 internal class KafkaInntektConsumer(
-    private val config: Configuration,
-    private val inntektPond: InntektPond
+        private val config: Configuration,
+        private val inntektPond: InntektPond
 ) {
 
     private val streams: KafkaStreams by lazy {
@@ -52,6 +51,6 @@ internal class InntektPond : Pond() {
             )
 
     override fun onPacket(packet: Packet) {
-        filteredPackages[ packet.getStringValue(PacketKeys.BEHOV_ID) ] = packet
+        filteredPackages[packet.getStringValue(PacketKeys.BEHOV_ID)] = packet
     }
 }

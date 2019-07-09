@@ -5,7 +5,6 @@ import com.auth0.jwk.JwkProviderBuilder
 import com.fasterxml.jackson.databind.SerializationFeature
 import data.configuration.Configuration
 import data.configuration.Profile
-import data.requests.APIPostRequest
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -20,7 +19,6 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.jackson.jackson
-import io.ktor.request.RequestCookies
 import io.ktor.response.respond
 import io.ktor.routing.get
 import io.ktor.routing.routing
@@ -42,14 +40,14 @@ import restapi.streams.producerConfig
 import java.net.URL
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 import java.util.concurrent.locks.*
 import kotlin.concurrent.withLock
 
 private val logger: Logger = LogManager.getLogger()
 private val config = Configuration()
 private val authorizedUsers = listOf("localhost")
-val APPLICATION_NAME = "dp-inntekt-innsyn"
+const val APPLICATION_NAME = "dp-inntekt-innsyn"
 val filteredPackages: HashMap<String, Packet> = HashMap()
 
 
@@ -95,7 +93,7 @@ internal fun Application.innsynAPI(
         method(HttpMethod.Options)
         header("MyCustomHeader")
         allowCredentials = true
-        anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
+        anyHost() //TODO: Don't do this in production if possible. Try to limit it.
     }
 
     install(ContentNegotiation) {
@@ -104,7 +102,7 @@ internal fun Application.innsynAPI(
         }
     }
 
-    if(config.application.profile == Profile.LOCAL) {
+    if (config.application.profile == Profile.LOCAL) {
         logger.info("Not running with authentication, local build.")
     } else {
         logger.info("Running with authentication, not a local build")
@@ -139,7 +137,7 @@ internal fun Application.innsynAPI(
             logger.info("Attempting to retrieve token")
             val idToken = call.request.cookies["ID_token"]
             val beregningsdato = LocalDate.parse(call.request.cookies["beregningsdato"], DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-            if(idToken == null) {
+            if (idToken == null) {
                 logger.error("Received invalid request without ID_token", call)
                 call.respond(HttpStatusCode.NotAcceptable, "Missing required cookies")
             } else if (!isValid(idToken)) {
@@ -154,7 +152,6 @@ internal fun Application.innsynAPI(
             } else {
                 logger.info("Received valid ID_token, extracting actor and making requirement")
                 val aktorID = getAktorIDFromIDToken(idToken)
-                //TODO: Add in Kafka stuff here
                 mapRequestToBehov(aktorID, beregningsdato).apply {
                     // TODO: Handle token
                     logger.info(this)
@@ -172,7 +169,6 @@ internal fun Application.innsynAPI(
                     call.respond(HttpStatusCode.OK, defaultParser.toJsonString(convertInntektDataIntoProcessedRequest(getJSONParsed("Gabriel"))))
                     notDone.signal()
                 }
-
                 logger.info("Received a request, responding with sample text for now")
                 call.respond(HttpStatusCode.OK, defaultParser.toJsonString(convertInntektDataIntoProcessedRequest(getJSONParsed("Gabriel"))))
             }
@@ -195,8 +191,8 @@ fun isValid(beregningsDato: LocalDate): Boolean {
     return true
 }
 
-    internal fun mapRequestToBehov(aktorId: String, beregningsDato: LocalDate): Behov = Behov(
-            // TODO: Map personnummer to aktørId
-            aktørId = aktorId,
-            beregningsDato = beregningsDato
-    )
+internal fun mapRequestToBehov(aktorId: String, beregningsDato: LocalDate): Behov = Behov(
+        // TODO: Map personnummer to aktørId
+        aktørId = aktorId,
+        beregningsDato = beregningsDato
+)

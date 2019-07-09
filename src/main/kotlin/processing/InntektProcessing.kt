@@ -1,11 +1,11 @@
 package processing
 
-import data.inntekt.EmployerSummary
 import data.inntekt.Employer
+import data.inntekt.EmployerSummary
 import data.inntekt.EmploymentPeriode
+import data.inntekt.Income
 import data.inntekt.InntektListe
 import data.inntekt.InntektsInformasjon
-import data.inntekt.Income
 import data.inntekt.MonthIncomeInformation
 import data.objects.Opptjeningsperiode
 import lookup.getNameFromID

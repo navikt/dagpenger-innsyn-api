@@ -20,14 +20,16 @@ class InnsynAPILaunchesTest {
     // TODO: Remove this and test that server is runnable another way
     @Test
     fun testRoot() {
-        withTestApplication({ innsynAPI(
-                kafkaProducer = KafkaInnsynProducer(producerConfig(
-                APPLICATION_NAME,
-                Configuration().kafka.brokers)),
-                jwkProvider = JwkProviderBuilder(URL(Configuration().application.jwksUrl))
-                        .cached(10, 24, TimeUnit.HOURS)
-                        .rateLimited(10, 1, TimeUnit.MINUTES)
-                        .build()) }) {
+        withTestApplication({
+            innsynAPI(
+                    kafkaProducer = KafkaInnsynProducer(producerConfig(
+                            APPLICATION_NAME,
+                            Configuration().kafka.brokers)),
+                    jwkProvider = JwkProviderBuilder(URL(Configuration().application.jwksUrl))
+                            .cached(10, 24, TimeUnit.HOURS)
+                            .rateLimited(10, 1, TimeUnit.MINUTES)
+                            .build())
+        }) {
             handleRequest(HttpMethod.Get, "/").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertEquals("HELLO WORLD!", response.content)
