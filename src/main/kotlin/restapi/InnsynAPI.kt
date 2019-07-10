@@ -25,6 +25,7 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import no.nav.dagpenger.events.Packet
+import no.nav.dagpenger.streams.KafkaCredential
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.slf4j.event.Level
@@ -40,16 +41,13 @@ import restapi.streams.producerConfig
 import java.net.URL
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.concurrent.*
-import java.util.concurrent.locks.*
-import kotlin.concurrent.withLock
+import java.util.concurrent.TimeUnit
 
-private val logger: Logger = LogManager.getLogger()
+val logger: Logger = LogManager.getLogger()
 private val config = Configuration()
 private val authorizedUsers = listOf("localhost")
-const val APPLICATION_NAME = "dp-inntekt-innsyn"
-val filteredPackages: HashMap<String, Packet> = HashMap()
-
+val APPLICATION_NAME = "dp-inntekt-innsyn"
+val filteredPackets: HashMap<String, Packet> = HashMap()
 
 fun main() {
     val jwkProvider = JwkProviderBuilder(URL(config.application.jwksUrl))
@@ -57,28 +55,32 @@ fun main() {
             .rateLimited(10, 1, TimeUnit.MINUTES)
             .build()
 
-//    val kafkaConsumer = KafkaInntektConsumer(config, InntektPond())
-//
-//    val kafkaProducer = KafkaInnsynProducer(producerConfig(
-//            APPLICATION_NAME,
-//            config.kafka.brokers))
+    val kafkaConsumer = KafkaInntektConsumer(config, InntektPond()).also {
+        it.start()
+    }
 
-    val app = embeddedServer(Netty, 8080) {
+    val kafkaProducer = KafkaInnsynProducer(producerConfig(
+            APPLICATION_NAME,
+            config.kafka.brokers,
+            KafkaCredential("igroup", "itest")))
+
+    val app = embeddedServer(Netty, port = config.application.httpPort) {
         innsynAPI(
+                kafkaProducer,
                 jwkProvider = jwkProvider
         )
     }
 
     Runtime.getRuntime().addShutdownHook(Thread {
+        kafkaConsumer.stop()
         app.stop(10, 60, TimeUnit.SECONDS)
     })
 
     app.start(wait = false)
-
 }
 
-@Suppress("unused") // Referenced in application.conf
-internal fun Application.innsynAPI(
+fun Application.innsynAPI(
+        kafkaProducer: InnsynProducer,
         jwkProvider: JwkProvider
 ) {
 
@@ -86,7 +88,7 @@ internal fun Application.innsynAPI(
         method(HttpMethod.Options)
         header("MyCustomHeader")
         allowCredentials = true
-        anyHost() //TODO: Don't do this in production if possible. Try to limit it.
+        anyHost() // TODO: Don't do this in production if possible. Try to limit it.
     }
 
     install(ContentNegotiation) {
@@ -145,23 +147,10 @@ internal fun Application.innsynAPI(
             } else {
                 logger.info("Received valid ID_token, extracting actor and making requirement")
                 val aktorID = getAktorIDFromIDToken(idToken)
-//                mapRequestToBehov(aktorID, beregningsdato).apply {
-//                    // TODO: Handle token
-//                    logger.info(this)
-//                    kafkaProducer.produceEvent(this)
-//                }.also {
-//                    val lock = ReentrantLock()
-//                    val notDone = lock.newCondition()
-//                    while (!filteredPackages.containsKey(it.behovId)) {
-//                        lock.withLock {
-//                            notDone.await()
-//                        }
-//                    }
-//                    // TODO: Respond with processed inntektData
-//                    print(filteredPackages[it.behovId]!!.toJson())
-//                    call.respond(HttpStatusCode.OK, defaultParser.toJsonString(convertInntektDataIntoProcessedRequest(getJSONParsed("Gabriel"))))
-//                    notDone.signal()
-//                }
+                mapRequestToBehov(aktorID, beregningsdato).apply {
+                    logger.info(this)
+                    kafkaProducer.produceEvent(this)
+                }
                 logger.info("Received a request, responding with sample text for now")
                 call.respond(HttpStatusCode.OK, defaultParser.toJsonString(convertInntektDataIntoProcessedRequest(getJSONParsed("Gabriel"))))
             }
@@ -169,23 +158,22 @@ internal fun Application.innsynAPI(
     }
 }
 
-//TODO: Implement this
+// TODO: Implement this
 fun getAktorIDFromIDToken(idToken: String): String {
     return "123519375hkjsols90821"
 }
 
-//TODO: Implement this
+// TODO: Implement this
 fun isValid(token: String): Boolean {
     return true
 }
 
-//TODO: Implement this
+// TODO: Implement this
 fun isValid(beregningsDato: LocalDate): Boolean {
     return true
 }
 
 internal fun mapRequestToBehov(aktorId: String, beregningsDato: LocalDate): Behov = Behov(
-        // TODO: Map personnummer to aktørId
         aktørId = aktorId,
         beregningsDato = beregningsDato
 )

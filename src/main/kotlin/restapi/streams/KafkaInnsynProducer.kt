@@ -1,6 +1,7 @@
 package restapi.streams
 
 import no.nav.dagpenger.events.Packet
+import no.nav.dagpenger.streams.KafkaCredential
 import no.nav.dagpenger.streams.Topics
 import org.apache.kafka.clients.CommonClientConfigs
 import org.apache.kafka.clients.producer.KafkaProducer
@@ -12,8 +13,8 @@ import org.apache.kafka.common.config.SslConfigs
 import org.apache.logging.log4j.LogManager
 import restapi.APPLICATION_NAME
 import java.io.File
-import java.util.*
-import java.util.concurrent.*
+import java.util.Properties
+import java.util.concurrent.Future
 
 val logger = LogManager.getLogger()
 
@@ -60,7 +61,7 @@ internal fun producerConfig(
     }
 }
 
-internal interface InnsynProducer {
+interface InnsynProducer {
     fun produceEvent(behov: Behov): Future<RecordMetadata>
 }
 
@@ -82,7 +83,7 @@ internal class KafkaInnsynProducer(kafkaProps: Properties) : InnsynProducer {
                 ProducerRecord(Topics.DAGPENGER_BEHOV_PACKET_EVENT.name, behov.behovId, Behov.toPacket(behov))
         ) { metadata, exception ->
             exception?.let { logger.error("Failed to produce dagpenger behov with exception $exception") }
-            metadata?.let { logger.info("Produced dagpenger behov on topic ${metadata.topic()} to offset ${metadata.offset()} with the key key") }
+            metadata?.let { logger.info("Produced dagpenger behov on topic ${metadata.topic()} to offset ${metadata.offset()} with the key ${behov.behovId}") }
         }
     }
 }

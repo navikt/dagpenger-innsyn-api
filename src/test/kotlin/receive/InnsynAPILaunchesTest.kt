@@ -11,7 +11,7 @@ import restapi.innsynAPI
 import restapi.streams.KafkaInnsynProducer
 import restapi.streams.producerConfig
 import java.net.URL
-import java.util.concurrent.*
+import java.util.concurrent.TimeUnit
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -21,7 +21,7 @@ class InnsynAPILaunchesTest {
     @Test
     fun testRoot() {
         withTestApplication({
-            innsynAPI(
+            innsynAPI(KafkaInnsynProducer(producerConfig(APPLICATION_NAME, Configuration().kafka.brokers)),
                     jwkProvider = JwkProviderBuilder(URL(Configuration().application.jwksUrl))
                             .cached(10, 24, TimeUnit.HOURS)
                             .rateLimited(10, 1, TimeUnit.MINUTES)

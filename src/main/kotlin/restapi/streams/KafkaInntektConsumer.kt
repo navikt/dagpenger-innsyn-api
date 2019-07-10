@@ -7,8 +7,9 @@ import no.nav.dagpenger.streams.streamConfig
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.kstream.Predicate
 import restapi.APPLICATION_NAME
-import restapi.filteredPackages
-import java.util.concurrent.*
+import restapi.filteredPackets
+import restapi.logger
+import java.util.concurrent.TimeUnit
 
 internal class KafkaInntektConsumer(
         private val config: Configuration,
@@ -51,6 +52,6 @@ internal class InntektPond : Pond() {
             )
 
     override fun onPacket(packet: Packet) {
-        filteredPackages[packet.getStringValue(PacketKeys.BEHOV_ID)] = packet
+        filteredPackets[packet.getStringValue(PacketKeys.BEHOV_ID)] = packet
     }
 }

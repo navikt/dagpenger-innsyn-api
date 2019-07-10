@@ -8,7 +8,7 @@ import data.inntekt.MonthIncomeInformation
 import data.inntekt.ProcessedRequest
 import java.time.YearMonth
 
-//TODO: Move to test when we have MVP
+// TODO: Move to test when we have MVP
 fun getExample(): ProcessedRequest {
 
     val fastloennConst = "Fastlønn"

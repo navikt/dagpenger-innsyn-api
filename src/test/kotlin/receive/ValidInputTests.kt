@@ -1,14 +1,19 @@
 package receive
 
+import com.auth0.jwk.JwkProvider
 import data.configuration.testURL
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.setBody
+import io.ktor.server.testing.withTestApplication
+import io.mockk.mockk
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import restapi.streams.KafkaInnsynProducer
 import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -34,7 +39,7 @@ class ValidDataTests {
         }
     }
 
-    //TODO: Fix this test
+    // TODO: Fix this test
     @Test
     fun testEdgeData() = testApp {
         handleRequest(HttpMethod.Post, testURL) {
@@ -46,7 +51,7 @@ class ValidDataTests {
         }
     }
 
-    //TODO: Fix this test
+    // TODO: Fix this test
     @Test
     fun testUntypicalData() = testApp {
         handleRequest(HttpMethod.Post, testURL) {
@@ -58,7 +63,7 @@ class ValidDataTests {
         }
     }
 
-    //TODO: Fix this test
+    // TODO: Fix this test
     @Test
     fun testValidButNotRealData() = testApp {
         handleRequest(HttpMethod.Post, testURL) {
@@ -68,5 +73,17 @@ class ValidDataTests {
             assertTrue(requestHandled)
             Assertions.assertEquals(HttpStatusCode.OK, response.status())
         }
+    }
+
+    fun testApp(callback: TestApplicationEngine.() -> Unit) {
+        val kafkaMock = mockk<KafkaInnsynProducer>(relaxed = true)
+        val jwkMock = mockk<JwkProvider>(relaxed = true)
+
+        withTestApplication(
+                MockApi(
+                        kafkaMock,
+                        jwkMock
+                )
+        ) { callback() }
     }
 }

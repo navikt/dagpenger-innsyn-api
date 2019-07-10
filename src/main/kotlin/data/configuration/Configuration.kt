@@ -9,13 +9,17 @@ import com.natpryce.konfig.overriding
 import com.natpryce.konfig.stringType
 import no.nav.dagpenger.streams.KafkaCredential
 
-
 private val localProperties = ConfigurationMap(
         mapOf(
                 "application.profile" to "LOCAL",
                 "application.url" to "/inntekt",
                 "application.httpPort" to "8099",
+                "vault.mountpath" to "postgresql/dev/",
                 "kafka.bootstrap.servers" to "localhost:9092",
+                "auth.secret" to "secret",
+                "auth.allowedKeys" to "secret1, secret2",
+                "srvdp.inntekt.innsyn.username" to "igroup",
+                "srvdp.inntekt.innsyn.password" to "itest",
                 "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api/enheter/",
                 "oppslag.url" to "https://localhost:8090/api",
                 "oidc.sts.issuerurl" to "http://localhost/",
@@ -25,6 +29,7 @@ private val localProperties = ConfigurationMap(
 )
 private val devProperties = ConfigurationMap(
         mapOf(
+                "vault.mountpath" to "postgresql/preprod-fss/",
                 "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api/enheter/",
                 "oppslag.url" to "http://dagpenger-oppslag.default.svc.nais.local/api",
                 "oidc.sts.issuerurl" to "https://security-token-service-t4.nais.preprod.local/",
@@ -38,6 +43,7 @@ private val devProperties = ConfigurationMap(
 )
 private val prodProperties = ConfigurationMap(
         mapOf(
+                "vault.mountpath" to "postgresql/prod-fss/",
                 "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api/enheter/",
                 "oppslag.url" to "http://dagpenger-oppslag.default.svc.nais.local/api",
                 "oidc.sts.issuerurl" to "https://security-token-service.nais.adeo.no/",
@@ -52,6 +58,7 @@ private val prodProperties = ConfigurationMap(
 
 data class Configuration(
         val application: Application = Application(),
+        val vault: Vault = Vault(),
         val kafka: Kafka = Kafka()
 
 ) {
@@ -67,10 +74,14 @@ data class Configuration(
             val name: String = "dagpenger-sommer"
     )
 
+    data class Vault(
+            val mountPath: String = config()[Key("vault.mountpath", stringType)]
+    )
+
     data class Kafka(
             val brokers: String = config()[Key("kafka.bootstrap.servers", stringType)],
-            val user: String? = config().getOrNull(Key("srvdp.regel.api.username", stringType)),
-            val password: String? = config().getOrNull(Key("srvdp.regel.api.password", stringType))
+            val user: String? = config().getOrNull(Key("srvdp.inntekt.innsyn.username", stringType)),
+            val password: String? = config().getOrNull(Key("srvdp.inntekt.innsyn.password", stringType))
     ) {
         fun credential(): KafkaCredential? {
             return if (user != null && password != null) {
