@@ -4,7 +4,7 @@ import no.bekk.bekkopen.date.NorwegianDateUtil
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
-import java.util.Date
+import java.util.*
 
 class Opptjeningsperiode(beregningsdato: LocalDate) {
     private val antattRapporteringsFrist = LocalDate.of(beregningsdato.year, beregningsdato.month, 5)

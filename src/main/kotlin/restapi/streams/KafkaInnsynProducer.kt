@@ -10,16 +10,18 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
 import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.config.SslConfigs
+import org.apache.logging.log4j.LogManager
 import restapi.APPLICATION_NAME
-import restapi.logger
 import java.io.File
-import java.util.Properties
-import java.util.concurrent.Future
+import java.util.*
+import java.util.concurrent.*
+
+val logger = LogManager.getLogger()
 
 internal fun producerConfig(
-    appId: String,
-    bootStapServerUrl: String,
-    credential: KafkaCredential? = null
+        appId: String,
+        bootStapServerUrl: String,
+        credential: KafkaCredential? = null
 ): Properties {
     return Properties().apply {
         putAll(

@@ -1,5 +1,8 @@
 package receive
 
+import com.auth0.jwk.JwkProviderBuilder
+import data.configuration.Configuration
+import data.configuration.testURL
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -12,12 +15,14 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import restapi.streams.KafkaInnsynProducer
+import java.net.URL
+import java.util.concurrent.*
 import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class InvalidInputTests {
 
-    private val noData = """
+    val noData = """
         {
         }
     """.trimIndent()
@@ -47,7 +52,7 @@ class InvalidInputTests {
 
     @Test
     fun lackingDataFails() = testApp {
-        handleRequest(HttpMethod.Post, "/inntekt") {
+        handleRequest(HttpMethod.Post, testURL) {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(lackingData)
         }.apply {
@@ -58,7 +63,7 @@ class InvalidInputTests {
 
     @Test
     fun noDataFails() = testApp {
-        handleRequest(HttpMethod.Post, "/inntekt") {
+        handleRequest(HttpMethod.Post, testURL) {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(noData)
         }.apply {
@@ -69,7 +74,7 @@ class InvalidInputTests {
 
     @Test
     fun lackingFieldsDataFails() = testApp {
-        handleRequest(HttpMethod.Post, "/inntekt") {
+        handleRequest(HttpMethod.Post, testURL) {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(lackingFieldsData)
         }.apply {
@@ -80,7 +85,7 @@ class InvalidInputTests {
     // TODO: Add in invalid data validation tests
 //    @Test
 //    fun InvalidDataFails() = testApp{
-//        handleRequest (HttpMethod.Post, "/inntekt" ) {
+//        handleRequest (HttpMethod.Post, testURL ) {
 //            addHeader(HttpHeaders.ContentType, "application/json")
 //            setBody()
 //        }.apply {
@@ -91,7 +96,7 @@ class InvalidInputTests {
 
     @Test
     fun partialDataFails() = testApp {
-        handleRequest(HttpMethod.Post, "/inntekt") {
+        handleRequest(HttpMethod.Post, testURL) {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(partialData)
         }.apply {
@@ -104,7 +109,11 @@ class InvalidInputTests {
         val kafkaMock = mockk<KafkaInnsynProducer>(relaxed = true)
 
         withTestApplication(
-            MockApi(kafkaMock)
+            MockApi(JwkProviderBuilder(URL(Configuration().application.jwksUrl))
+                    .cached(10, 24, TimeUnit.HOURS)
+                    .rateLimited(10, 1, TimeUnit.MINUTES)
+                    .build(),
+                    kafkaMock)
         ) { callback() }
     }
 }

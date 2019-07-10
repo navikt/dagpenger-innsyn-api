@@ -1,5 +1,6 @@
 package receive
 
+import data.configuration.testURL
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -27,7 +28,7 @@ class ValidDataTests {
 
     @Test
     fun testTypicalData() = testApp {
-        handleRequest(HttpMethod.Post, "/inntekt") {
+        handleRequest(HttpMethod.Post, testURL) {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(typicalData)
         }.apply {
@@ -40,7 +41,7 @@ class ValidDataTests {
     // TODO: Fix this test
     @Test
     fun testEdgeData() = testApp {
-        handleRequest(HttpMethod.Post, "/inntekt") {
+        handleRequest(HttpMethod.Post, testURL) {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(typicalData)
         }.apply {
@@ -52,7 +53,7 @@ class ValidDataTests {
     // TODO: Fix this test
     @Test
     fun testUntypicalData() = testApp {
-        handleRequest(HttpMethod.Post, "/inntekt") {
+        handleRequest(HttpMethod.Post, testURL) {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(typicalData)
         }.apply {
@@ -64,7 +65,7 @@ class ValidDataTests {
     // TODO: Fix this test
     @Test
     fun testValidButNotRealData() = testApp {
-        handleRequest(HttpMethod.Post, "/inntekt") {
+        handleRequest(HttpMethod.Post, testURL) {
             addHeader(HttpHeaders.ContentType, "application/json")
             setBody(typicalData)
         }.apply {
