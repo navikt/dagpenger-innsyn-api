@@ -80,8 +80,8 @@ fun main() {
 }
 
 fun Application.innsynAPI(
-    kafkaProducer: InnsynProducer,
-    jwkProvider: JwkProvider
+        kafkaProducer: InnsynProducer,
+        jwkProvider: JwkProvider
 ) {
 
     install(CORS) {

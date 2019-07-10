@@ -231,7 +231,8 @@
               "informasjonsstatus": "InngaarAlltid",
               "verdikode": "Fastlønn",
               "beskrivelse": "Total lønnsinntekt"
-            },{
+            },
+            {
               "inntektType": "LOENNSINNTEKT",
               "header": "Total lønnsinntekt",
               "beloep": "50.83",

@@ -107,10 +107,10 @@ class InvalidInputTests {
         val jwkMock = mockk<JwkProvider>(relaxed = true)
 
         withTestApplication(
-            MockApi(
-                    kafkaMock,
-                    jwkMock
-            )
+                MockApi(
+                        kafkaMock,
+                        jwkMock
+                )
         ) { callback() }
     }
 }

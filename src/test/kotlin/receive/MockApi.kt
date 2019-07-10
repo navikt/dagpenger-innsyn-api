@@ -7,8 +7,8 @@ import restapi.innsynAPI
 import restapi.streams.KafkaInnsynProducer
 
 internal fun MockApi(
-    kafkaInnsynProducer: KafkaInnsynProducer = mockk(),
-    jwkProvider: JwkProvider = mockk()
+        kafkaInnsynProducer: KafkaInnsynProducer = mockk(),
+        jwkProvider: JwkProvider = mockk()
 ): Application.() -> Unit {
     return fun Application.() {
         innsynAPI(kafkaInnsynProducer, jwkProvider)
