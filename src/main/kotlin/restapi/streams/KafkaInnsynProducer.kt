@@ -13,15 +13,15 @@ import org.apache.kafka.common.config.SslConfigs
 import org.apache.logging.log4j.LogManager
 import restapi.APPLICATION_NAME
 import java.io.File
-import java.util.*
-import java.util.concurrent.*
+import java.util.Properties
+import java.util.concurrent.Future
 
 val logger = LogManager.getLogger()
 
 internal fun producerConfig(
-        appId: String,
-        bootStapServerUrl: String,
-        credential: KafkaCredential? = null
+    appId: String,
+    bootStapServerUrl: String,
+    credential: KafkaCredential? = null
 ): Properties {
     return Properties().apply {
         putAll(

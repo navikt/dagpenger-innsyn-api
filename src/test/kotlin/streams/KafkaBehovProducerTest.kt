@@ -6,7 +6,7 @@ import restapi.streams.Behov
 import restapi.streams.KafkaInnsynProducer
 import restapi.streams.producerConfig
 import java.time.LocalDate
-import java.util.concurrent.*
+import java.util.concurrent.TimeUnit
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 

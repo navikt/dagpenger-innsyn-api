@@ -12,8 +12,8 @@ import restapi.logger
 import java.util.concurrent.TimeUnit
 
 internal class KafkaInntektConsumer(
-        private val config: Configuration,
-        private val inntektPond: InntektPond
+    private val config: Configuration,
+    private val inntektPond: InntektPond
 ) {
 
     private val streams: KafkaStreams by lazy {

@@ -1,7 +1,6 @@
 package receive
 
-import com.auth0.jwk.JwkProviderBuilder
-import data.configuration.Configuration
+import com.auth0.jwk.JwkProvider
 import data.configuration.testURL
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -15,8 +14,6 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import restapi.streams.KafkaInnsynProducer
-import java.net.URL
-import java.util.concurrent.*
 import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -107,13 +104,13 @@ class InvalidInputTests {
 
     fun testApp(callback: TestApplicationEngine.() -> Unit) {
         val kafkaMock = mockk<KafkaInnsynProducer>(relaxed = true)
+        val jwkMock = mockk<JwkProvider>(relaxed = true)
 
         withTestApplication(
-            MockApi(JwkProviderBuilder(URL(Configuration().application.jwksUrl))
-                    .cached(10, 24, TimeUnit.HOURS)
-                    .rateLimited(10, 1, TimeUnit.MINUTES)
-                    .build(),
-                    kafkaMock)
+            MockApi(
+                    kafkaMock,
+                    jwkMock
+            )
         ) { callback() }
     }
 }

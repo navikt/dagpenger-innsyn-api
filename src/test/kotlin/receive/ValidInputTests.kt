@@ -1,5 +1,6 @@
 package receive
 
+import com.auth0.jwk.JwkProvider
 import data.configuration.testURL
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -76,9 +77,13 @@ class ValidDataTests {
 
     fun testApp(callback: TestApplicationEngine.() -> Unit) {
         val kafkaMock = mockk<KafkaInnsynProducer>(relaxed = true)
+        val jwkMock = mockk<JwkProvider>(relaxed = true)
 
         withTestApplication(
-                MockApi(kafkaMock)
+                MockApi(
+                        kafkaMock,
+                        jwkMock
+                )
         ) { callback() }
     }
 }

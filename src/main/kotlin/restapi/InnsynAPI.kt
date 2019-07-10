@@ -77,19 +77,18 @@ fun main() {
     })
 
     app.start(wait = false)
-
 }
 
 fun Application.innsynAPI(
-        kafkaProducer: InnsynProducer,
-        jwkProvider: JwkProvider
+    kafkaProducer: InnsynProducer,
+    jwkProvider: JwkProvider
 ) {
 
     install(CORS) {
         method(HttpMethod.Options)
         header("MyCustomHeader")
         allowCredentials = true
-        anyHost() //TODO: Don't do this in production if possible. Try to limit it.
+        anyHost() // TODO: Don't do this in production if possible. Try to limit it.
     }
 
     install(ContentNegotiation) {
@@ -159,17 +158,17 @@ fun Application.innsynAPI(
     }
 }
 
-//TODO: Implement this
+// TODO: Implement this
 fun getAktorIDFromIDToken(idToken: String): String {
     return "123519375hkjsols90821"
 }
 
-//TODO: Implement this
+// TODO: Implement this
 fun isValid(token: String): Boolean {
     return true
 }
 
-//TODO: Implement this
+// TODO: Implement this
 fun isValid(beregningsDato: LocalDate): Boolean {
     return true
 }

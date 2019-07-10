@@ -5,10 +5,10 @@ import no.nav.dagpenger.events.Packet
 import java.time.LocalDate
 
 data class Behov(
-        val behovId: String = ulidGenerator.nextULID(),
-        val aktørId: String,
+    val behovId: String = ulidGenerator.nextULID(),
+    val aktørId: String,
         // TODO: Change to LocalDate
-        val beregningsDato: LocalDate
+    val beregningsDato: LocalDate
 ) {
     companion object Mapper {
         private val ulidGenerator = ULID()
