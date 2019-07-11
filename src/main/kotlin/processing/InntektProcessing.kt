@@ -47,11 +47,16 @@ fun groupYearMonthIntoPeriods(yearMonths: List<YearMonth>): List<EmploymentPerio
             .sorted()
             .fold(emptyList(), { list, yearMonth ->
                 when {
-                    list.isEmpty() -> list + EmploymentPeriode(yearMonth, yearMonth)
-                    list.last().endDateYearMonth.plusMonths(1) == yearMonth -> list.dropLast(1) + EmploymentPeriode(list.last().startDateYearMonth, yearMonth)
+                    list.isEmpty() -> listOf(EmploymentPeriode(yearMonth, yearMonth))
+                    isSuccessiveMonth(list.last().endDateYearMonth, yearMonth) ->
+                        list.dropLast(1) + EmploymentPeriode(list.last().startDateYearMonth, yearMonth)
                     else -> list + EmploymentPeriode(yearMonth, yearMonth)
                 }
             })
+}
+
+fun isSuccessiveMonth(monthOne: YearMonth, monthTwo: YearMonth): Boolean {
+    return monthOne.plusMonths(1) == monthTwo
 }
 
 fun getEmployerSummaries(inntektData: InntektsInformasjon): List<EmployerSummary> {

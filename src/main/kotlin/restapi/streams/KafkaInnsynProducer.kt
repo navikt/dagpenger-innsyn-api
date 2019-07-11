@@ -1,5 +1,7 @@
 package restapi.streams
 
+import mu.KLogger
+import mu.KotlinLogging
 import no.nav.dagpenger.events.Packet
 import no.nav.dagpenger.streams.KafkaCredential
 import no.nav.dagpenger.streams.Topics
@@ -16,7 +18,7 @@ import java.io.File
 import java.util.Properties
 import java.util.concurrent.Future
 
-val logger = LogManager.getLogger()
+private val logger: KLogger = KotlinLogging.logger{}
 
 internal fun producerConfig(
         appId: String,

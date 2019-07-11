@@ -11,26 +11,26 @@ import no.nav.dagpenger.streams.KafkaCredential
 
 private val localProperties = ConfigurationMap(
         mapOf(
-                "application.profile" to "LOCAL",
-                "application.url" to "/inntekt",
-                "application.httpPort" to "8099",
                 "vault.mountpath" to "postgresql/dev/",
-                "kafka.bootstrap.servers" to "localhost:9092",
-                "auth.secret" to "secret",
-                "auth.allowedKeys" to "secret1, secret2",
                 "srvdp.inntekt.innsyn.username" to "igroup",
                 "srvdp.inntekt.innsyn.password" to "itest",
                 "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api/enheter/",
+                "aktoerregisteret.url" to "http://tjenester.nav.no/aktoerregister/api/v1/identer?identgruppe=AktoerId",
                 "oppslag.url" to "https://localhost:8090/api",
                 "oidc.sts.issuerurl" to "http://localhost/",
-                "jwks.url" to "https://localhost",
-                "jwks.issuer" to "https://localhost"
+                "kafka.bootstrap.servers" to "localhost:9092",
+                "jwks.url" to "http://host.docker.internal:4352/certs",
+                "jwks.issuer" to "http://simple-oidc-provider",
+                "application.profile" to "LOCAL",
+                "application.url" to "/inntekt",
+                "application.httpPort" to "8099"
         )
 )
 private val devProperties = ConfigurationMap(
         mapOf(
                 "vault.mountpath" to "postgresql/preprod-fss/",
                 "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api/enheter/",
+                "aktoerregisteret.url" to "http://tjenester.nav.no/aktoerregister/api/v1/identer?identgruppe=AktoerId",
                 "oppslag.url" to "http://dagpenger-oppslag.default.svc.nais.local/api",
                 "oidc.sts.issuerurl" to "https://security-token-service-t4.nais.preprod.local/",
                 "kafka.bootstrap.servers" to "d26apvl00159.test.local:8443,d26apvl00160.test.local:8443,d26apvl00161.test.local:8443",
@@ -45,6 +45,7 @@ private val prodProperties = ConfigurationMap(
         mapOf(
                 "vault.mountpath" to "postgresql/prod-fss/",
                 "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api/enheter/",
+                "aktoerregisteret.url" to "http://tjenester.nav.no/aktoerregister/api/v1/identer?identgruppe=AktoerId",
                 "oppslag.url" to "http://dagpenger-oppslag.default.svc.nais.local/api",
                 "oidc.sts.issuerurl" to "https://security-token-service.nais.adeo.no/",
                 "kafka.bootstrap.servers" to "a01apvl00145.adeo.no:8443,a01apvl00146.adeo.no:8443,a01apvl00147.adeo.no:8443,a01apvl00148.adeo.no:8443,a01apvl00149.adeo.no:8443,a01apvl150.adeo.no:8443",
@@ -66,7 +67,9 @@ data class Configuration(
     data class Application(
             val profile: Profile = config()[Key("application.profile", stringType)].let { Profile.valueOf(it) },
             val httpPort: Int = config()[Key("application.httpPort", intType)],
+            val applicationUrl: String = config()[Key("application.url", stringType)],
             val enhetsregisteretUrl: String = config()[Key("enhetsregisteret.url", stringType)],
+            val aktoerregisteretUrl: String = config()[Key("aktoerregisteret.url", stringType)],
             val oppslagUrl: String = config()[Key("oppslag.url", stringType)],
             val oicdStsUrl: String = config()[Key("oidc.sts.issuerurl", stringType)],
             val jwksUrl: String = config()[Key("jwks.url", stringType)],

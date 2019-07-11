@@ -1,14 +1,17 @@
 package restapi.streams
 
 import data.configuration.Configuration
+import mu.KLogger
+import mu.KotlinLogging
 import no.nav.dagpenger.events.Packet
 import no.nav.dagpenger.streams.Pond
 import no.nav.dagpenger.streams.streamConfig
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.kstream.Predicate
 import restapi.APPLICATION_NAME
-import restapi.logger
 import java.util.concurrent.TimeUnit
+
+private val logger: KLogger = KotlinLogging.logger {}
 
 internal class KafkaInntektConsumer(
         private val config: Configuration,

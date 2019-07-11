@@ -56,14 +56,19 @@ val orgJsonVersion = "20180813"
 val kafkaVersion = "2.0.1"
 val testcontainers_version = "1.11.2"
 val konfigVersion = "1.6.10.0"
+val bekkopenVersion = "0.8.2"
+val dagpengerStreamsVersion = "2019.06.26-21.57.bdd7e296c753"
+val khttpVersion = "0.1.0"
+val klaxonVersion = "5.0.1"
+val huxhornSulkyUlidVersion = "8.2.0"
+val kotlinReflectVersion = "1.3.21"
+val log4j2LogstashLayoutFatjarVersion = "0.15"
 val mockkVersion = "1.9.3"
 
 dependencies {
     implementation(kotlin("stdlib"))
 
-    implementation("com.github.navikt:dagpenger-streams:2019.06.26-21.57.bdd7e296c753")
-    implementation("de.huxhorn.sulky:de.huxhorn.sulky.ulid:8.2.0")
-    implementation("com.natpryce:konfig:$konfigVersion")
+
     implementation("io.ktor:ktor-server:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
@@ -71,24 +76,30 @@ dependencies {
     implementation("io.ktor:ktor-auth-jwt:$ktorVersion")
     implementation("io.ktor:ktor-metrics-micrometer:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
-    implementation("com.beust:klaxon:5.0.1")
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+
     implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
     implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")
     implementation("org.apache.logging.log4j:log4j-slf4j-impl:$log4j2Version")
     implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
     implementation("org.apache.kafka:kafka-streams:$kafkaVersion")
-    implementation("io.confluent:kafka-streams-avro-serde:$confluentVersion")
-    implementation("com.vlkan.log4j2:log4j2-logstash-layout-fatjar:0.15")
-    implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.21")
-    implementation("no.bekk.bekkopen:nocommons:0.8.2")
+    testImplementation("org.apache.kafka:kafka-streams-test-utils:$kafkaVersion")
 
-    implementation("com.github.jkcclemens:khttp:0.1.0")
-    implementation("com.natpryce:konfig:1.6.10.0")
+
+    implementation("com.github.navikt:dagpenger-streams:$dagpengerStreamsVersion")
+    implementation("com.github.jkcclemens:khttp:$khttpVersion")
+    implementation("com.natpryce:konfig:$konfigVersion")
+    implementation("com.vlkan.log4j2:log4j2-logstash-layout-fatjar:$log4j2LogstashLayoutFatjarVersion")
+    implementation("com.beust:klaxon:$klaxonVersion")
+    implementation("no.bekk.bekkopen:nocommons:$bekkopenVersion")
+    implementation("de.huxhorn.sulky:de.huxhorn.sulky.ulid:$huxhornSulkyUlidVersion")
+    implementation("io.github.microutils:kotlin-logging:$kotlinLoggingVersion")
+    implementation("io.confluent:kafka-streams-avro-serde:$confluentVersion")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinReflectVersion")
 
     testImplementation(kotlin("test"))
-    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+
     testImplementation("org.junit.jupiter:junit-jupiter-api:$jupiterVersion")
-    testImplementation("org.apache.kafka:kafka-streams-test-utils:$kafkaVersion")
     testImplementation("org.testcontainers:kafka:$testcontainers_version")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jupiterVersion")

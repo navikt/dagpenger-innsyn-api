@@ -41,22 +41,6 @@ val yearMonthParser = object : Converter {
     override fun toJson(value: Any) = """"${(value as YearMonth)}""""
 }
 
-@Target(AnnotationTarget.FIELD)
-annotation class LocalDate
-
-val localDateParser = object : Converter {
-    override fun canConvert(cls: Class<*>) = cls == LocalDate::class.java
-
-    override fun fromJson(jv: JsonValue) =
-            if (jv.string != null) {
-                LocalDate.parse(jv.string, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-            } else {
-                throw KlaxonException("Could not parse LocalDate: ${jv.string}")
-            }
-
-    override fun toJson(value: Any) = """"$value""""
-}
-
 val defaultParser = Klaxon()
         .fieldConverter(parsing.Double::class, doubleParser)
         .fieldConverter(parsing.YearMonth::class, yearMonthParser)

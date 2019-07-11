@@ -1,9 +1,5 @@
 package parsing
 
-import com.beust.klaxon.Klaxon
-import data.objects.APITestRequest
-import data.objects.OnlyLocalDate
-import data.requests.APIPostRequest
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -28,38 +24,5 @@ class JSONParseTestClass {
     @Test
     fun parseJSONToDoubleTest() {
         assertTrue(testDataPeter.inntekt.arbeidsInntektMaaned[0].arbeidsInntektInformasjon.inntektListe[0].beloep == 5.83)
-    }
-
-    @Test
-    fun klaxonParsesLocaclDate() {
-        Klaxon()
-                .fieldConverter(LocalDate::class, localDateParser)
-                .parse<APIPostRequest>("""
-                    {
-                        "personnummer": "15118512351",
-                        "beregningsdato": "2019-03-01",
-                        "token":"ah82638419gvh123bn"
-                    }
-                """.trimIndent())
-    }
-
-    @Test
-    fun klaxonParsesWithoutLocalDate() {
-        Klaxon()
-                .parse<APITestRequest>("""
-                    {
-                        "personnummer": "15118512351",
-                        "token":"ah82638419gvh123bn"
-                    }
-                """.trimIndent())
-    }
-
-    @Test
-    fun klaxonParsesBackToLocalDate() {
-        Klaxon()
-                .fieldConverter(LocalDate::class, localDateParser)
-                .parse<OnlyLocalDate>(
-                        Klaxon().toJsonString(OnlyLocalDate(java.time.LocalDate.now()))
-                )
     }
 }
