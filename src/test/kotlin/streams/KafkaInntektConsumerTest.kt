@@ -1,23 +1,53 @@
 package streams
 
+import io.mockk.Called
+import io.mockk.Runs
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.verifyAll
 import no.nav.dagpenger.events.Packet
 import no.nav.dagpenger.streams.Topics
 import org.apache.kafka.streams.StreamsConfig
 import org.apache.kafka.streams.TopologyTestDriver
 import org.apache.kafka.streams.test.ConsumerRecordFactory
+import org.junit.jupiter.api.Test
 import restapi.streams.InntektPond
+import restapi.streams.PacketKeys
+import restapi.streams.PacketStore
+import restapi.streams.behovId
 import java.util.Properties
 
 internal class KafkaInntektConsumerTest {
 
-    /*
     @Test
     fun `Packet is ignored if not all parameters are present`() {
-        runTest(Packet()) {
-            verifyAll { }
+        val packet = Packet().apply { this.putValue(PacketKeys.INNTEKT, "inntekt") }
+        val mock = mockk<PacketStore>()
+        runTest(mock, packet) {
+            verifyAll { mock wasNot Called }
         }
     }
-     */
+
+    @Test
+    fun `Packet is handled if all parameters are present`() {
+        val packet = Packet("""
+            {
+                ${PacketKeys.BEHOV_ID}: "behovId",
+                ${PacketKeys.INNTEKT}: "inntekt",
+                ${PacketKeys.MINSTEINNTEKT_RESULTAT}: "minsteinntektResultat",
+                ${PacketKeys.MINSTEINNTEKT_INNTEKTSPERIODER}: "minsteinntektInntektsperioder",
+                ${PacketKeys.PERIODE_RESULTAT}: "periodeResultat"
+            }
+        """.trimIndent()
+        )
+        val mock = mockk<PacketStore>().apply {
+            every { this@apply.insert(match { it.behovId == "behovId" }) } just Runs
+        }
+        runTest(mock, packet) {
+            verifyAll { mock.insert(match { it.behovId == "behovId" }) }
+        }
+    }
 
     private companion object {
         val factory = ConsumerRecordFactory<String, Packet>(
@@ -31,8 +61,8 @@ internal class KafkaInntektConsumerTest {
             this[StreamsConfig.BOOTSTRAP_SERVERS_CONFIG] = "dummy:1234"
         }
 
-        fun runTest(packet: Packet, testBlock: () -> Unit) {
-            InntektPond().let {
+        fun runTest(store: PacketStore, packet: Packet, testBlock: () -> Unit) {
+            InntektPond(store).let {
                 TopologyTestDriver(it.buildTopology(), config).use { topologyTestDriver ->
                     topologyTestDriver.pipeInput(factory.create(packet))
                     testBlock()
