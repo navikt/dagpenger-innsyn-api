@@ -24,7 +24,6 @@ import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import no.nav.dagpenger.events.Packet
 import no.nav.dagpenger.streams.KafkaCredential
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -37,6 +36,7 @@ import restapi.streams.InnsynProducer
 import restapi.streams.InntektPond
 import restapi.streams.KafkaInnsynProducer
 import restapi.streams.KafkaInntektConsumer
+import restapi.streams.HashMapPacketStore
 import restapi.streams.producerConfig
 import java.net.URL
 import java.time.LocalDate
@@ -47,7 +47,6 @@ val logger: Logger = LogManager.getLogger()
 private val config = Configuration()
 private val authorizedUsers = listOf("localhost")
 val APPLICATION_NAME = "dp-inntekt-innsyn"
-val filteredPackets: HashMap<String, Packet> = HashMap()
 
 fun main() {
     val jwkProvider = JwkProviderBuilder(URL(config.application.jwksUrl))
@@ -55,7 +54,9 @@ fun main() {
             .rateLimited(10, 1, TimeUnit.MINUTES)
             .build()
 
-    val kafkaConsumer = KafkaInntektConsumer(config, InntektPond()).also {
+    val packetStore = HashMapPacketStore()
+
+    val kafkaConsumer = KafkaInntektConsumer(config, InntektPond(packetStore)).also {
         it.start()
     }
 
@@ -131,7 +132,10 @@ fun Application.innsynAPI(
         get("/inntekt") {
             logger.info("Attempting to retrieve token")
             val idToken = call.request.cookies["ID_token"]
-            val beregningsdato = LocalDate.parse(call.request.cookies["beregningsdato"], DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            val beregningsdato: LocalDate? = try {
+                LocalDate.parse(call.request.cookies["beregningsdato"], DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            }
+            catch (e: NullPointerException) { null }
             if (idToken == null) {
                 logger.error("Received invalid request without ID_token", call)
                 call.respond(HttpStatusCode.NotAcceptable, "Missing required cookies")
