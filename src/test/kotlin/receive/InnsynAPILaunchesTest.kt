@@ -1,21 +1,21 @@
-//package receive
+// package receive
 //
-//import com.auth0.jwk.JwkProviderBuilder
-//import io.ktor.http.HttpMethod
-//import io.ktor.http.HttpStatusCode
-//import io.ktor.server.testing.handleRequest
-//import io.ktor.server.testing.withTestApplication
-//import no.nav.dagpenger.innsyn.data.configuration.Configuration
-//import no.nav.dagpenger.innsyn.APPLICATION_NAME
-//import no.nav.dagpenger.innsyn.innsynAPI
-//import no.nav.dagpenger.innsyn.restapi.streams.KafkaInnsynProducer
-//import no.nav.dagpenger.innsyn.restapi.streams.producerConfig
-//import java.net.URL
-//import java.util.concurrent.*
-//import kotlin.test.Test
-//import kotlin.test.assertEquals
+// import com.auth0.jwk.JwkProviderBuilder
+// import io.ktor.http.HttpMethod
+// import io.ktor.http.HttpStatusCode
+// import io.ktor.server.testing.handleRequest
+// import io.ktor.server.testing.withTestApplication
+// import no.nav.dagpenger.innsyn.data.configuration.Configuration
+// import no.nav.dagpenger.innsyn.APPLICATION_NAME
+// import no.nav.dagpenger.innsyn.innsynAPI
+// import no.nav.dagpenger.innsyn.restapi.streams.KafkaInnsynProducer
+// import no.nav.dagpenger.innsyn.restapi.streams.producerConfig
+// import java.net.URL
+// import java.util.concurrent.*
+// import kotlin.test.Test
+// import kotlin.test.assertEquals
 //
-//class InnsynAPILaunchesTest {
+// class InnsynAPILaunchesTest {
 //
 //    // TODO: Remove this and test that server is runnable another way
 //    @Test
@@ -33,4 +33,4 @@
 //            }
 //        }
 //    }
-//}
+// }

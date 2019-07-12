@@ -68,7 +68,6 @@ val mockkVersion = "1.9.3"
 dependencies {
     implementation(kotlin("stdlib"))
 
-
     implementation("io.ktor:ktor-server:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
@@ -84,7 +83,6 @@ dependencies {
     implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
     implementation("org.apache.kafka:kafka-streams:$kafkaVersion")
     testImplementation("org.apache.kafka:kafka-streams-test-utils:$kafkaVersion")
-
 
     implementation("com.github.navikt:dagpenger-streams:$dagpengerStreamsVersion")
     implementation("com.github.jkcclemens:khttp:$khttpVersion")

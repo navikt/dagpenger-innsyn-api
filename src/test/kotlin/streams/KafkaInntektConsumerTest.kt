@@ -1,24 +1,24 @@
-//package streams
+// package streams
 //
-//import io.mockk.Called
-//import io.mockk.Runs
-//import io.mockk.every
-//import io.mockk.just
-//import io.mockk.mockk
-//import io.mockk.verifyAll
-//import no.nav.dagpenger.events.Packet
-//import no.nav.dagpenger.innsyn.restapi.streams.InntektPond
-//import no.nav.dagpenger.innsyn.restapi.streams.PacketKeys
-//import no.nav.dagpenger.innsyn.restapi.streams.PacketStore
-//import no.nav.dagpenger.innsyn.restapi.streams.behovId
-//import no.nav.dagpenger.streams.Topics
-//import org.apache.kafka.streams.StreamsConfig
-//import org.apache.kafka.streams.TopologyTestDriver
-//import org.apache.kafka.streams.test.ConsumerRecordFactory
-//import org.junit.jupiter.api.Test
-//import java.util.*
+// import io.mockk.Called
+// import io.mockk.Runs
+// import io.mockk.every
+// import io.mockk.just
+// import io.mockk.mockk
+// import io.mockk.verifyAll
+// import no.nav.dagpenger.events.Packet
+// import no.nav.dagpenger.innsyn.restapi.streams.InntektPond
+// import no.nav.dagpenger.innsyn.restapi.streams.PacketKeys
+// import no.nav.dagpenger.innsyn.restapi.streams.PacketStore
+// import no.nav.dagpenger.innsyn.restapi.streams.behovId
+// import no.nav.dagpenger.streams.Topics
+// import org.apache.kafka.streams.StreamsConfig
+// import org.apache.kafka.streams.TopologyTestDriver
+// import org.apache.kafka.streams.test.ConsumerRecordFactory
+// import org.junit.jupiter.api.Test
+// import java.util.*
 //
-//internal class KafkaInntektConsumerTest {
+// internal class KafkaInntektConsumerTest {
 //
 //    @Test
 //    fun `Packet is ignored if not all parameters are present`() {
@@ -70,4 +70,4 @@
 //            }
 //        }
 //    }
-//}
+// }

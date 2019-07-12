@@ -6,7 +6,7 @@ import no.nav.dagpenger.innsyn.restapi.streams.producerConfig
 import org.junit.jupiter.api.Test
 import org.testcontainers.containers.KafkaContainer
 import java.time.LocalDate
-import java.util.concurrent.*
+import java.util.concurrent.TimeUnit
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 

@@ -9,13 +9,13 @@ import no.nav.dagpenger.streams.Pond
 import no.nav.dagpenger.streams.streamConfig
 import org.apache.kafka.streams.KafkaStreams
 import org.apache.kafka.streams.kstream.Predicate
-import java.util.concurrent.*
+import java.util.concurrent.TimeUnit
 
 private val logger: KLogger = KotlinLogging.logger {}
 
 internal class KafkaInntektConsumer(
-        private val config: Configuration,
-        private val inntektPond: InntektPond
+    private val config: Configuration,
+    private val inntektPond: InntektPond
 ) {
 
     private val streams: KafkaStreams by lazy {

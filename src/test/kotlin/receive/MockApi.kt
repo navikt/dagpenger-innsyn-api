@@ -7,8 +7,8 @@ import no.nav.dagpenger.innsyn.innsynAPI
 import no.nav.dagpenger.innsyn.restapi.streams.InnsynProducer
 
 internal fun MockApi(
-        kafkaProducer: InnsynProducer = mockk(),
-        jwkProvider: JwkProvider = mockk()
+    kafkaProducer: InnsynProducer = mockk(),
+    jwkProvider: JwkProvider = mockk()
 ): Application.() -> Unit {
     return fun Application.() {
         innsynAPI(kafkaProducer, jwkProvider)

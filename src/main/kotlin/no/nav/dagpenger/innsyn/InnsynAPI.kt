@@ -46,7 +46,7 @@ import org.slf4j.event.Level
 import java.net.URL
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.concurrent.*
+import java.util.concurrent.TimeUnit
 import javax.naming.ConfigurationException
 
 private val logger: KLogger = KotlinLogging.logger {}
@@ -124,8 +124,8 @@ fun Application.aktoerRegisterMock() {
 }
 
 fun Application.innsynAPI(
-        kafkaProducer: InnsynProducer,
-        jwkProvider: JwkProvider
+    kafkaProducer: InnsynProducer,
+    jwkProvider: JwkProvider
 ) {
 
     install(CORS) {
