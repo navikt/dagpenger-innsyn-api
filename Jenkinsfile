@@ -83,17 +83,6 @@ pipeline {
           }
         }
 
-        stage('Deploy to pre-production, namespace dp') {
-          when { branch 'one_route' }
-          steps {
-            sh label: 'Deploy with kubectl', script: """
-              kubectl config use-context dev-${env.ZONE}
-              kubectl apply -f ./nais/nais-dev-deploy.yaml --wait
-              kubectl rollout status -w deployment/${APPLICATION_NAME}
-            """
-          }
-        }
-
         stage('Run tests') {
           // Since these tests usually are quite expensive, running them as
           // separate stages allows distributing them on seperate agents
@@ -164,29 +153,6 @@ pipeline {
             }
           }
         }
-      }
-    }
-
-    stage('Deploy') {
-      when { branch 'master' }
-
-      steps {
-        sh label: 'Deploy with kubectl', script: """
-          kubectl config use-context prod-${env.ZONE}
-          kubectl apply  -f ./nais/nais-prod-deploy.yaml --wait
-          kubectl rollout status -w deployment/${APPLICATION_NAME}
-        """
-
-        archiveArtifacts artifacts: 'nais/nais-prod-deploy.yaml', fingerprint: true
-
-      }
-    }
-
-    stage('Release') {
-      when { branch 'master' }
-
-      steps {
-        sh "echo true"
       }
     }
   }
