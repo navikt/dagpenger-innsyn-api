@@ -15,7 +15,7 @@ private val localProperties = ConfigurationMap(
                 "srvdp.inntekt.innsyn.username" to "igroup",
                 "srvdp.inntekt.innsyn.password" to "itest",
                 "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api/enheter/",
-                "aktoerregisteret.url" to "http://lvh.me:9011",
+                "aktoerregisteret.url" to "http://backend.myapp.com:9011",
                 "oppslag.url" to "https://localhost:8090/api",
                 "oidc.sts.issuerurl" to "http://localhost/",
                 "kafka.bootstrap.servers" to "localhost:9092",
@@ -26,6 +26,7 @@ private val localProperties = ConfigurationMap(
                 "application.httpPort" to "8099"
         )
 )
+
 private val devProperties = ConfigurationMap(
         mapOf(
                 "vault.mountpath" to "postgresql/preprod-fss/",

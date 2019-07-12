@@ -142,13 +142,16 @@ fun Application.innsynAPI(
     }
 
     install(Authentication) {
-        jwt {
-            realm = "dagpenger-innsyn-api"
-            verifier(jwkProvider, config.application.jwksIssuer)
+        jwt(name = "jwt") {
+            realm = "dp-inntekt-api"
+            verifier(jwkProvider, config.application.jwksIssuer) {
+                acceptNotBefore(10)
+                acceptIssuedAt(10)
+            }
             authHeader { call ->
-                call.request.cookies["nav-esso"]?.let {
-                    HttpAuthHeader.Single("Bearer", it)
-                } ?: call.request.parseAuthorizationHeader()
+                val cookie = call.request.cookies["ID_token"]
+                        ?: throw Exception("Cookie with name ID_Token not found")
+                HttpAuthHeader.Single("Bearer", cookie)
             }
             validate { credentials ->
                 return@validate JWTPrincipal(credentials.payload)
@@ -205,7 +208,7 @@ fun getAktorIDFromIDToken(idToken: String, ident: String): String {
     try {
         return (response.jsonObject.getJSONObject(ident).getJSONArray("identer")[0] as JSONObject).get("ident").toString()
     } catch (e: Exception) {
-        logger.error("Something when wrong no.nav.dagpenger.innsyn.parsing the JSON response, e")
+        logger.error("Something when wrong parsing the JSON response", e)
     }
     return ""
 }
@@ -216,6 +219,11 @@ fun isValid(beregningsDato: LocalDate): Boolean {
 
 private fun PipelineContext<Unit, ApplicationCall>.getSubject(): String {
     return runCatching {
+        logger.info(call.toString())
+        logger.info(call.authentication.toString())
+        logger.info(call.authentication.principal.toString())
+        logger.info((call.authentication.principal!! as JWTPrincipal).payload.toString())
+        logger.info((call.authentication.principal!! as JWTPrincipal).payload.subject)
         call.authentication.principal?.let {
             (it as JWTPrincipal).payload.subject
         } ?: throw JWTDecodeException("Unable to get subject from JWT")
