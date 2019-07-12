@@ -1,4 +1,4 @@
-package no.nav.dagpenger.innsyn.restapi
+package no.nav.dagpenger.innsyn
 
 import com.auth0.jwk.JwkProvider
 import com.auth0.jwk.JwkProviderBuilder

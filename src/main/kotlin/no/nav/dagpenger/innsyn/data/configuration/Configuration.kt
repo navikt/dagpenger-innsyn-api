@@ -14,7 +14,7 @@ private val localProperties = ConfigurationMap(
                 "vault.mountpath" to "postgresql/dev/",
                 "srvdp.inntekt.innsyn.username" to "igroup",
                 "srvdp.inntekt.innsyn.password" to "itest",
-                "enhetsregisteret.url" to "https://no.nav.dagpenger.innsyn.data.brreg.no/enhetsregisteret/api/enheter/",
+                "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api/enheter/",
                 "aktoerregisteret.url" to "http://lvh.me:9011",
                 "oppslag.url" to "https://localhost:8090/api",
                 "oidc.sts.issuerurl" to "http://localhost/",

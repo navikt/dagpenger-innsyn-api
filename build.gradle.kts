@@ -27,8 +27,8 @@ repositories {
 }
 
 application {
-    applicationName = "dp-regel-minsteinntekt"
-    mainClassName = "io.ktor.server.netty.EngineMain"
+    applicationName = "dagpenger-innsyn-api"
+    mainClassName = "no.nav.dagpenger.innsyn.InnsynAPIKt"
 }
 
 java {

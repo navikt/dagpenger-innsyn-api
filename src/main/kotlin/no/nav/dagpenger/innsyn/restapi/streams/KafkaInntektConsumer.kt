@@ -4,7 +4,7 @@ import mu.KLogger
 import mu.KotlinLogging
 import no.nav.dagpenger.events.Packet
 import no.nav.dagpenger.innsyn.data.configuration.Configuration
-import no.nav.dagpenger.innsyn.restapi.APPLICATION_NAME
+import no.nav.dagpenger.innsyn.APPLICATION_NAME
 import no.nav.dagpenger.streams.Pond
 import no.nav.dagpenger.streams.streamConfig
 import org.apache.kafka.streams.KafkaStreams

@@ -3,7 +3,7 @@ package no.nav.dagpenger.innsyn.restapi.streams
 import mu.KLogger
 import mu.KotlinLogging
 import no.nav.dagpenger.events.Packet
-import no.nav.dagpenger.innsyn.restapi.APPLICATION_NAME
+import no.nav.dagpenger.innsyn.APPLICATION_NAME
 import no.nav.dagpenger.streams.KafkaCredential
 import no.nav.dagpenger.streams.Topics
 import org.apache.kafka.clients.CommonClientConfigs

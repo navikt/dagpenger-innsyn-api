@@ -3,7 +3,7 @@ namespace: default
 
 # Labels to add to all resources and selectors.
 commonLabels:
-  app: dp-regel-api
+  app: dagpenger-innsyn-api
   team: teamdagpenger
 
 commonAnnotations:

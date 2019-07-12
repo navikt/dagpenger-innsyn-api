@@ -1,9 +1,9 @@
 apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
-  name: dp-regel-api
+  name: dagpenger-innsyn-api
 spec:
-  image: repo.adeo.no:5443/dp-regel-api:latest
+  image: repo.adeo.no:5443/dagpenger-innsyn-api:latest
   port: 8092
   liveness:
     path: /isAlive
