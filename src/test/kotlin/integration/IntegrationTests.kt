@@ -1,9 +1,9 @@
 package integration
 
+import no.nav.dagpenger.innsyn.parsing.getJSONParsed
+import no.nav.dagpenger.innsyn.processing.convertInntektDataIntoProcessedRequest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import parsing.getJSONParsed
-import processing.convertInntektDataIntoProcessedRequest
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class IntegrationTests {

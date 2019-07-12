@@ -1,17 +1,17 @@
 package receive
 
 import com.auth0.jwk.JwkProviderBuilder
-import data.configuration.Configuration
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
-import restapi.APPLICATION_NAME
-import restapi.innsynAPI
-import restapi.streams.KafkaInnsynProducer
-import restapi.streams.producerConfig
+import no.nav.dagpenger.innsyn.data.configuration.Configuration
+import no.nav.dagpenger.innsyn.restapi.APPLICATION_NAME
+import no.nav.dagpenger.innsyn.restapi.innsynAPI
+import no.nav.dagpenger.innsyn.restapi.streams.KafkaInnsynProducer
+import no.nav.dagpenger.innsyn.restapi.streams.producerConfig
 import java.net.URL
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

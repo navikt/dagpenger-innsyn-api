@@ -8,8 +8,8 @@ import io.ktor.server.testing.withTestApplication
 import io.mockk.Called
 import io.mockk.mockk
 import io.mockk.verifyAll
+import no.nav.dagpenger.innsyn.restapi.streams.InnsynProducer
 import org.junit.jupiter.api.Test
-import restapi.streams.InnsynProducer
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
