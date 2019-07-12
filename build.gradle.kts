@@ -19,11 +19,13 @@ apply {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
     maven("http://packages.confluent.io/maven/")
     maven("https://jitpack.io")
     maven("https://kotlin.bintray.com/ktor")
+    maven("https://dl.bintray.com/cbeust/maven")
+    maven("https://kotlin.bintray.com/kotlinx")
 }
 
 application {
