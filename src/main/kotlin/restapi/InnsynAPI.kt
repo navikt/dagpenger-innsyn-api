@@ -48,6 +48,7 @@ import java.net.URL
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
+import javax.naming.ConfigurationException
 
 private val logger: KLogger = KotlinLogging.logger {}
 
@@ -78,12 +79,49 @@ fun main() {
         )
     }
 
+    if (config.application.profile == Profile.LOCAL) {
+        embeddedServer(Netty, port = 9011) {
+            aktoerRegisterMock()
+        }.start(wait = false)
+    }
+
     Runtime.getRuntime().addShutdownHook(Thread {
         kafkaConsumer.stop()
         app.stop(10, 60, TimeUnit.SECONDS)
     })
 
     app.start(wait = false)
+}
+
+fun Application.aktoerRegisterMock() {
+    if (config.application.profile != Profile.LOCAL) {
+        throw ConfigurationException("This is the wrong config for this service")
+    }
+    routing {
+        get(config.application.aktoerregisteretUrl) {
+            if (call.request.headers["Authorization"] == null || call.request.headers["Nav-Call-Id"] == null || call.request.headers["Nav-Consumer-Id"] == null || call.request.headers["Nav-Personidenter"] == null) {
+                logger.info("Lacking Cookie Received")
+                call.respond(HttpStatusCode.NotAcceptable, "Lacking Headers")
+            } else {
+                logger.info("Received set headers. No authentication performed. Responding with default")
+                val defaultResponse =
+                        """
+                            {
+                                "${call.request.headers["Authorization"]}": {
+                                    "identer": [
+                                        {
+                                        "ident": "1000100625562",
+                                        "identgruppe": "AktoerId",
+                                        "gjeldende": false
+                                        }
+                                    ]
+                                }
+                            }
+                        """
+                call.respond(HttpStatusCode.OK, defaultResponse)
+            }
+        }
+    }
 }
 
 fun Application.innsynAPI(
@@ -104,25 +142,20 @@ fun Application.innsynAPI(
         }
     }
 
-    if (config.application.profile == Profile.LOCAL) {
-        logger.info("Not running with authentication, local build.")
-    } else {
-        logger.info("Running with authentication, not a local build")
-        install(Authentication) {
-            jwt {
-                realm = "dagpenger-sommer"
-                verifier(jwkProvider, config.application.jwksIssuer)
-                authHeader { call ->
-                    call.request.cookies["ID_token"]?.let {
-                        HttpAuthHeader.Single("Bearer", it)
-                    } ?: call.request.parseAuthorizationHeader()
-                }
-                validate { credentials ->
-                        return@validate JWTPrincipal(credentials.payload)
-                    }
-                }
+    install(Authentication) {
+        jwt {
+            realm = "dagpenger-innsyn-api"
+            verifier(jwkProvider, config.application.jwksIssuer)
+            authHeader { call ->
+                call.request.cookies["nav-esso"]?.let {
+                    HttpAuthHeader.Single("Bearer", it)
+                } ?: call.request.parseAuthorizationHeader()
+            }
+            validate { credentials ->
+                    return@validate JWTPrincipal(credentials.payload)
             }
         }
+    }
 
     install(CallLogging) {
         level = Level.INFO
@@ -137,7 +170,7 @@ fun Application.innsynAPI(
             }
             catch (e: NullPointerException) { null }
             if (idToken == null) {
-                logger.error("Received invalid request without ID_token", call)
+                logger.error("Received invalid request without nav-esso token", call)
                 call.respond(HttpStatusCode.NotAcceptable, "Missing required cookies")
             } else if (beregningsdato == null) {
                 logger.error("Received invalid request without beregningsdato", call)
@@ -146,7 +179,7 @@ fun Application.innsynAPI(
                 logger.error("Submitted beregningsdato is not valid", call)
                 call.respond(HttpStatusCode.NotAcceptable, "Could not validate token")
             } else {
-                logger.info("Received valid ID_token, extracting actor and making requirement")
+                logger.info("Received valid nav-esso_token, extracting actor and making requirement")
                 val aktorID = getAktorIDFromIDToken(idToken, getSubject())
                 mapRequestToBehov(aktorID, beregningsdato).apply {
                     logger.info(this.toString())
@@ -164,8 +197,8 @@ fun getAktorIDFromIDToken(idToken: String, ident: String): String {
             url = config.application.aktoerregisteretUrl,
             headers = mapOf(
                     "Authorization" to idToken,
-                    "Nav-Call-Id" to "dagpenger-sommer-${LocalDate.now().dayOfMonth}",
-                    "Nav-Consumer-Id" to "dagpenger-sommer",
+                    "Nav-Call-Id" to "dagpenger-innsyn-api-${LocalDate.now().dayOfMonth}",
+                    "Nav-Consumer-Id" to "dagpenger-innsyn-api",
                     "Nav-Personidenter" to ident
             )
     )

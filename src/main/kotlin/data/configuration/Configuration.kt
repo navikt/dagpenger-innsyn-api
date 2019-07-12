@@ -15,7 +15,7 @@ private val localProperties = ConfigurationMap(
                 "srvdp.inntekt.innsyn.username" to "igroup",
                 "srvdp.inntekt.innsyn.password" to "itest",
                 "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api/enheter/",
-                "aktoerregisteret.url" to "http://tjenester.nav.no/aktoerregister/api/v1/identer?identgruppe=AktoerId",
+                "aktoerregisteret.url" to "http://lvh.me:9011",
                 "oppslag.url" to "https://localhost:8090/api",
                 "oidc.sts.issuerurl" to "http://localhost/",
                 "kafka.bootstrap.servers" to "localhost:9092",
@@ -74,7 +74,7 @@ data class Configuration(
             val oicdStsUrl: String = config()[Key("oidc.sts.issuerurl", stringType)],
             val jwksUrl: String = config()[Key("jwks.url", stringType)],
             val jwksIssuer: String = config()[Key("jwks.issuer", stringType)],
-            val name: String = "dagpenger-sommer"
+            val name: String = "dagpenger-innsyn-api"
     )
 
     data class Vault(
