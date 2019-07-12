@@ -6,22 +6,35 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
 import io.mockk.Called
+import io.mockk.Runs
+import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verifyAll
 import org.junit.jupiter.api.Test
+import restapi.streams.Behov
 import restapi.streams.InnsynProducer
+import restapi.streams.PacketStore
+import restapi.streams.behovId
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class RoutingTest {
+class CookieTest {
 
     @Test
     fun `Valid request to inntekt endpoint should succeed and produce an event to Kafka`() {
         val kafkaMock = mockk<InnsynProducer>(relaxed = true)
 
-        val cookie = "ID_token=2416281490ghj; beregningsdato=2019-03-01"
+        val slot = slot<String>()
 
-        withTestApplication(MockApi(kafkaMock)) {
+        val storeMock = mockk<PacketStore>(relaxed = true).apply {
+            every { this@apply.isDone(capture(slot)) } returns true
+        }
+
+        val cookie = "nav-esso=2416281490ghj; beregningsdato=2019-06-01"
+
+        withTestApplication(MockApi(kafkaProducer = kafkaMock, packetStore = storeMock)) {
             handleRequest(HttpMethod.Get, "/inntekt") {
                 addHeader(HttpHeaders.Cookie, cookie)
             }.apply {
@@ -51,10 +64,10 @@ class RoutingTest {
     }
 
     @Test
-    fun `Request missing ID_token should not be accepted and not produce an event to Kafka`() {
+    fun `Request missing ID token should not be accepted and not produce an event to Kafka`() {
         val kafkaMock = mockk<InnsynProducer>(relaxed = true)
 
-        val cookie = "beregningsdato=2019-03-01"
+        val cookie = "beregningsdato=2019-06-01"
 
         withTestApplication(MockApi(kafkaMock)) {
             handleRequest(HttpMethod.Get, "/inntekt") {
@@ -73,7 +86,7 @@ class RoutingTest {
     fun `Request missing beregningsdato should not be accepted and not produce an event to Kafka`() {
         val kafkaMock = mockk<InnsynProducer>(relaxed = true)
 
-        val cookie = "ID_token=2416281490ghj"
+        val cookie = "nav-esso=2416281490ghj"
 
         withTestApplication(MockApi(kafkaMock)) {
             handleRequest(HttpMethod.Get, "/inntekt") {

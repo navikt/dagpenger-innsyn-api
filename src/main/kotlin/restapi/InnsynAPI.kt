@@ -30,7 +30,6 @@ import io.ktor.server.netty.Netty
 import io.ktor.util.pipeline.PipelineContext
 import mu.KLogger
 import mu.KotlinLogging
-import no.nav.dagpenger.events.Packet
 import no.nav.dagpenger.streams.KafkaCredential
 import org.json.simple.JSONObject
 import org.slf4j.event.Level
@@ -43,15 +42,22 @@ import restapi.streams.InntektPond
 import restapi.streams.KafkaInnsynProducer
 import restapi.streams.KafkaInntektConsumer
 import restapi.streams.HashMapPacketStore
+import restapi.streams.PacketStore
 import restapi.streams.producerConfig
 import java.net.URL
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 private val logger: KLogger = KotlinLogging.logger {}
 
 private val config = Configuration()
+
+
+val lock = ReentrantLock()
+val condition = lock.newCondition()
 val APPLICATION_NAME = "dp-inntekt-innsyn"
 
 fun main() {
@@ -60,7 +66,7 @@ fun main() {
             .rateLimited(10, 1, TimeUnit.MINUTES)
             .build()
 
-    val packetStore = HashMapPacketStore()
+    val packetStore = HashMapPacketStore(condition)
 
     val kafkaConsumer = KafkaInntektConsumer(config, InntektPond(packetStore)).also {
         it.start()
@@ -74,7 +80,8 @@ fun main() {
     val app = embeddedServer(Netty, port = config.application.httpPort) {
         innsynAPI(
                 kafkaProducer,
-                jwkProvider = jwkProvider
+                jwkProvider = jwkProvider,
+                packetStore = packetStore
         )
     }
 
@@ -88,7 +95,8 @@ fun main() {
 
 fun Application.innsynAPI(
         kafkaProducer: InnsynProducer,
-        jwkProvider: JwkProvider
+        jwkProvider: JwkProvider,
+        packetStore: PacketStore
 ) {
 
     install(CORS) {
@@ -151,6 +159,12 @@ fun Application.innsynAPI(
                 mapRequestToBehov(aktorID, beregningsdato).apply {
                     logger.info(this.toString())
                     kafkaProducer.produceEvent(this)
+                }.also {
+                    while (!(packetStore.isDone(it.behovId))) {
+                        lock.withLock {
+                            condition.await(2000, TimeUnit.MILLISECONDS)
+                        }
+                    }
                 }
                 logger.info("Received a request, responding with sample text for now")
                 call.respond(HttpStatusCode.OK, defaultParser.toJsonString(convertInntektDataIntoProcessedRequest(getJSONParsed("Gabriel"))))
