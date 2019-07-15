@@ -24,7 +24,7 @@ private val localProperties = ConfigurationMap(
         "application.profile" to "LOCAL",
         "application.url" to "/inntekt",
         "application.httpPort" to "8099",
-        "srvdp.inntekt.innsyn.username" to "igroup",
+        "SRVDP.INNTEKT.INNSYN.USERNAME" to "igroup",
         "srvdp.inntekt.innsyn.password" to "itest"
     )
 )
@@ -105,6 +105,8 @@ fun config() = when (System.getenv("NAIS_CLUSTER_NAME")
     ?: System.getProperty("NAIS_CLUSTER_NAME")) {
     "dev-sbs" -> ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding devProperties
     "prod-sbs" -> ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding prodProperties
+    "dev-fss" -> ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding devProperties
+    "prod-fss" -> ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding prodProperties
     else -> {
         ConfigurationProperties.systemProperties() overriding EnvironmentVariables overriding localProperties
     }
