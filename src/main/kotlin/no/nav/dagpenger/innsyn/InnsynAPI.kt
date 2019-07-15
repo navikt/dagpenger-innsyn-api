@@ -199,7 +199,6 @@ fun Application.innsynAPI(
         get("/isReady") {
             call.respond(HttpStatusCode.OK, "OK")
         }
-
     }
 }
 
