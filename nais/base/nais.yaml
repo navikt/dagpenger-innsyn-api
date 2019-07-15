@@ -4,7 +4,7 @@ metadata:
   name: dagpenger-innsyn-api
 spec:
   image: repo.adeo.no:5443/dagpenger-innsyn-api:latest
-  port: 8092
+  port: 8099
   liveness:
     path: /isAlive
   readiness:
