@@ -68,7 +68,7 @@ fun main() {
     val kafkaProducer = KafkaInnsynProducer(producerConfig(
             APPLICATION_NAME,
             config.kafka.brokers,
-            KafkaCredential("igroup", "itest")))
+            KafkaCredential(config.kafka.user, config.kafka.password)))
 
     val app = embeddedServer(Netty, port = config.application.httpPort) {
         innsynAPI(
