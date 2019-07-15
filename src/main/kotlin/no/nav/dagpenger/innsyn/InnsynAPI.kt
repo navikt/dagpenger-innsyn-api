@@ -55,9 +55,9 @@ val APPLICATION_NAME = "dp-inntekt-innsyn"
 
 fun main() {
     val jwkProvider = JwkProviderBuilder(URL(config.application.jwksUrl))
-            .cached(10, 24, TimeUnit.HOURS)
-            .rateLimited(10, 1, TimeUnit.MINUTES)
-            .build()
+        .cached(10, 24, TimeUnit.HOURS)
+        .rateLimited(10, 1, TimeUnit.MINUTES)
+        .build()
 
     val packetStore = HashMapPacketStore()
 
@@ -66,14 +66,14 @@ fun main() {
     }
 
     val kafkaProducer = KafkaInnsynProducer(producerConfig(
-            APPLICATION_NAME,
-            config.kafka.brokers,
-            KafkaCredential(config.kafka.user, config.kafka.password)))
+        APPLICATION_NAME,
+        config.kafka.brokers,
+        KafkaCredential(config.kafka.user, config.kafka.password)))
 
     val app = embeddedServer(Netty, port = config.application.httpPort) {
         innsynAPI(
-                kafkaProducer,
-                jwkProvider = jwkProvider
+            kafkaProducer,
+            jwkProvider = jwkProvider
         )
     }
 
@@ -103,7 +103,7 @@ fun Application.aktoerRegisterMock() {
             } else {
                 logger.info("Received set headers. No authentication performed. Responding with default")
                 val defaultResponse =
-                        """
+                    """
                             {
                                 "${call.request.headers["Authorization"]}": {
                                     "identer": [
@@ -149,7 +149,7 @@ fun Application.innsynAPI(
             }
             authHeader { call ->
                 val cookie = call.request.cookies["ID_token"]
-                        ?: throw Exception("Cookie with name ID_Token not found")
+                    ?: throw Exception("Cookie with name ID_Token not found")
                 HttpAuthHeader.Single("Bearer", cookie)
             }
             validate { credentials ->
@@ -191,18 +191,27 @@ fun Application.innsynAPI(
                 call.respond(HttpStatusCode.OK, defaultParser.toJsonString(convertInntektDataIntoProcessedRequest(getJSONParsed("Gabriel"))))
             }
         }
+
+        get("/isAlive") {
+            call.respond(HttpStatusCode.OK, "OK")
+        }
+
+        get("/isReady") {
+            call.respond(HttpStatusCode.OK, "OK")
+        }
+
     }
 }
 
 fun getAktorIDFromIDToken(idToken: String, ident: String): String {
     val response = khttp.get(
-            url = config.application.aktoerregisteretUrl,
-            headers = mapOf(
-                    "Authorization" to idToken,
-                    "Nav-Call-Id" to "dagpenger-innsyn-api-${LocalDate.now().dayOfMonth}",
-                    "Nav-Consumer-Id" to "dagpenger-innsyn-api",
-                    "Nav-Personidenter" to ident
-            )
+        url = config.application.aktoerregisteretUrl,
+        headers = mapOf(
+            "Authorization" to idToken,
+            "Nav-Call-Id" to "dagpenger-innsyn-api-${LocalDate.now().dayOfMonth}",
+            "Nav-Consumer-Id" to "dagpenger-innsyn-api",
+            "Nav-Personidenter" to ident
+        )
     )
     try {
         return (response.jsonObject.getJSONObject(ident).getJSONArray("identer")[0] as JSONObject).get("ident").toString()
@@ -233,6 +242,6 @@ private fun PipelineContext<Unit, ApplicationCall>.getSubject(): String {
 }
 
 internal fun mapRequestToBehov(aktorId: String, beregningsDato: LocalDate): Behov = Behov(
-        aktørId = aktorId,
-        beregningsDato = beregningsDato
+    aktørId = aktorId,
+    beregningsDato = beregningsDato
 )
