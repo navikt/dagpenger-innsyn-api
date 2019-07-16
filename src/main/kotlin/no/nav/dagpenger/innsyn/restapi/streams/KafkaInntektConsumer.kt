@@ -3,8 +3,10 @@ package no.nav.dagpenger.innsyn.restapi.streams
 import mu.KLogger
 import mu.KotlinLogging
 import no.nav.dagpenger.events.Packet
-import no.nav.dagpenger.innsyn.data.configuration.Configuration
 import no.nav.dagpenger.innsyn.APPLICATION_NAME
+import no.nav.dagpenger.innsyn.data.configuration.Configuration
+import no.nav.dagpenger.innsyn.monitoring.HealthCheck
+import no.nav.dagpenger.innsyn.monitoring.HealthStatus
 import no.nav.dagpenger.streams.Pond
 import no.nav.dagpenger.streams.streamConfig
 import org.apache.kafka.streams.KafkaStreams
@@ -14,9 +16,9 @@ import java.util.concurrent.TimeUnit
 private val logger: KLogger = KotlinLogging.logger {}
 
 internal class KafkaInntektConsumer(
-    private val config: Configuration,
-    private val inntektPond: InntektPond
-) {
+        private val config: Configuration,
+        private val inntektPond: InntektPond
+) : HealthCheck {
 
     private val streams: KafkaStreams by lazy {
         KafkaStreams(inntektPond.buildTopology(), this.getConfig()).apply {
@@ -38,6 +40,14 @@ internal class KafkaInntektConsumer(
             bootStapServerUrl = config.kafka.brokers,
             credential = config.kafka.credential()
     )
+
+
+    override fun status(): HealthStatus =
+            when (streams.state()) {
+                KafkaStreams.State.ERROR -> HealthStatus.DOWN
+                KafkaStreams.State.PENDING_SHUTDOWN -> HealthStatus.DOWN
+                else -> HealthStatus.UP
+            }
 }
 
 internal class InntektPond(private val packetStore: PacketStore) : Pond() {

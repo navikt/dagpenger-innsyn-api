@@ -4,6 +4,8 @@ import mu.KLogger
 import mu.KotlinLogging
 import no.nav.dagpenger.events.Packet
 import no.nav.dagpenger.innsyn.APPLICATION_NAME
+import no.nav.dagpenger.innsyn.monitoring.HealthCheck
+import no.nav.dagpenger.innsyn.monitoring.HealthStatus
 import no.nav.dagpenger.streams.KafkaCredential
 import no.nav.dagpenger.streams.Topics
 import org.apache.kafka.clients.CommonClientConfigs
@@ -11,6 +13,7 @@ import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
+import org.apache.kafka.common.KafkaException
 import org.apache.kafka.common.config.SaslConfigs
 import org.apache.kafka.common.config.SslConfigs
 import java.io.File
@@ -66,7 +69,7 @@ interface InnsynProducer {
     fun produceEvent(behov: Behov): Future<RecordMetadata>
 }
 
-internal class KafkaInnsynProducer(kafkaProps: Properties) : InnsynProducer {
+internal class KafkaInnsynProducer(kafkaProps: Properties) : InnsynProducer, HealthCheck {
 
     private val kafkaProducer = KafkaProducer<String, Packet>(kafkaProps, Topics.DAGPENGER_BEHOV_PACKET_EVENT.keySerde.serializer(), Topics.DAGPENGER_BEHOV_PACKET_EVENT.valueSerde.serializer())
 
@@ -77,6 +80,16 @@ internal class KafkaInnsynProducer(kafkaProps: Properties) : InnsynProducer {
             kafkaProducer.close()
             logger.info("done! ")
         })
+    }
+
+    override fun status(): HealthStatus {
+        try {
+            kafkaProducer.partitionsFor(Topics.DAGPENGER_BEHOV_PACKET_EVENT.name)
+        } catch (e: KafkaException) {
+            logger.error(e) { "Failed Kafka health check getting partion info for ${Topics.DAGPENGER_BEHOV_PACKET_EVENT.name}" }
+            return HealthStatus.DOWN
+        }
+        return HealthStatus.UP
     }
 
     override fun produceEvent(behov: Behov): Future<RecordMetadata> {
