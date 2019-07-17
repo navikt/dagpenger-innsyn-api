@@ -199,7 +199,7 @@ fun Application.innsynAPI(
             } else {
                 logger.info("Received valid nav-esso_token, extracting actor and making requirement")
                 val aktorID = getAktorIDFromIDToken(idToken, getSubject())
-                mapRequestToBehov(aktorID, beregningsdato).apply {
+                mapRequestToBehov("1000033752789", beregningsdato, 31541399).apply {
                     logger.info(this.toString())
                     kafkaProducer.produceEvent(this)
                 }
@@ -267,7 +267,8 @@ private fun PipelineContext<Unit, ApplicationCall>.getSubject(): String {
     }
 }
 
-internal fun mapRequestToBehov(aktorId: String, beregningsDato: LocalDate): Behov = Behov(
+internal fun mapRequestToBehov(aktorId: String, beregningsDato: LocalDate, vedtakId: Int): Behov = Behov(
         aktørId = aktorId,
-        beregningsDato = beregningsDato
+        beregningsDato = beregningsDato,
+        vedtakId = vedtakId
 )
