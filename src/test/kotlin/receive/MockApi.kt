@@ -8,9 +8,9 @@ import no.nav.dagpenger.innsyn.monitoring.HealthCheck
 import no.nav.dagpenger.innsyn.restapi.streams.InnsynProducer
 
 internal fun MockApi(
-        kafkaProducer: InnsynProducer = mockk(),
-        jwkProvider: JwkProvider = mockk(),
-        healthChecks: List<HealthCheck> = mockk()
+    kafkaProducer: InnsynProducer = mockk(),
+    jwkProvider: JwkProvider = mockk(),
+    healthChecks: List<HealthCheck> = mockk()
 ): Application.() -> Unit {
     return fun Application.() {
         innsynAPI(kafkaProducer, jwkProvider, healthChecks)

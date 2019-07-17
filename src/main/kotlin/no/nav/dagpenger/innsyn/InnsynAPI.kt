@@ -131,9 +131,9 @@ fun Application.aktoerRegisterMock() {
 }
 
 fun Application.innsynAPI(
-        kafkaProducer: InnsynProducer,
-        jwkProvider: JwkProvider,
-        healthChecks: List<HealthCheck>
+    kafkaProducer: InnsynProducer,
+    jwkProvider: JwkProvider,
+    healthChecks: List<HealthCheck>
 ) {
 
     install(CORS) {

@@ -61,33 +61,33 @@ private val prodProperties = ConfigurationMap(
 )
 
 data class Configuration(
-        val application: Application = Application(),
-        val vault: Vault = Vault(),
-        val kafka: Kafka = Kafka()
+    val application: Application = Application(),
+    val vault: Vault = Vault(),
+    val kafka: Kafka = Kafka()
 
 ) {
 
     data class Application(
-            val profile: Profile = config()[Key("application.profile", stringType)].let { Profile.valueOf(it) },
-            val httpPort: Int = config()[Key("application.httpPort", intType)],
-            val applicationUrl: String = config()[Key("application.url", stringType)],
-            val enhetsregisteretUrl: String = config()[Key("enhetsregisteret.url", stringType)],
-            val aktoerregisteretUrl: String = config()[Key("aktoerregisteret.url", stringType)],
-            val oppslagUrl: String = config()[Key("oppslag.url", stringType)],
-            val oicdStsUrl: String = config()[Key("oidc.sts.issuerurl", stringType)],
-            val jwksUrl: String = config()[Key("jwks.url", stringType)],
-            val jwksIssuer: String = config()[Key("jwks.issuer", stringType)],
-            val name: String = "dagpenger-innsyn-api"
+        val profile: Profile = config()[Key("application.profile", stringType)].let { Profile.valueOf(it) },
+        val httpPort: Int = config()[Key("application.httpPort", intType)],
+        val applicationUrl: String = config()[Key("application.url", stringType)],
+        val enhetsregisteretUrl: String = config()[Key("enhetsregisteret.url", stringType)],
+        val aktoerregisteretUrl: String = config()[Key("aktoerregisteret.url", stringType)],
+        val oppslagUrl: String = config()[Key("oppslag.url", stringType)],
+        val oicdStsUrl: String = config()[Key("oidc.sts.issuerurl", stringType)],
+        val jwksUrl: String = config()[Key("jwks.url", stringType)],
+        val jwksIssuer: String = config()[Key("jwks.issuer", stringType)],
+        val name: String = "dagpenger-innsyn-api"
     )
 
     data class Vault(
-            val mountPath: String = config()[Key("vault.mountpath", stringType)]
+        val mountPath: String = config()[Key("vault.mountpath", stringType)]
     )
 
     data class Kafka(
-            val brokers: String = config()[Key("kafka.bootstrap.servers", stringType)],
-            val user: String = config()[Key("srvdp.inntekt.innsyn.username", stringType)],
-            val password: String = config()[Key("srvdp.inntekt.innsyn.password", stringType)]
+        val brokers: String = config()[Key("kafka.bootstrap.servers", stringType)],
+        val user: String = config()[Key("srvdp.inntekt.innsyn.username", stringType)],
+        val password: String = config()[Key("srvdp.inntekt.innsyn.password", stringType)]
     ) {
         fun credential(): KafkaCredential? {
             return if (user != null && password != null) {
