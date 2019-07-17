@@ -20,6 +20,7 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.jackson.jackson
+import io.ktor.request.path
 import io.ktor.response.respond
 import io.ktor.response.respondTextWriter
 import io.ktor.routing.get
@@ -169,6 +170,12 @@ fun Application.innsynAPI(
 
     install(CallLogging) {
         level = Level.INFO
+
+        filter { call ->
+            !call.request.path().startsWith("/isAlive") &&
+                    !call.request.path().startsWith("/isReady") &&
+                    !call.request.path().startsWith("/metrics")
+        }
     }
 
     routing {
