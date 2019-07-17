@@ -15,16 +15,21 @@ import io.ktor.auth.jwt.jwt
 import io.ktor.features.CORS
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
+import io.ktor.http.ContentType
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.jackson.jackson
 import io.ktor.response.respond
+import io.ktor.response.respondTextWriter
 import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.util.pipeline.PipelineContext
+import io.prometheus.client.CollectorRegistry
+import io.prometheus.client.exporter.common.TextFormat
+import io.prometheus.client.hotspot.DefaultExports
 import mu.KLogger
 import mu.KotlinLogging
 import no.nav.dagpenger.innsyn.data.configuration.Configuration
@@ -203,6 +208,16 @@ fun Application.innsynAPI(
 
         get("/isReady") {
             call.respond(HttpStatusCode.OK, "OK")
+        }
+
+        get("/metrics") {
+            val collectorRegistry = CollectorRegistry.defaultRegistry
+            DefaultExports.initialize()
+
+            val names = call.request.queryParameters.getAll("name[]")?.toSet() ?: setOf()
+            call.respondTextWriter(ContentType.parse(TextFormat.CONTENT_TYPE_004)) {
+                TextFormat.write004(this, collectorRegistry.filteredMetricFamilySamples(names))
+            }
         }
     }
 }

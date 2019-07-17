@@ -96,6 +96,10 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:$kotlinLoggingVersion")
     implementation("io.confluent:kafka-streams-avro-serde:$confluentVersion")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinReflectVersion")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.1.5")
+    implementation("io.prometheus:simpleclient_common:$prometheusVersion")
+    implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
+    implementation("io.prometheus:simpleclient_log4j2:$prometheusVersion")
 
     testImplementation(kotlin("test"))
 
