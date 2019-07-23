@@ -139,6 +139,7 @@ fun getEmployerMonth(inntektListe: List<InntektListe>): List<Employer> {
 
 fun getMonthsIncomeInformation(inntektData: InntektsInformasjon): List<MonthIncomeInformation> {
     return inntektData.inntekt.arbeidsInntektMaaned.stream()
+            .filter { it.aarMaaned in Opptjeningsperiode(LocalDate.now()).get36MonthRange() }
             .map { arbeidsInntektMaaned ->
                 MonthIncomeInformation(
                         arbeidsInntektMaaned.aarMaaned,
