@@ -5,7 +5,7 @@
   "inntekt": {
     "arbeidsInntektMaaned": [
       {
-        "aarMaaned": "2016-04",
+        "aarMaaned": "2016-09",
         "arbeidsInntektInformasjon": {
           "inntektListe": [
             {
@@ -24,6 +24,41 @@
               },
               "virksomhet": {
                 "identifikator": "222222",
+                "aktoerType": "ORGANISASJON"
+              },
+              "inntektsmottaker": {
+                "identifikator": "99999999999",
+                "aktoerType": "NATURLIG_IDENT"
+              },
+              "inngaarIGrunnlagForTrekk": true,
+              "utloeserArbeidsgiveravgift": true,
+              "informasjonsstatus": "InngaarAlltid",
+              "verdikode": "Fastlønn",
+              "beskrivelse": "Total lønnsinntekt"
+            }
+          ]
+        }
+      },
+      {
+        "aarMaaned": "2018-08",
+        "arbeidsInntektInformasjon": {
+          "inntektListe": [
+            {
+              "inntektType": "LOENNSINNTEKT",
+              "header": "Total lønnsinntekt",
+              "beloep": "544004.83",
+              "fordel": "kontantytelse",
+              "inntektskilde": "A-ordningen",
+              "inntektsperiodetype": "Maaned",
+              "inntektsstatus": "LoependeInnrapportert",
+              "leveringstidspunkt": "2019-02",
+              "utbetaltIMaaned": "2018-03",
+              "opplysningspliktig": {
+                "identifikator": "sher",
+                "aktoerType": "ORGANISASJON"
+              },
+              "virksomhet": {
+                "identifikator": "sher",
                 "aktoerType": "ORGANISASJON"
               },
               "inntektsmottaker": {
