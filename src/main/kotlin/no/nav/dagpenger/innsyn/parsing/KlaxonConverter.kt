@@ -15,7 +15,6 @@ annotation class Double
 
 val doubleParser = object : Converter {
     override fun fromJson(jv: JsonValue): Any? {
-        logger.debug("Converting fom JSON to Double")
         if (jv.string != null) {
             return jv.string!!.toDouble()
         } else {
@@ -35,7 +34,6 @@ val yearMonthParser = object : Converter {
     override fun canConvert(cls: Class<*>) = cls == YearMonth::class.java
 
     override fun fromJson(jv: JsonValue): Any? {
-        logger.debug("Converting from JSON to YearMonth")
         if (jv.string != null) {
             return YearMonth.parse(jv.string, DateTimeFormatter.ofPattern("yyyy-MM"))
         } else {

@@ -11,9 +11,10 @@ val logger = KotlinLogging.logger {}
 fun getJSONParsed(userName: String): InntektsInformasjon {
     logger.debug("Atttempting to find JSON file for $userName, this should only run during tests")
     return defaultParser
-            .parse<InntektsInformasjon>(Files.find(Paths.get(""), 10, BiPredicate {
-                path, basicFileAttributes -> basicFileAttributes.isRegularFile &&
-                    path.toAbsolutePath().toString()
-                    .matches(Regex("^.+src.+%s.json$".format(userName))) })
+            .parse<InntektsInformasjon>(Files.find(Paths.get(""), 10, BiPredicate { path, basicFileAttributes ->
+                basicFileAttributes.isRegularFile &&
+                        path.toAbsolutePath().toString()
+                                .matches(Regex("^.+src.+%s.json$".format(userName)))
+            })
                     .findFirst().get().toFile().inputStream())!!
 }
