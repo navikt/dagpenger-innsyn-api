@@ -19,16 +19,18 @@ apply {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
     maven("https://oss.sonatype.org/content/repositories/snapshots/")
     maven("http://packages.confluent.io/maven/")
     maven("https://jitpack.io")
     maven("https://kotlin.bintray.com/ktor")
+    maven("https://dl.bintray.com/cbeust/maven")
+    maven("https://kotlin.bintray.com/kotlinx")
 }
 
 application {
-    applicationName = "dp-regel-minsteinntekt"
-    mainClassName = "io.ktor.server.netty.EngineMain"
+    applicationName = "dagpenger-innsyn-api"
+    mainClassName = "no.nav.dagpenger.innsyn.InnsynAPIKt"
 }
 
 java {
@@ -68,7 +70,6 @@ val mockkVersion = "1.9.3"
 dependencies {
     implementation(kotlin("stdlib"))
 
-
     implementation("io.ktor:ktor-server:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
@@ -85,7 +86,6 @@ dependencies {
     implementation("org.apache.kafka:kafka-streams:$kafkaVersion")
     testImplementation("org.apache.kafka:kafka-streams-test-utils:$kafkaVersion")
 
-
     implementation("com.github.navikt:dagpenger-streams:$dagpengerStreamsVersion")
     implementation("com.github.jkcclemens:khttp:$khttpVersion")
     implementation("com.natpryce:konfig:$konfigVersion")
@@ -96,6 +96,10 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:$kotlinLoggingVersion")
     implementation("io.confluent:kafka-streams-avro-serde:$confluentVersion")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinReflectVersion")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.1.5")
+    implementation("io.prometheus:simpleclient_common:$prometheusVersion")
+    implementation("io.prometheus:simpleclient_hotspot:$prometheusVersion")
+    implementation("io.prometheus:simpleclient_log4j2:$prometheusVersion")
 
     testImplementation(kotlin("test"))
 

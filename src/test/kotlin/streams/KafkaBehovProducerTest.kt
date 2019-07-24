@@ -1,10 +1,10 @@
 package streams
 
+import no.nav.dagpenger.innsyn.restapi.streams.Behov
+import no.nav.dagpenger.innsyn.restapi.streams.KafkaInnsynProducer
+import no.nav.dagpenger.innsyn.restapi.streams.producerConfig
 import org.junit.jupiter.api.Test
 import org.testcontainers.containers.KafkaContainer
-import restapi.streams.Behov
-import restapi.streams.KafkaInnsynProducer
-import restapi.streams.producerConfig
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 import kotlin.test.assertNotNull

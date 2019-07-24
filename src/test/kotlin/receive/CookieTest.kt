@@ -6,17 +6,13 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
 import io.mockk.Called
-import io.mockk.Runs
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verifyAll
+import no.nav.dagpenger.innsyn.restapi.streams.InnsynProducer
+import no.nav.dagpenger.innsyn.restapi.streams.PacketStore
 import org.junit.jupiter.api.Test
-import restapi.streams.Behov
-import restapi.streams.InnsynProducer
-import restapi.streams.PacketStore
-import restapi.streams.behovId
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -53,7 +49,7 @@ class CookieTest {
     fun `Request missing cookie should not be accepted and not produce an event to Kafka`() {
         val kafkaMock = mockk<InnsynProducer>(relaxed = true)
 
-        withTestApplication(MockApi(kafkaMock)) {
+        withTestApplication(MockApi(kafkaProducer = kafkaMock)) {
             handleRequest(HttpMethod.Get, "/inntekt")
                     .apply { assertEquals(HttpStatusCode.NotAcceptable, response.status()) }
         }
@@ -69,7 +65,7 @@ class CookieTest {
 
         val cookie = "beregningsdato=2019-06-01"
 
-        withTestApplication(MockApi(kafkaMock)) {
+        withTestApplication(MockApi(kafkaProducer = kafkaMock)) {
             handleRequest(HttpMethod.Get, "/inntekt") {
                 addHeader(HttpHeaders.Cookie, cookie)
             }.apply {
@@ -88,7 +84,7 @@ class CookieTest {
 
         val cookie = "nav-esso=2416281490ghj"
 
-        withTestApplication(MockApi(kafkaMock)) {
+        withTestApplication(MockApi(kafkaProducer = kafkaMock)) {
             handleRequest(HttpMethod.Get, "/inntekt") {
                 addHeader(HttpHeaders.Cookie, cookie)
             }.apply {
