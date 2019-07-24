@@ -9,14 +9,13 @@ import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.auth.Authentication
+import io.ktor.auth.authenticate
 import io.ktor.auth.authentication
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.auth.jwt.jwt
-import io.ktor.features.CORS
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.http.ContentType
-import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.jackson.jackson
@@ -34,12 +33,15 @@ import io.prometheus.client.hotspot.DefaultExports
 import mu.KLogger
 import mu.KotlinLogging
 import no.nav.dagpenger.innsyn.data.configuration.Configuration
-import no.nav.dagpenger.innsyn.data.configuration.Profile
+import no.nav.dagpenger.innsyn.data.inntekt.Employer
+import no.nav.dagpenger.innsyn.data.inntekt.EmployerSummary
+import no.nav.dagpenger.innsyn.data.inntekt.EmploymentPeriode
+import no.nav.dagpenger.innsyn.data.inntekt.Income
+import no.nav.dagpenger.innsyn.data.inntekt.MonthIncomeInformation
+import no.nav.dagpenger.innsyn.data.inntekt.ProcessedRequest
 import no.nav.dagpenger.innsyn.monitoring.HealthCheck
 import no.nav.dagpenger.innsyn.monitoring.HealthStatus
 import no.nav.dagpenger.innsyn.parsing.defaultParser
-import no.nav.dagpenger.innsyn.parsing.getJSONParsed
-import no.nav.dagpenger.innsyn.processing.convertInntektDataIntoProcessedRequest
 import no.nav.dagpenger.innsyn.restapi.streams.Behov
 import no.nav.dagpenger.innsyn.restapi.streams.HashMapPacketStore
 import no.nav.dagpenger.innsyn.restapi.streams.InnsynProducer
@@ -53,20 +55,53 @@ import org.json.simple.JSONObject
 import org.slf4j.event.Level
 import java.net.URL
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import java.time.YearMonth
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
-import javax.naming.ConfigurationException
 
 private val logger: KLogger = KotlinLogging.logger {}
 
 private val config = Configuration()
 
-
 val lock = ReentrantLock()
 val condition = lock.newCondition()
 val APPLICATION_NAME = "dp-inntekt-innsyn"
+
+private val testDataIncome = Income(
+        income = 155.13,
+        verdikode = "Total Lønnsinntekt"
+)
+
+private val testDataEmployer = Employer(
+        name = "NAV",
+        orgID = "114235",
+        incomes = listOf(testDataIncome)
+)
+
+private val testDataMonthIncomeInformation = MonthIncomeInformation(
+        month = YearMonth.of(2019, 1),
+        employers = listOf(testDataEmployer)
+)
+
+private val testDataEmployerSummary = EmployerSummary(
+        name = "NAV",
+        orgID = "114235",
+        income = 155.13,
+        employmentPeriodes = listOf(EmploymentPeriode(
+                startDateYearMonth = YearMonth.of(2019, 1),
+                endDateYearMonth = YearMonth.of(2019, 3)
+        )
+        )
+)
+
+private val testDataProcessedRequest = ProcessedRequest(
+        personnummer = "131165542135",
+        totalIncome36 = 155.13,
+        totalIncome12 = 80.25,
+        employerSummaries = listOf(testDataEmployerSummary),
+        monthsIncomeInformation = listOf(testDataMonthIncomeInformation)
+)
 
 fun main() {
     val jwkProvider = JwkProviderBuilder(URL(config.application.jwksUrl))
@@ -94,12 +129,6 @@ fun main() {
         )
     }
 
-    if (config.application.profile == Profile.LOCAL) {
-        embeddedServer(Netty, port = 9011) {
-            aktoerRegisterMock()
-        }.start(wait = false)
-    }
-
     Runtime.getRuntime().addShutdownHook(Thread {
         kafkaConsumer.stop()
         app.stop(10, 60, TimeUnit.SECONDS)
@@ -108,50 +137,12 @@ fun main() {
     app.start(wait = false)
 }
 
-fun Application.aktoerRegisterMock() {
-    if (config.application.profile != Profile.LOCAL) {
-        throw ConfigurationException("This is the wrong config for this service")
-    }
-    routing {
-        get(config.application.aktoerregisteretUrl) {
-            if (call.request.headers["Authorization"] == null || call.request.headers["Nav-Call-Id"] == null || call.request.headers["Nav-Consumer-Id"] == null || call.request.headers["Nav-Personidenter"] == null) {
-                logger.info("Lacking Cookie Received")
-                call.respond(HttpStatusCode.NotAcceptable, "Lacking Headers")
-            } else {
-                logger.info("Received set headers. No authentication performed. Responding with default")
-                val defaultResponse =
-                        """
-                            {
-                                "${call.request.headers["Authorization"]}": {
-                                    "identer": [
-                                        {
-                                        "ident": "1000100625562",
-                                        "identgruppe": "AktoerId",
-                                        "gjeldende": false
-                                        }
-                                    ]
-                                }
-                            }
-                        """
-                call.respond(HttpStatusCode.OK, defaultResponse)
-            }
-        }
-    }
-}
-
 fun Application.innsynAPI(
-        packetStore: PacketStore,
-        kafkaProducer: InnsynProducer,
-        jwkProvider: JwkProvider,
-        healthChecks: List<HealthCheck>
+    packetStore: PacketStore,
+    kafkaProducer: InnsynProducer,
+    jwkProvider: JwkProvider,
+    healthChecks: List<HealthCheck>
 ) {
-
-    install(CORS) {
-        method(HttpMethod.Options)
-        header("MyCustomHeader")
-        allowCredentials = true
-        anyHost() // TODO: Don't do this in production if possible. Try to limit it.
-    }
 
     install(ContentNegotiation) {
         jackson {
@@ -166,13 +157,15 @@ fun Application.innsynAPI(
                 acceptNotBefore(10)
                 acceptIssuedAt(10)
             }
-            authHeader { call ->
-                val cookie = call.request.cookies["ID_token"]
+            authHeader {
+                logger.info("Accessing auth cookie")
+                val cookie = it.request.cookies["ID_token"]
                         ?: throw Exception("Cookie with name ID_Token not found")
                 HttpAuthHeader.Single("Bearer", cookie)
             }
-            validate { credentials ->
-                return@validate JWTPrincipal(credentials.payload)
+            validate {
+                logger.info("Attempting to validate current request: $it")
+                return@validate JWTPrincipal(it.payload)
             }
         }
     }
@@ -188,38 +181,29 @@ fun Application.innsynAPI(
     }
 
     routing {
-        get(config.application.applicationUrl) {
-            logger.info("Attempting to retrieve token")
-            val idToken = call.request.cookies["nav-esso"]
-            val beregningsdato: LocalDate? = try {
-                LocalDate.parse(call.request.cookies["beregningsdato"], DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-            } catch (e: NullPointerException) {
-                null
-            }
-            if (idToken == null) {
-                logger.error("Received invalid request without nav-esso token", call)
-                call.respond(HttpStatusCode.NotAcceptable, "Missing required cookies")
-            } else if (beregningsdato == null) {
-                logger.error("Received invalid request without beregningsdato", call)
-                call.respond(HttpStatusCode.NotAcceptable, "Missing required cookies")
-            } else if (!isValid(beregningsdato)) {
-                logger.error("Submitted beregningsdato is not valid", call)
-                call.respond(HttpStatusCode.NotAcceptable, "Could not validate token")
-            } else {
-                logger.info("Received valid nav-esso_token, extracting actor and making requirement")
-                val aktorID = getAktorIDFromIDToken(idToken, getSubject())
-                mapRequestToBehov(aktorID, beregningsdato).apply {
-                    logger.info(this.toString())
-                    kafkaProducer.produceEvent(this)
-                }.also {
-                    while (!(packetStore.isDone(it.behovId))) {
-                        lock.withLock {
-                            condition.await(2000, TimeUnit.MILLISECONDS)
-                        }
-                    }
+        authenticate("jwt") {
+            get(config.application.applicationUrl) {
+                logger.info("Attempting to retrieve token")
+                val idToken = call.request.cookies["ID_token"]
+                val beregningsdato = LocalDate.now()
+                if (idToken == null) {
+                    logger.error("Received invalid request without ID_token cookie", call)
+                    call.respond(HttpStatusCode.NotAcceptable, "Missing required cookies")
+                } else {
+                    logger.info("Received valid nav-esso_token, extracting actor and making requirement")
+                    val aktorID = getAktorIDFromIDToken(idToken, getSubject())
+//                mapRequestToBehov(aktorID, beregningsdato).apply {
+//                    logger.info(this.toString())
+//                    kafkaProducer.produceEvent(this)
+//                }.also {
+//                    while (!(packetStore.isDone(it.behovId))) {
+//                        lock.withLock {
+//                            condition.await(2000, TimeUnit.MILLISECONDS)
+//                        }
+//                    }
+                    logger.info("Received a request, responding with sample text for now")
+                    call.respond(HttpStatusCode.OK, defaultParser.toJsonString(testDataProcessedRequest))
                 }
-                logger.info("Received a request, responding with sample text for now")
-                call.respond(HttpStatusCode.OK, defaultParser.toJsonString(convertInntektDataIntoProcessedRequest(getJSONParsed("Gabriel"))))
             }
         }
 
@@ -245,6 +229,7 @@ fun Application.innsynAPI(
 }
 
 fun getAktorIDFromIDToken(idToken: String, ident: String): String {
+    logger.info(config.application.aktoerregisteretUrl)
     val response = khttp.get(
             url = config.application.aktoerregisteretUrl,
             headers = mapOf(
@@ -255,24 +240,22 @@ fun getAktorIDFromIDToken(idToken: String, ident: String): String {
             )
     )
     try {
-        return (response.jsonObject.getJSONObject(ident).getJSONArray("identer")[0] as JSONObject).get("ident").toString()
+        logger.info(response.toString())
+        logger.info(response.jsonObject.toString())
+        logger.info(response.jsonObject
+                .getJSONObject(ident).toString())
+        return (response.jsonObject
+                .getJSONObject(ident)
+                .getJSONArray("identer")[0] as org.json.JSONObject)["ident"]
+                .toString()
     } catch (e: Exception) {
         logger.error("Something went wrong parsing the JSON response", e)
     }
     return ""
 }
 
-fun isValid(beregningsDato: LocalDate): Boolean {
-    return beregningsDato.isAfter(LocalDate.now().minusMonths(2))
-}
-
 private fun PipelineContext<Unit, ApplicationCall>.getSubject(): String {
     return runCatching {
-        logger.info(call.toString())
-        logger.info(call.authentication.toString())
-        logger.info(call.authentication.principal.toString())
-        logger.info((call.authentication.principal!! as JWTPrincipal).payload.toString())
-        logger.info((call.authentication.principal!! as JWTPrincipal).payload.subject)
         call.authentication.principal?.let {
             (it as JWTPrincipal).payload.subject
         } ?: throw JWTDecodeException("Unable to get subject from JWT")

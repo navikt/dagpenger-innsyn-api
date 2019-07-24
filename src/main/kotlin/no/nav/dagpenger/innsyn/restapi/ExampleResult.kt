@@ -15,7 +15,7 @@ fun getExample(): ProcessedRequest {
 
     return ProcessedRequest(
             personnummer = "18069637988",
-            totalIncome = 25542.12,
+            totalIncome36 = 25542.12,
             totalIncome12 = 122234.3,
             employerSummaries = listOf(
                     EmployerSummary(

@@ -9,6 +9,7 @@ import no.nav.dagpenger.innsyn.data.inntekt.InntektsInformasjon
 import no.nav.dagpenger.innsyn.data.inntekt.MonthIncomeInformation
 import no.nav.dagpenger.innsyn.data.objects.Opptjeningsperiode
 import no.nav.dagpenger.innsyn.lookup.getNameFromID
+import no.nav.dagpenger.innsyn.parsing.getJSONParsed
 import java.time.LocalDate
 import java.time.YearMonth
 import kotlin.streams.toList
@@ -147,4 +148,8 @@ fun getMonthsIncomeInformation(inntektData: InntektsInformasjon): List<MonthInco
                 )
             }
             .toList()
+}
+
+fun main() {
+    val inntektPerArbeidsgiverList = getInntektPerArbeidsgiverList(getJSONParsed("Bob"))
 }

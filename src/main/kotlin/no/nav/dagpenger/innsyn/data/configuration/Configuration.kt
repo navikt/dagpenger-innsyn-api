@@ -15,15 +15,15 @@ private val localProperties = ConfigurationMap(
         "srvdp.inntekt.innsyn.username" to "igroup",
         "srvdp.inntekt.innsyn.password" to "itest",
         "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api/enheter/",
-        "aktoerregisteret.url" to "http://backend.myapp.com:9011",
+        "aktoerregisteret.url" to "http://mockserver:3050/aktoerregister/api/v1/identer?identgruppe=AktoerId",
         "oppslag.url" to "https://localhost:8090/api",
         "oidc.sts.issuerurl" to "http://localhost/",
         "kafka.bootstrap.servers" to "localhost:9092",
         "jwks.url" to "http://host.docker.internal:4352/certs",
         "jwks.issuer" to "http://simple-oidc-provider",
         "application.profile" to "LOCAL",
-        "application.url" to "/inntekt",
-        "application.httpPort" to "8099",
+        "application.url" to "/api/inntekt",
+        "application.httpPort" to "8080",
         "SRVDP.INNTEKT.INNSYN.USERNAME" to "igroup",
         "srvdp.inntekt.innsyn.password" to "itest"
     )
