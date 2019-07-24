@@ -8,7 +8,7 @@ import mu.KotlinLogging
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 
-private val logger = KotlinLogging.logger {  }
+private val logger = KotlinLogging.logger { }
 
 @Target(AnnotationTarget.FIELD)
 annotation class Double

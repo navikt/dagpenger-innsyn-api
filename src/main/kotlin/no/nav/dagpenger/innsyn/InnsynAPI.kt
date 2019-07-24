@@ -228,8 +228,7 @@ fun Application.innsynAPI(
             if (healthChecks.all { it.status() == HealthStatus.UP }) {
                 logger.debug("Health status is up, responding with 200 OK")
                 call.respond(HttpStatusCode.OK, "OK")
-            }
-            else {
+            } else {
                 logger.debug("Health status is not up, responding with 503 Service Unavailable")
                 call.response.status(HttpStatusCode.ServiceUnavailable)
             }
