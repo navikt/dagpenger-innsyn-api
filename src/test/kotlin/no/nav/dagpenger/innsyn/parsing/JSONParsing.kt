@@ -10,8 +10,7 @@ import java.util.function.BiPredicate
 val logger = KotlinLogging.logger {}
 
 fun getJSONParsed(userName: String): InntektsInformasjon {
-    logger.info(Paths.get("").toAbsolutePath().toString())
-    File("/tmp").walkTopDown().forEach { logger.info(it.toString()) }
+    logger.debug("Atttempting to find JSON file for $userName, this should only run during tests")
     return defaultParser
             .parse<InntektsInformasjon>(Files.find(Paths.get(""), 10, BiPredicate {
                 path, basicFileAttributes -> basicFileAttributes.isRegularFile &&
