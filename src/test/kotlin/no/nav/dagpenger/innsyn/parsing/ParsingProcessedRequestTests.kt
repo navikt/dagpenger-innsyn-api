@@ -42,7 +42,7 @@ class ParsingProcessedRequestTests {
 
     private val testDataProcessedRequest = ProcessedRequest(
             personnummer = "131165542135",
-            totalIncome = 155.13,
+            totalIncome36 = 155.13,
             totalIncome12 = 80.25,
             employerSummaries = listOf(testDataEmployerSummary),
             monthsIncomeInformation = listOf(testDataMonthIncomeInformation)
