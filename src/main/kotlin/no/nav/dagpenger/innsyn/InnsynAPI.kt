@@ -50,7 +50,6 @@ import no.nav.dagpenger.innsyn.restapi.streams.KafkaInnsynProducer
 import no.nav.dagpenger.innsyn.restapi.streams.KafkaInntektConsumer
 import no.nav.dagpenger.innsyn.restapi.streams.producerConfig
 import no.nav.dagpenger.streams.KafkaCredential
-import org.json.simple.JSONObject
 import org.slf4j.event.Level
 import java.net.URL
 import java.time.LocalDate
@@ -98,22 +97,29 @@ private val testDataProcessedRequest = ProcessedRequest(
 )
 
 fun main() {
+
+    logger.debug("Creating jwkProvider for ${config.application.jwksUrl}")
     val jwkProvider = JwkProviderBuilder(URL(config.application.jwksUrl))
             .cached(10, 24, TimeUnit.HOURS)
             .rateLimited(10, 1, TimeUnit.MINUTES)
             .build()
 
+    logger.debug("Creating hashMapPacketStore")
     val packetStore = HashMapPacketStore()
 
+    logger.debug("Creating kafkaConsumer for application and starting it")
     val kafkaConsumer = KafkaInntektConsumer(config, InntektPond(packetStore)).also {
         it.start()
     }
 
+    logger.debug("Creating kafkaProducer for application")
     val kafkaProducer = KafkaInnsynProducer(producerConfig(
             APPLICATION_NAME,
             config.kafka.brokers,
-            KafkaCredential(config.kafka.user, config.kafka.password)))
+            KafkaCredential(config.kafka.user, config.kafka.password)
+    ))
 
+    logger.debug("Creating application with port ${config.application.httpPort}")
     val app = embeddedServer(Netty, port = config.application.httpPort) {
         innsynAPI(
                 kafkaProducer,
@@ -122,11 +128,13 @@ fun main() {
         )
     }
 
+    logger.debug("Adding shutdownhook to kafkaConsumer")
     Runtime.getRuntime().addShutdownHook(Thread {
         kafkaConsumer.stop()
         app.stop(10, 60, TimeUnit.SECONDS)
     })
 
+    logger.debug("Starting application without wait")
     app.start(wait = false)
 }
 
@@ -136,12 +144,14 @@ fun Application.innsynAPI(
     healthChecks: List<HealthCheck>
 ) {
 
+    logger.debug("Installing jackson for content negotiation")
     install(ContentNegotiation) {
         jackson {
             enable(SerializationFeature.INDENT_OUTPUT)
         }
     }
 
+    logger.debug("Installing authentication with jwksIssuer: ${config.application.jwksIssuer}")
     install(Authentication) {
         jwt(name = "jwt") {
             realm = "dp-inntekt-api"
@@ -150,18 +160,19 @@ fun Application.innsynAPI(
                 acceptIssuedAt(10)
             }
             authHeader {
-                logger.info("Accessing auth cookie")
+                logger.debug("Accessing ID_token for authenticating user")
                 val cookie = it.request.cookies["ID_token"]
                         ?: throw Exception("Cookie with name ID_Token not found")
                 HttpAuthHeader.Single("Bearer", cookie)
             }
             validate {
-                logger.info("Attempting to validate current request: $it")
+                logger.debug("Attempting to validate user ID_token")
                 return@validate JWTPrincipal(it.payload)
             }
         }
     }
 
+    logger.debug("Installing call logging")
     install(CallLogging) {
         level = Level.INFO
 
@@ -172,51 +183,93 @@ fun Application.innsynAPI(
         }
     }
 
+    logger
     routing {
         authenticate("jwt") {
             get(config.application.applicationUrl) {
-                logger.info("Attempting to retrieve token")
+                logger.debug("Call to ${config.application.applicationUrl} received")
+
+                logger.debug("Attempting to retrieve ID_token from cookies from caller")
                 val idToken = call.request.cookies["ID_token"]
+
+                logger.debug("Setting beregningsdato to current date")
                 val beregningsdato = LocalDate.now()
+
+                logger.debug("Checking that ID_token is present: Should not be possible to get this far without ID_token")
                 if (idToken == null) {
                     logger.error("Received invalid request without ID_token cookie", call)
+
+                    logger.debug("Could not find ID_token, implying either authentication or cookie retrieval failed")
+                    logger.debug("Responding with 406 NotAcceptable: Missing required cookies")
                     call.respond(HttpStatusCode.NotAcceptable, "Missing required cookies")
                 } else {
-                    logger.info("Received valid nav-esso_token, extracting actor and making requirement")
-                    val aktorID = getAktorIDFromIDToken(idToken, getSubject())
-//                mapRequestToBehov(aktorID, beregningsdato).apply {
-//                    logger.info(this.toString())
-//                    kafkaProducer.produceEvent(this)
-//                }
-                    logger.info("Received a request, responding with sample text for now")
+                    logger.debug("Received valid ID_token, will attempt to extract actor and make requirement")
+
+                    logger.debug("Attempting to extract aktoerID from ID_token (OIDC) and subject")
+                    val aktoerID = getAktoerIDFromIDToken(idToken, getSubject())
+
+                    logger.debug("Attempting to create behov for aktoerID: $aktoerID")
+                    mapRequestToBehov(aktoerID, beregningsdato).apply {
+                        logger.debug("Created behov: $this")
+                        kafkaProducer.produceEvent(this)
+                    }
+                    logger.debug("Completed request. Responding with 200 OK and example result")
                     call.respond(HttpStatusCode.OK, defaultParser.toJsonString(testDataProcessedRequest))
+
+                    logger.debug("Finished handling ${config.application.applicationUrl} call")
                 }
             }
         }
 
         get("/isAlive") {
-            if (healthChecks.all { it.status() == HealthStatus.UP }) call.respond(HttpStatusCode.OK, "OK")
-            else call.response.status(HttpStatusCode.ServiceUnavailable)
+            logger.debug("Call to isAlive received")
+
+            logger.debug("Checking health status and responding with either 200 OK or 503 Service Unavailable")
+            if (healthChecks.all { it.status() == HealthStatus.UP }) {
+                logger.debug("Health status is up, responding with 200 OK")
+                call.respond(HttpStatusCode.OK, "OK")
+            }
+            else {
+                logger.debug("Health status is not up, responding with 503 Service Unavailable")
+                call.response.status(HttpStatusCode.ServiceUnavailable)
+            }
+
+            logger.debug("Finished handling isAlive call")
         }
 
         get("/isReady") {
+            logger.debug("Call to isReady received")
+
+            logger.debug("Attempting to respond 200 OKto isReady call")
             call.respond(HttpStatusCode.OK, "OK")
+
+            logger.debug("Finished handling isReady call")
         }
 
         get("/metrics") {
+            logger.debug("Call to metrics received")
+
+            logger.debug("Attempting to access CollectorRegistry")
             val collectorRegistry = CollectorRegistry.defaultRegistry
             DefaultExports.initialize()
 
+            logger.debug("Attempting to acquire names asked for from collectorRegistry")
             val names = call.request.queryParameters.getAll("name[]")?.toSet() ?: setOf()
+
+            logger.debug("Attempting to make a textWriter response for bundle of names: $names")
             call.respondTextWriter(ContentType.parse(TextFormat.CONTENT_TYPE_004)) {
                 TextFormat.write004(this, collectorRegistry.filteredMetricFamilySamples(names))
             }
+
+            logger.debug("Finished handling metrics call")
         }
     }
 }
 
-fun getAktorIDFromIDToken(idToken: String, ident: String): String {
-    logger.info(config.application.aktoerregisteretUrl)
+fun getAktoerIDFromIDToken(idToken: String, ident: String): String {
+    logger.debug("Sending request to aktoerregisteret to retrieve aktoerID for subject")
+    logger.debug("Current url for aktoerregisteret: $config.application.aktoerregisteretUrl")
+
     val response = khttp.get(
             url = config.application.aktoerregisteretUrl,
             headers = mapOf(
@@ -227,27 +280,28 @@ fun getAktorIDFromIDToken(idToken: String, ident: String): String {
             )
     )
     try {
-        logger.info(response.toString())
-        logger.info(response.jsonObject.toString())
-        logger.info(response.jsonObject
-                .getJSONObject(ident).toString())
+        logger.debug("Attempting to retrieve subject aktoerID from aktoerregisteret's response")
+
         return (response.jsonObject
                 .getJSONObject(ident)
                 .getJSONArray("identer")[0] as org.json.JSONObject)["ident"]
                 .toString()
     } catch (e: Exception) {
-        logger.error("Something went wrong parsing the JSON response", e)
+        logger.error("Could not successfully retrieve the aktoerID from aktoerregisteret's response", e)
     }
+    logger.debug("Did not successfully retrieve the aktoerID and responding with empty string")
     return ""
 }
 
 private fun PipelineContext<Unit, ApplicationCall>.getSubject(): String {
+    logger.debug("Attempting to retrieve subject from authentication token")
     return runCatching {
         call.authentication.principal?.let {
             (it as JWTPrincipal).payload.subject
         } ?: throw JWTDecodeException("Unable to get subject from JWT")
     }.getOrElse {
-        logger.error(it) { "Unable to get subject" }
+        logger.error(it) { "Unable to get subject from authentication" }
+        logger.debug("Could not retrieve subject from JWT, responding with UNKNOWN")
         return@getOrElse "UNKNOWN"
     }
 }

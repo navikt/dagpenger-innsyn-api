@@ -14,6 +14,7 @@ fun getNameFromID(id: String): String {
         logger.error("Error retrieving organisation name $id")
         (id)
     } else {
+        logger.debug("Retrieved organisation name: ${response.jsonObject["navn"]} for org with id $id")
         response.jsonObject["navn"].toString()
     }
 }

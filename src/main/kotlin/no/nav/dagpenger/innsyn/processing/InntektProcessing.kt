@@ -9,26 +9,12 @@ import no.nav.dagpenger.innsyn.data.inntekt.InntektsInformasjon
 import no.nav.dagpenger.innsyn.data.inntekt.MonthIncomeInformation
 import no.nav.dagpenger.innsyn.data.objects.Opptjeningsperiode
 import no.nav.dagpenger.innsyn.lookup.getNameFromID
-import no.nav.dagpenger.innsyn.parsing.getJSONParsed
 import java.time.LocalDate
 import java.time.YearMonth
 import kotlin.streams.toList
 
 data class ArbeidsgiverOgInntekt(val arbeidsgiver: String, val inntekt: Double)
 data class ArbeidsgiverOgPeriode(val arbeidsgiver: String, val perioder: List<EmploymentPeriode>)
-
-fun getInntektForFirstMonth(inntektData: InntektsInformasjon): Double? {
-    return inntektData.inntekt.arbeidsInntektMaaned
-            .first().arbeidsInntektInformasjon.inntektListe
-            .first().beloep
-}
-
-fun getInntektForOneMonth(inntektData: InntektsInformasjon, yearMonth: YearMonth): Double {
-    return inntektData.inntekt.arbeidsInntektMaaned
-            .first { arbeidsInntektMaaned -> arbeidsInntektMaaned.aarMaaned == yearMonth }
-            .arbeidsInntektInformasjon.inntektListe
-            .sumByDouble { inntektListe -> inntektListe.beloep }
-}
 
 fun getPeriodForEachEmployer(inntektData: InntektsInformasjon): List<ArbeidsgiverOgPeriode> {
     return inntektData.inntekt.arbeidsInntektMaaned
@@ -148,8 +134,4 @@ fun getMonthsIncomeInformation(inntektData: InntektsInformasjon): List<MonthInco
                 )
             }
             .toList()
-}
-
-fun main() {
-    val inntektPerArbeidsgiverList = getInntektPerArbeidsgiverList(getJSONParsed("Bob"))
 }
