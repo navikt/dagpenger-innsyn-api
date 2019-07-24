@@ -192,13 +192,14 @@ fun Application.innsynAPI(
                 } else {
                     logger.info("Received valid nav-esso_token, extracting actor and making requirement")
                     val aktorID = getAktorIDFromIDToken(idToken, getSubject())
-//                mapRequestToBehov(aktorID, beregningsdato).apply {
-//                    logger.info(this.toString())
-//                    kafkaProducer.produceEvent(this)
-//                }.also {
-//                    while (!(packetStore.isDone(it.behovId))) {
-//                        lock.withLock {
-//                            condition.await(2000, TimeUnit.MILLISECONDS)
+//                    mapRequestToBehov("1234", beregningsdato).apply {
+//                        logger.info(this.toString())
+//                        kafkaProducer.produceEvent(this)
+//                    }.also {
+//                        while (!(packetStore.isDone(it.behovId))) {
+//                            lock.withLock {
+//                                condition.await(2000, TimeUnit.MILLISECONDS)
+//                            }
 //                        }
 //                    }
                     logger.info("Received a request, responding with sample text for now")
@@ -228,10 +229,10 @@ fun Application.innsynAPI(
     }
 }
 
-fun getAktorIDFromIDToken(idToken: String, ident: String): String {
-    logger.info(config.application.aktoerregisteretUrl)
+fun getAktorIDFromIDToken(idToken: String, ident: String, url: String = config.application.aktoerregisteretUrl): String {
+    logger.info(url)
     val response = khttp.get(
-            url = config.application.aktoerregisteretUrl,
+            url = url,
             headers = mapOf(
                     "Authorization" to idToken,
                     "Nav-Call-Id" to "dagpenger-innsyn-api-${LocalDate.now().dayOfMonth}",
