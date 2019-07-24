@@ -23,9 +23,9 @@ import java.util.concurrent.Future
 private val logger: KLogger = KotlinLogging.logger {}
 
 internal fun producerConfig(
-    appId: String,
-    bootStapServerUrl: String,
-    credential: KafkaCredential? = null
+        appId: String,
+        bootStapServerUrl: String,
+        credential: KafkaCredential? = null
 ): Properties {
     return Properties().apply {
         putAll(

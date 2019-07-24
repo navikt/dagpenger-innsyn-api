@@ -16,19 +16,6 @@ import kotlin.streams.toList
 data class ArbeidsgiverOgInntekt(val arbeidsgiver: String, val inntekt: Double)
 data class ArbeidsgiverOgPeriode(val arbeidsgiver: String, val perioder: List<EmploymentPeriode>)
 
-fun getInntektForFirstMonth(inntektData: InntektsInformasjon): Double? {
-    return inntektData.inntekt.arbeidsInntektMaaned
-            .first().arbeidsInntektInformasjon.inntektListe
-            .first().beloep
-}
-
-fun getInntektForOneMonth(inntektData: InntektsInformasjon, yearMonth: YearMonth): Double {
-    return inntektData.inntekt.arbeidsInntektMaaned
-            .first { arbeidsInntektMaaned -> arbeidsInntektMaaned.aarMaaned == yearMonth }
-            .arbeidsInntektInformasjon.inntektListe
-            .sumByDouble { inntektListe -> inntektListe.beloep }
-}
-
 fun getPeriodForEachEmployer(inntektData: InntektsInformasjon): List<ArbeidsgiverOgPeriode> {
     return inntektData.inntekt.arbeidsInntektMaaned
             .filter { arbeidsInntektMaaned -> arbeidsInntektMaaned.aarMaaned in Opptjeningsperiode(LocalDate.now()).get36MonthRange() }
