@@ -109,6 +109,11 @@ dependencies {
     testImplementation("org.testcontainers:kafka:$testcontainers_version")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jupiterVersion")
+    testImplementation("com.github.tomakehurst:wiremock-standalone:2.21.0")
+
+    /*testCompile("io.ktor:ktor-server-test-host:$ktorVersion") {
+        exclude(group = "org.eclipse.jetty") // conflicts with WireMock
+    }*/
 }
 
 spotless {

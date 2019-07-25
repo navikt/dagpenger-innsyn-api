@@ -43,6 +43,7 @@ import no.nav.dagpenger.innsyn.lookup.InnsynProducer
 import no.nav.dagpenger.innsyn.lookup.InntektPond
 import no.nav.dagpenger.innsyn.lookup.KafkaInnsynProducer
 import no.nav.dagpenger.innsyn.lookup.KafkaInntektConsumer
+import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.lookup.producerConfig
 import no.nav.dagpenger.streams.KafkaCredential
 import org.apache.kafka.common.errors.TimeoutException
@@ -51,10 +52,15 @@ import org.slf4j.event.Level
 import java.net.URL
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 private val logger: KLogger = KotlinLogging.logger {}
 
 private val config = Configuration()
+
+val lock = ReentrantLock()
+val condition = lock.newCondition()
 val APPLICATION_NAME = "dp-inntekt-innsyn-api"
 
 fun main() {
@@ -65,7 +71,7 @@ fun main() {
             .rateLimited(10, 1, TimeUnit.MINUTES)
             .build()
 
-    val packetStore = HashMapPacketStore()
+    val packetStore = HashMapPacketStore(condition)
 
     val kafkaConsumer = KafkaInntektConsumer(config, InntektPond(packetStore)).also {
         it.start()
@@ -80,7 +86,8 @@ fun main() {
     logger.debug("Creating application with port ${config.application.httpPort}")
     val app = embeddedServer(Netty, port = config.application.httpPort) {
         innsynAPI(
-                kafkaProducer,
+                packetStore = packetStore,
+                kafkaProducer = kafkaProducer,
                 jwkProvider = jwkProvider,
                 healthChecks = listOf(kafkaConsumer as HealthCheck, kafkaProducer as HealthCheck)
         )
@@ -96,6 +103,7 @@ fun main() {
 }
 
 fun Application.innsynAPI(
+    packetStore: PacketStore,
     kafkaProducer: InnsynProducer,
     jwkProvider: JwkProvider,
     healthChecks: List<HealthCheck>
@@ -150,7 +158,13 @@ fun Application.innsynAPI(
                     try {
                         mapRequestToBehov(aktoerID, beregningsdato, 1).apply {
                             kafkaProducer.produceEvent(this)
+                        }/*.also {
+                        while (!(packetStore.isDone(it.behovId))) {
+                            lock.withLock {
+                                condition.await(2000, TimeUnit.MILLISECONDS)
+                            }
                         }
+                    }*/
                     } catch (e: TimeoutException) {
                         logger.error("Timed out waiting for kafka", e)
                     }
@@ -183,18 +197,20 @@ fun Application.innsynAPI(
     }
 }
 
-fun getAktoerIDFromIDToken(idToken: String, ident: String): String {
+fun getAktoerIDFromIDToken(idToken: String,
+                           ident: String,
+                           url: String = config.application.aktoerregisteretUrl): String {
     try {
-        return getFirstMatchingAktoerIDFromIdent(ident, getAktoerResponse(idToken, ident).jsonObject)
+        return getFirstMatchingAktoerIDFromIdent(ident, getAktoerResponse(idToken, ident, url).jsonObject)
     } catch (e: Exception) {
         logger.error("Could not successfully retrieve the aktoerID from aktoerregisteret's response", e)
     }
     return ""
 }
 
-private fun getAktoerResponse(idToken: String, ident: String): Response {
+private fun getAktoerResponse(idToken: String, ident: String, url: String): Response {
     return khttp.get(
-            url = config.application.aktoerregisteretUrl,
+            url = url,
             headers = mapOf(
                     "Authorization" to idToken,
                     "Nav-Call-Id" to "dagpenger-innsyn-api-${LocalDate.now().dayOfMonth}",

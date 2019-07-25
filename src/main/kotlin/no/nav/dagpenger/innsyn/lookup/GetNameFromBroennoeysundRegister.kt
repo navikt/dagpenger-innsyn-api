@@ -7,8 +7,8 @@ import org.apache.logging.log4j.Logger
 private val logger: Logger = LogManager.getLogger()
 private val config = Configuration()
 
-fun getNameFromBroennoeysundRegisterByID(id: String): String {
-    val response = khttp.get(config.application.enhetsregisteretUrl + id)
+fun getNameFromBroennoeysundRegisterByID(id: String, url: String = config.application.enhetsregisteretUrl): String {
+    val response = khttp.get(url + id)
     return if (response.statusCode != 200) {
         logger.error("Error retrieving organisation name $id")
         (id)
