@@ -4,9 +4,9 @@ import com.auth0.jwk.JwkProvider
 import io.ktor.application.Application
 import io.mockk.mockk
 import no.nav.dagpenger.innsyn.innsynAPI
+import no.nav.dagpenger.innsyn.lookup.InnsynProducer
+import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.monitoring.HealthCheck
-import no.nav.dagpenger.innsyn.restapi.streams.InnsynProducer
-import no.nav.dagpenger.innsyn.restapi.streams.PacketStore
 
 internal fun MockApi(
         packetStore: PacketStore = mockk(),

@@ -10,8 +10,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verifyAll
-import no.nav.dagpenger.innsyn.restapi.streams.InnsynProducer
-import no.nav.dagpenger.innsyn.restapi.streams.PacketStore
+import no.nav.dagpenger.innsyn.lookup.InnsynProducer
+import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

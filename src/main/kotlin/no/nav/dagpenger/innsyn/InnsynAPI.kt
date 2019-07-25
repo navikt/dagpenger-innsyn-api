@@ -156,7 +156,7 @@ fun Application.innsynAPI(
                 } else {
                     val aktoerID = getAktoerIDFromIDToken(idToken, getSubject())
                     try {
-                        mapRequestToBehov(aktoerID, beregningsdato, 1).apply {
+                        mapRequestToBehov(aktoerID, beregningsdato).apply {
                             kafkaProducer.produceEvent(this)
                         }/*.also {
                         while (!(packetStore.isDone(it.behovId))) {
@@ -238,8 +238,7 @@ private fun PipelineContext<Unit, ApplicationCall>.getSubject(): String {
     }
 }
 
-internal fun mapRequestToBehov(aktorId: String, beregningsDato: LocalDate, vedtakId: Int): Behov = Behov(
+internal fun mapRequestToBehov(aktorId: String, beregningsDato: LocalDate): Behov = Behov(
         aktørId = aktorId,
-        beregningsDato = beregningsDato,
-        vedtakId = vedtakId
+        beregningsDato = beregningsDato
 )

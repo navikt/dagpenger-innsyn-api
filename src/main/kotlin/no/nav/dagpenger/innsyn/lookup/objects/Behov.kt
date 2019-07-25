@@ -8,7 +8,7 @@ import java.time.LocalDate
 data class Behov(
     val behovId: String = ulidGenerator.nextULID(),
     val aktørId: String,
-    val vedtakId: Int,
+    val vedtakId: Int = 1,
     val beregningsDato: LocalDate
 ) {
     companion object Mapper {
