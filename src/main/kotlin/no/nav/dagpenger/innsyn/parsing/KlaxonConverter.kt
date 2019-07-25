@@ -4,8 +4,11 @@ import com.beust.klaxon.Converter
 import com.beust.klaxon.JsonValue
 import com.beust.klaxon.Klaxon
 import com.beust.klaxon.KlaxonException
+import mu.KotlinLogging
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+
+private val logger = KotlinLogging.logger { }
 
 @Target(AnnotationTarget.FIELD)
 annotation class Double
@@ -30,12 +33,13 @@ annotation class YearMonth
 val yearMonthParser = object : Converter {
     override fun canConvert(cls: Class<*>) = cls == YearMonth::class.java
 
-    override fun fromJson(jv: JsonValue) =
-            if (jv.string != null) {
-                YearMonth.parse(jv.string, DateTimeFormatter.ofPattern("yyyy-MM"))
-            } else {
-                throw KlaxonException("Could not parse YearMonth: $jv")
-            }
+    override fun fromJson(jv: JsonValue): Any? {
+        if (jv.string != null) {
+            return YearMonth.parse(jv.string, DateTimeFormatter.ofPattern("yyyy-MM"))
+        } else {
+            throw KlaxonException("Could not parse YearMonth: $jv")
+        }
+    }
 
     override fun toJson(value: Any) = """"${(value as YearMonth)}""""
 }

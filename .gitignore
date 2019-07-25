@@ -159,3 +159,6 @@ gradle-app.setting
 **/build/
 
 # End of https://www.gitignore.io/api/macos,gradle,kotlin,intellij
+
+#Don't copy over all node modules
+/aktoer-mock/node_modules/

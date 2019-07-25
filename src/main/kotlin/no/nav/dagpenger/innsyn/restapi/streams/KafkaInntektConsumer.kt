@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit
 private val logger: KLogger = KotlinLogging.logger {}
 
 internal class KafkaInntektConsumer(
-    private val config: Configuration,
-    private val inntektPond: InntektPond
+        private val config: Configuration,
+        private val inntektPond: InntektPond
 ) : HealthCheck {
 
     private val streams: KafkaStreams by lazy {

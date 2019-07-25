@@ -11,8 +11,6 @@ import kotlin.test.assertEquals
 class ProcessingDataObjectTests {
 
     private val testDataBob = getJSONParsed("Bob")
-    private val testDataPeter = getJSONParsed("Peter")
-    private val testDataGabriel = getJSONParsed("Gabriel")
 
     private val testYearMonths = listOf(YearMonth.of(2001, 1), YearMonth.of(2001, 2), YearMonth.of(2001, 3), YearMonth.of(2001, 4), YearMonth.of(2001, 5),
             YearMonth.of(2001, 9), YearMonth.of(2001, 10), YearMonth.of(2001, 11), YearMonth.of(2001, 12))
@@ -33,21 +31,6 @@ class ProcessingDataObjectTests {
             EmploymentPeriode(YearMonth.of(2001, 12), YearMonth.of(2002, 1)))
 
     private val expectedPeriodsGabriel = "[ArbeidsgiverOgPeriode(arbeidsgiver=222222, perioder=[EmploymentPeriode(startDateYearMonth=2017-09, endDateYearMonth=2017-09), EmploymentPeriode(startDateYearMonth=2017-12, endDateYearMonth=2017-12)]), ArbeidsgiverOgPeriode(arbeidsgiver=2222221, perioder=[EmploymentPeriode(startDateYearMonth=2017-09, endDateYearMonth=2017-09)]), ArbeidsgiverOgPeriode(arbeidsgiver=55555, perioder=[EmploymentPeriode(startDateYearMonth=2017-10, endDateYearMonth=2017-10)]), ArbeidsgiverOgPeriode(arbeidsgiver=666666, perioder=[EmploymentPeriode(startDateYearMonth=2017-10, endDateYearMonth=2017-10)]), ArbeidsgiverOgPeriode(arbeidsgiver=11111, perioder=[EmploymentPeriode(startDateYearMonth=2017-11, endDateYearMonth=2017-12)])]" // TODO: Fix this nonsense
-
-    @Test
-    fun inntektForFirstMonthTest() {
-        assertEquals(getInntektForFirstMonth(testDataPeter), 5.83)
-    }
-
-    @Test
-    fun allInntektForOneMonthWithOneInntekt() {
-        assertEquals(50.83, getInntektForOneMonth(testDataBob, YearMonth.of(2017, 10)))
-    }
-
-    @Test
-    fun allInntektForOneMonthWithTwoInntekts() {
-        assertEquals(5600.0, getInntektForOneMonth(testDataBob, YearMonth.of(2017, 9)))
-    }
 
     @Test
     fun allInntekt36LastMonths() {
@@ -80,10 +63,5 @@ class ProcessingDataObjectTests {
     @Test
     fun checkGroupingWorksEdgeCase() {
         assertEquals(expectedResultTestMonthsEdge, groupYearMonthIntoPeriods(testYearMonthsEdge))
-    }
-
-    @Test
-    fun checkPeriodSortingWorks() {
-       // assertEquals(expectedPeriodsGabriel, getPeriodForEachEmployer(testDataGabriel).toString())
     }
 }
