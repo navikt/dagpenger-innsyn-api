@@ -52,6 +52,7 @@ import java.net.URL
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 private val logger: KLogger = KotlinLogging.logger {}
 
@@ -156,13 +157,13 @@ fun Application.innsynAPI(
                     try {
                         mapRequestToBehov(aktoerID, beregningsdato).apply {
                             kafkaProducer.produceEvent(this)
-                        } /*.also {
+                        } .also {
                         while (!(packetStore.isDone(it.behovId))) {
                             lock.withLock {
                                 condition.await(2000, TimeUnit.MILLISECONDS)
                             }
                         }
-                    }*/
+                    }
                     } catch (e: TimeoutException) {
                         logger.error("Timed out waiting for kafka", e)
                     }
