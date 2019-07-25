@@ -1,17 +1,18 @@
 package no.nav.dagpenger.innsyn.parsing
 
-import no.nav.dagpenger.innsyn.data.inntekt.Employer
-import no.nav.dagpenger.innsyn.data.inntekt.EmployerSummary
-import no.nav.dagpenger.innsyn.data.inntekt.EmploymentPeriode
-import no.nav.dagpenger.innsyn.data.inntekt.Income
-import no.nav.dagpenger.innsyn.data.inntekt.MonthIncomeInformation
-import no.nav.dagpenger.innsyn.data.inntekt.ProcessedRequest
+import no.nav.dagpenger.innsyn.conversion.objects.Employer
+import no.nav.dagpenger.innsyn.conversion.objects.EmployerSummary
+import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
+import no.nav.dagpenger.innsyn.conversion.objects.Income
+import no.nav.dagpenger.innsyn.conversion.objects.MonthIncomeInformation
+import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
+import no.nav.dagpenger.innsyn.settings.defaultParser
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.time.YearMonth
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ParsingProcessedRequestTests {
+class ParsingUserInformationTests {
 
     private val testDataIncome = Income(
             income = 155.13,
@@ -40,7 +41,7 @@ class ParsingProcessedRequestTests {
             )
     )
 
-    private val testDataProcessedRequest = ProcessedRequest(
+    private val testDataProcessedRequest = UserInformation(
             personnummer = "131165542135",
             totalIncome36 = 155.13,
             totalIncome12 = 80.25,
@@ -87,7 +88,7 @@ class ParsingProcessedRequestTests {
     @Test
     fun klaxonParsesProcessedRequest() {
         defaultParser
-                .parse<ProcessedRequest>(
+                .parse<UserInformation>(
                         defaultParser
                                 .toJsonString(testDataProcessedRequest)
                 )

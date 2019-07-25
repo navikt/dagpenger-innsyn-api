@@ -1,14 +1,11 @@
-package no.nav.dagpenger.innsyn.parsing
+package no.nav.dagpenger.innsyn.settings
 
 import com.beust.klaxon.Converter
 import com.beust.klaxon.JsonValue
 import com.beust.klaxon.Klaxon
 import com.beust.klaxon.KlaxonException
-import mu.KotlinLogging
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
-
-private val logger = KotlinLogging.logger { }
 
 @Target(AnnotationTarget.FIELD)
 annotation class Double
@@ -45,5 +42,5 @@ val yearMonthParser = object : Converter {
 }
 
 val defaultParser = Klaxon()
-        .fieldConverter(no.nav.dagpenger.innsyn.parsing.Double::class, doubleParser)
-        .fieldConverter(no.nav.dagpenger.innsyn.parsing.YearMonth::class, yearMonthParser)
+        .fieldConverter(Double::class, doubleParser)
+        .fieldConverter(no.nav.dagpenger.innsyn.settings.YearMonth::class, yearMonthParser)

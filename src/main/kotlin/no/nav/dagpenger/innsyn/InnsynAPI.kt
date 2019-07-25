@@ -33,30 +33,23 @@ import io.prometheus.client.hotspot.DefaultExports
 import khttp.responses.Response
 import mu.KLogger
 import mu.KotlinLogging
-import no.nav.dagpenger.innsyn.data.configuration.Configuration
-import no.nav.dagpenger.innsyn.data.inntekt.Employer
-import no.nav.dagpenger.innsyn.data.inntekt.EmployerSummary
-import no.nav.dagpenger.innsyn.data.inntekt.EmploymentPeriode
-import no.nav.dagpenger.innsyn.data.inntekt.Income
-import no.nav.dagpenger.innsyn.data.inntekt.MonthIncomeInformation
-import no.nav.dagpenger.innsyn.data.inntekt.ProcessedRequest
+import no.nav.dagpenger.innsyn.settings.Configuration
 import no.nav.dagpenger.innsyn.monitoring.HealthCheck
 import no.nav.dagpenger.innsyn.monitoring.HealthStatus
-import no.nav.dagpenger.innsyn.parsing.defaultParser
-import no.nav.dagpenger.innsyn.restapi.getExample
-import no.nav.dagpenger.innsyn.restapi.streams.Behov
-import no.nav.dagpenger.innsyn.restapi.streams.HashMapPacketStore
-import no.nav.dagpenger.innsyn.restapi.streams.InnsynProducer
-import no.nav.dagpenger.innsyn.restapi.streams.InntektPond
-import no.nav.dagpenger.innsyn.restapi.streams.KafkaInnsynProducer
-import no.nav.dagpenger.innsyn.restapi.streams.KafkaInntektConsumer
-import no.nav.dagpenger.innsyn.restapi.streams.producerConfig
+import no.nav.dagpenger.innsyn.settings.defaultParser
+import no.nav.dagpenger.innsyn.lookup.objects.Behov
+import no.nav.dagpenger.innsyn.lookup.objects.HashMapPacketStore
+import no.nav.dagpenger.innsyn.lookup.InnsynProducer
+import no.nav.dagpenger.innsyn.lookup.InntektPond
+import no.nav.dagpenger.innsyn.lookup.KafkaInnsynProducer
+import no.nav.dagpenger.innsyn.lookup.KafkaInntektConsumer
+import no.nav.dagpenger.innsyn.lookup.producerConfig
 import no.nav.dagpenger.streams.KafkaCredential
+import org.apache.kafka.common.errors.TimeoutException
 import org.json.JSONObject
 import org.slf4j.event.Level
 import java.net.URL
 import java.time.LocalDate
-import java.time.YearMonth
 import java.util.concurrent.TimeUnit
 
 private val logger: KLogger = KotlinLogging.logger {}
@@ -103,9 +96,9 @@ fun main() {
 }
 
 fun Application.innsynAPI(
-        kafkaProducer: InnsynProducer,
-        jwkProvider: JwkProvider,
-        healthChecks: List<HealthCheck>
+    kafkaProducer: InnsynProducer,
+    jwkProvider: JwkProvider,
+    healthChecks: List<HealthCheck>
 ) {
 
     logger.debug("Installing jackson for content negotiation")
@@ -154,8 +147,12 @@ fun Application.innsynAPI(
                     call.respond(HttpStatusCode.NotAcceptable, "Missing required cookies")
                 } else {
                     val aktoerID = getAktoerIDFromIDToken(idToken, getSubject())
-                    mapRequestToBehov(aktoerID, beregningsdato).apply {
-                        kafkaProducer.produceEvent(this)
+                    try {
+                        mapRequestToBehov(aktoerID, beregningsdato).apply {
+                            kafkaProducer.produceEvent(this)
+                        }
+                    } catch (e: TimeoutException) {
+                        logger.error("Timed out waiting for kafka", e)
                     }
                     call.respond(HttpStatusCode.OK, defaultParser.toJsonString(getExample()))
                 }
@@ -196,7 +193,6 @@ fun getAktoerIDFromIDToken(idToken: String, ident: String): String {
     return ""
 }
 
-
 private fun getAktoerResponse(idToken: String, ident: String): Response {
     return khttp.get(
             url = config.application.aktoerregisteretUrl,
@@ -212,7 +208,7 @@ private fun getAktoerResponse(idToken: String, ident: String): Response {
 private fun getFirstMatchingAktoerIDFromIdent(ident: String, jsonResponse: JSONObject): String {
     return (jsonResponse
             .getJSONObject(ident)
-            .getJSONArray("identer")[0] as JSONObject)[ident]
+            .getJSONArray("identer")[0] as JSONObject)["ident"]
             .toString()
 }
 

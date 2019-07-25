@@ -1,8 +1,8 @@
 package streams
 
-import no.nav.dagpenger.innsyn.restapi.streams.Behov
-import no.nav.dagpenger.innsyn.restapi.streams.KafkaInnsynProducer
-import no.nav.dagpenger.innsyn.restapi.streams.producerConfig
+import no.nav.dagpenger.innsyn.lookup.objects.Behov
+import no.nav.dagpenger.innsyn.lookup.KafkaInnsynProducer
+import no.nav.dagpenger.innsyn.lookup.producerConfig
 import org.junit.jupiter.api.Test
 import org.testcontainers.containers.KafkaContainer
 import java.time.LocalDate

@@ -1,15 +1,13 @@
-package no.nav.dagpenger.innsyn.processing
+package no.nav.dagpenger.innsyn.conversion
 
-import no.nav.dagpenger.innsyn.data.inntekt.Employer
-import no.nav.dagpenger.innsyn.data.inntekt.EmployerSummary
-import no.nav.dagpenger.innsyn.data.inntekt.EmploymentPeriode
-import no.nav.dagpenger.innsyn.data.inntekt.Income
-import no.nav.dagpenger.innsyn.data.inntekt.InntektListe
-import no.nav.dagpenger.innsyn.data.inntekt.InntektsInformasjon
-import no.nav.dagpenger.innsyn.data.inntekt.MonthIncomeInformation
-import no.nav.dagpenger.innsyn.data.objects.Opptjeningsperiode
-import no.nav.dagpenger.innsyn.lookup.getNameFromID
-import java.time.LocalDate
+import no.nav.dagpenger.innsyn.conversion.objects.Employer
+import no.nav.dagpenger.innsyn.conversion.objects.EmployerSummary
+import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
+import no.nav.dagpenger.innsyn.conversion.objects.Income
+import no.nav.dagpenger.innsyn.conversion.objects.MonthIncomeInformation
+import no.nav.dagpenger.innsyn.lookup.getNameFromBroennoeysundRegisterByID
+import no.nav.dagpenger.innsyn.conversion.objects.InntektListe
+import no.nav.dagpenger.innsyn.conversion.objects.InntektsInformasjon
 import java.time.YearMonth
 import kotlin.streams.toList
 
@@ -18,7 +16,7 @@ data class ArbeidsgiverOgPeriode(val arbeidsgiver: String, val perioder: List<Em
 
 fun getPeriodForEachEmployer(inntektData: InntektsInformasjon): List<ArbeidsgiverOgPeriode> {
     return inntektData.inntekt.arbeidsInntektMaaned
-            .filter { arbeidsInntektMaaned -> arbeidsInntektMaaned.aarMaaned in Opptjeningsperiode(LocalDate.now()).get36MonthRange() }
+            .filter { arbeidsInntektMaaned -> arbeidsInntektMaaned.aarMaaned in get36MonthRange() }
             .flatMap { arbeidsInntektMaaned ->
                 arbeidsInntektMaaned.arbeidsInntektInformasjon.inntektListe
                         .map { inntektListe -> Pair(inntektListe.virksomhet.identifikator, arbeidsInntektMaaned.aarMaaned) }
@@ -50,7 +48,7 @@ fun getEmployerSummaries(inntektData: InntektsInformasjon): List<EmployerSummary
     return getPeriodForEachEmployer(inntektData)
             .map { periods ->
                 EmployerSummary(
-                        name = getNameFromID(periods.arbeidsgiver),
+                        name = getNameFromBroennoeysundRegisterByID(periods.arbeidsgiver),
                         orgID = periods.arbeidsgiver,
                         employmentPeriodes = periods.perioder,
                         income = getInntektPerArbeidsgiverList(inntektData)
@@ -62,7 +60,7 @@ fun getEmployerSummaries(inntektData: InntektsInformasjon): List<EmployerSummary
 
 fun getInntektForTheLast36LastMoths(inntektData: InntektsInformasjon): Double {
     return inntektData.inntekt.arbeidsInntektMaaned
-            .filter { it.aarMaaned in Opptjeningsperiode(LocalDate.now()).get36MonthRange() }
+            .filter { it.aarMaaned in get36MonthRange() }
             .sumByDouble { arbeidsInntektMaaned ->
                 arbeidsInntektMaaned.arbeidsInntektInformasjon.inntektListe
                         .sumByDouble { it.beloep }
@@ -71,7 +69,7 @@ fun getInntektForTheLast36LastMoths(inntektData: InntektsInformasjon): Double {
 
 fun getInntektForTheLast12LastMoths(inntektData: InntektsInformasjon): Double {
     return inntektData.inntekt.arbeidsInntektMaaned
-            .filter { it.aarMaaned in Opptjeningsperiode(LocalDate.now()).get12MonthRange() }
+            .filter { it.aarMaaned in get12MonthRange() }
             .sumByDouble { arbeidsInntektMaaned ->
                 arbeidsInntektMaaned.arbeidsInntektInformasjon.inntektListe
                         .sumByDouble { it.beloep }
@@ -80,7 +78,7 @@ fun getInntektForTheLast12LastMoths(inntektData: InntektsInformasjon): Double {
 
 fun getInntektPerArbeidsgiverList(inntektData: InntektsInformasjon): List<ArbeidsgiverOgInntekt> {
     return inntektData.inntekt.arbeidsInntektMaaned.stream()
-            .filter { it.aarMaaned in Opptjeningsperiode(LocalDate.now()).get36MonthRange() }
+            .filter { it.aarMaaned in get36MonthRange() }
             .map { arbeidsInntektMaaned -> arbeidsInntektMaaned.arbeidsInntektInformasjon.inntektListe }
             .flatMap { inntektListe -> inntektListe.stream() }
             .filter { inntektListe -> inntektListe.header == "Total lønnsinntekt" }
@@ -115,7 +113,7 @@ fun getEmployerMonth(inntektListe: List<InntektListe>): List<Employer> {
             }
             .map { inntekt ->
                 Employer(
-                        name = getNameFromID(inntekt.key.identifikator),
+                        name = getNameFromBroennoeysundRegisterByID(inntekt.key.identifikator),
                         orgID = inntekt.key.identifikator,
                         incomes = inntekt.value
 
@@ -126,7 +124,7 @@ fun getEmployerMonth(inntektListe: List<InntektListe>): List<Employer> {
 
 fun getMonthsIncomeInformation(inntektData: InntektsInformasjon): List<MonthIncomeInformation> {
     return inntektData.inntekt.arbeidsInntektMaaned.stream()
-            .filter { it.aarMaaned in Opptjeningsperiode(LocalDate.now()).get36MonthRange() }
+            .filter { it.aarMaaned in get36MonthRange() }
             .map { arbeidsInntektMaaned ->
                 MonthIncomeInformation(
                         arbeidsInntektMaaned.aarMaaned,
