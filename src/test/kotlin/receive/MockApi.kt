@@ -9,10 +9,10 @@ import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.monitoring.HealthCheck
 
 internal fun MockApi(
-        packetStore: PacketStore = mockk(),
-        kafkaProducer: InnsynProducer = mockk(),
-        jwkProvider: JwkProvider = mockk(),
-        healthChecks: List<HealthCheck> = mockk()
+    packetStore: PacketStore = mockk(),
+    kafkaProducer: InnsynProducer = mockk(),
+    jwkProvider: JwkProvider = mockk(),
+    healthChecks: List<HealthCheck> = mockk()
 ): Application.() -> Unit {
     return fun Application.() {
         innsynAPI(packetStore, kafkaProducer, jwkProvider, healthChecks)

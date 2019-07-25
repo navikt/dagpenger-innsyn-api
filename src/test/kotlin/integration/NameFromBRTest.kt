@@ -46,7 +46,7 @@ class NameFromBRTest {
     }
 
     @Test
-    fun `Unsuccessful fetch returns only organization id`(){
+    fun `Unsuccessful fetch returns only organization id`() {
         val testOrgId = "974760673"
 
         WireMock.stubFor(

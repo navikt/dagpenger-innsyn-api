@@ -53,7 +53,6 @@ import java.net.URL
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 
 private val logger: KLogger = KotlinLogging.logger {}
 
@@ -158,7 +157,7 @@ fun Application.innsynAPI(
                     try {
                         mapRequestToBehov(aktoerID, beregningsdato).apply {
                             kafkaProducer.produceEvent(this)
-                        }/*.also {
+                        } /*.also {
                         while (!(packetStore.isDone(it.behovId))) {
                             lock.withLock {
                                 condition.await(2000, TimeUnit.MILLISECONDS)
@@ -197,9 +196,11 @@ fun Application.innsynAPI(
     }
 }
 
-fun getAktoerIDFromIDToken(idToken: String,
-                           ident: String,
-                           url: String = config.application.aktoerregisteretUrl): String {
+fun getAktoerIDFromIDToken(
+    idToken: String,
+    ident: String,
+    url: String = config.application.aktoerregisteretUrl
+): String {
     try {
         return getFirstMatchingAktoerIDFromIdent(ident, getAktoerResponse(idToken, ident, url).jsonObject)
     } catch (e: Exception) {

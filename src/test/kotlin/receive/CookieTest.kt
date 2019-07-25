@@ -42,7 +42,6 @@ class CookieTest {
         verifyAll {
             kafkaMock.produceEvent(any())
         }
-
     }
 
     @Test
@@ -96,5 +95,4 @@ class CookieTest {
             kafkaMock.produceEvent(any()) wasNot Called
         }
     }
-
 }
