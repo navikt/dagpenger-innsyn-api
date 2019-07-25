@@ -30,7 +30,6 @@ import io.ktor.util.pipeline.PipelineContext
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
-import khttp.responses.Response
 import mu.KLogger
 import mu.KotlinLogging
 import no.nav.dagpenger.innsyn.settings.Configuration
@@ -43,11 +42,11 @@ import no.nav.dagpenger.innsyn.lookup.InnsynProducer
 import no.nav.dagpenger.innsyn.lookup.InntektPond
 import no.nav.dagpenger.innsyn.lookup.KafkaInnsynProducer
 import no.nav.dagpenger.innsyn.lookup.KafkaInntektConsumer
+import no.nav.dagpenger.innsyn.lookup.getGjeldendeAktoerIDFromIDToken
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.lookup.producerConfig
 import no.nav.dagpenger.streams.KafkaCredential
 import org.apache.kafka.common.errors.TimeoutException
-import org.json.JSONObject
 import org.slf4j.event.Level
 import java.net.URL
 import java.time.LocalDate
@@ -153,7 +152,7 @@ fun Application.innsynAPI(
                     logger.error("Received invalid request without ID_token cookie", call)
                     call.respond(HttpStatusCode.NotAcceptable, "Missing required cookies")
                 } else {
-                    val aktoerID = getAktoerIDFromIDToken(idToken, getSubject())
+                    val aktoerID = getGjeldendeAktoerIDFromIDToken(idToken, getSubject())
                     try {
                         mapRequestToBehov(aktoerID, beregningsdato).apply {
                             kafkaProducer.produceEvent(this)
@@ -194,38 +193,6 @@ fun Application.innsynAPI(
             }
         }
     }
-}
-
-fun getAktoerIDFromIDToken(
-    idToken: String,
-    ident: String,
-    url: String = config.application.aktoerregisteretUrl
-): String {
-    try {
-        return getFirstMatchingAktoerIDFromIdent(ident, getAktoerResponse(idToken, ident, url).jsonObject)
-    } catch (e: Exception) {
-        logger.error("Could not successfully retrieve the aktoerID from aktoerregisteret's response", e)
-    }
-    return ""
-}
-
-private fun getAktoerResponse(idToken: String, ident: String, url: String): Response {
-    return khttp.get(
-            url = url,
-            headers = mapOf(
-                    "Authorization" to idToken,
-                    "Nav-Call-Id" to "dagpenger-innsyn-api-${LocalDate.now().dayOfMonth}",
-                    "Nav-Consumer-Id" to "dagpenger-innsyn-api",
-                    "Nav-Personidenter" to ident
-            )
-    )
-}
-
-private fun getFirstMatchingAktoerIDFromIdent(ident: String, jsonResponse: JSONObject): String {
-    return (jsonResponse
-            .getJSONObject(ident)
-            .getJSONArray("identer")[0] as JSONObject)["ident"]
-            .toString()
 }
 
 private fun PipelineContext<Unit, ApplicationCall>.getSubject(): String {
