@@ -1,17 +1,20 @@
 package no.nav.dagpenger.innsyn.processing
 
-import no.nav.dagpenger.innsyn.data.inntekt.EmploymentPeriode
+import no.nav.dagpenger.innsyn.conversion.getInntektForTheLast36LastMoths
+import no.nav.dagpenger.innsyn.conversion.getInntektPerArbeidsgiverList
+import no.nav.dagpenger.innsyn.conversion.getTotalInntektPerArbeidsgiver
+import no.nav.dagpenger.innsyn.conversion.groupYearMonthIntoPeriods
+import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
 import no.nav.dagpenger.innsyn.parsing.getJSONParsed
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import java.time.YearMonth
 import kotlin.test.assertEquals
 
-// @TestInstance
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ProcessingDataObjectTests {
 
     private val testDataBob = getJSONParsed("Bob")
-    private val testDataPeter = getJSONParsed("Peter")
-    private val testDataGabriel = getJSONParsed("Gabriel")
 
     private val testYearMonths = listOf(YearMonth.of(2001, 1), YearMonth.of(2001, 2), YearMonth.of(2001, 3), YearMonth.of(2001, 4), YearMonth.of(2001, 5),
             YearMonth.of(2001, 9), YearMonth.of(2001, 10), YearMonth.of(2001, 11), YearMonth.of(2001, 12))
@@ -34,21 +37,6 @@ class ProcessingDataObjectTests {
     private val expectedPeriodsGabriel = "[ArbeidsgiverOgPeriode(arbeidsgiver=222222, perioder=[EmploymentPeriode(startDateYearMonth=2017-09, endDateYearMonth=2017-09), EmploymentPeriode(startDateYearMonth=2017-12, endDateYearMonth=2017-12)]), ArbeidsgiverOgPeriode(arbeidsgiver=2222221, perioder=[EmploymentPeriode(startDateYearMonth=2017-09, endDateYearMonth=2017-09)]), ArbeidsgiverOgPeriode(arbeidsgiver=55555, perioder=[EmploymentPeriode(startDateYearMonth=2017-10, endDateYearMonth=2017-10)]), ArbeidsgiverOgPeriode(arbeidsgiver=666666, perioder=[EmploymentPeriode(startDateYearMonth=2017-10, endDateYearMonth=2017-10)]), ArbeidsgiverOgPeriode(arbeidsgiver=11111, perioder=[EmploymentPeriode(startDateYearMonth=2017-11, endDateYearMonth=2017-12)])]" // TODO: Fix this nonsense
 
     @Test
-    fun inntektForFirstMonthTest() {
-        assertEquals(getInntektForFirstMonth(testDataPeter), 5.83)
-    }
-
-    @Test
-    fun allInntektForOneMonthWithOneInntekt() {
-        assertEquals(50.83, getInntektForOneMonth(testDataBob, YearMonth.of(2017, 10)))
-    }
-
-    @Test
-    fun allInntektForOneMonthWithTwoInntekts() {
-        assertEquals(5600.0, getInntektForOneMonth(testDataBob, YearMonth.of(2017, 9)))
-    }
-
-    @Test
     fun allInntekt36LastMonths() {
         assertEquals(5650.83, getInntektForTheLast36LastMoths(testDataBob))
     }
@@ -60,14 +48,13 @@ class ProcessingDataObjectTests {
 
     @Test
     fun getListOfInntektForEachArbeidsgiverTest() {
-
+        println(testDataBob)
         assertEquals(5099.00, getInntektPerArbeidsgiverList(testDataBob)[0].inntekt)
         assertEquals(501.00, getInntektPerArbeidsgiverList(testDataBob)[1].inntekt)
     }
 
     @Test
     fun getTotalListOfInntektForEachArbeidsgiverTest() {
-
         assertEquals(5149.83, getTotalInntektPerArbeidsgiver(testDataBob)[0].inntekt)
         assertEquals(501.0, getTotalInntektPerArbeidsgiver(testDataBob)[1].inntekt)
     }
@@ -80,10 +67,5 @@ class ProcessingDataObjectTests {
     @Test
     fun checkGroupingWorksEdgeCase() {
         assertEquals(expectedResultTestMonthsEdge, groupYearMonthIntoPeriods(testYearMonthsEdge))
-    }
-
-    @Test
-    fun checkPeriodSortingWorks() {
-        assertEquals(expectedPeriodsGabriel, getPeriodForEachEmployer(testDataGabriel).toString())
     }
 }

@@ -1,12 +1,14 @@
-package no.nav.dagpenger.innsyn.restapi.streams
+package no.nav.dagpenger.innsyn.lookup
 
 import mu.KLogger
 import mu.KotlinLogging
 import no.nav.dagpenger.events.Packet
 import no.nav.dagpenger.innsyn.APPLICATION_NAME
-import no.nav.dagpenger.innsyn.data.configuration.Configuration
+import no.nav.dagpenger.innsyn.settings.Configuration
 import no.nav.dagpenger.innsyn.monitoring.HealthCheck
 import no.nav.dagpenger.innsyn.monitoring.HealthStatus
+import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
+import no.nav.dagpenger.innsyn.settings.PacketKeys
 import no.nav.dagpenger.streams.Pond
 import no.nav.dagpenger.streams.streamConfig
 import org.apache.kafka.streams.KafkaStreams

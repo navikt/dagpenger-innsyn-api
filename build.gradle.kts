@@ -77,7 +77,9 @@ dependencies {
     implementation("io.ktor:ktor-auth-jwt:$ktorVersion")
     implementation("io.ktor:ktor-metrics-micrometer:$ktorVersion")
     implementation("io.ktor:ktor-jackson:$ktorVersion")
-    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
+        exclude(module = "logback-classic")
+    }
 
     implementation("org.apache.logging.log4j:log4j-api:$log4j2Version")
     implementation("org.apache.logging.log4j:log4j-core:$log4j2Version")

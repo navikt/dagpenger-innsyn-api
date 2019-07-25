@@ -1,4 +1,4 @@
-package no.nav.dagpenger.innsyn.data.inntekt
+package no.nav.dagpenger.innsyn.conversion.objects
 
 import java.time.YearMonth
 
@@ -19,13 +19,13 @@ data class Inntekt(
 
     val arbeidsInntektMaaned: List<ArbeidsInntektMaaned>,
     val ident: Ident,
-    @no.nav.dagpenger.innsyn.parsing.YearMonth val fraDato: YearMonth,
-    @no.nav.dagpenger.innsyn.parsing.YearMonth val tilDato: YearMonth
+    @no.nav.dagpenger.innsyn.settings.YearMonth val fraDato: YearMonth,
+    @no.nav.dagpenger.innsyn.settings.YearMonth val tilDato: YearMonth
 )
 
 data class ArbeidsInntektMaaned(
 
-    @no.nav.dagpenger.innsyn.parsing.YearMonth val aarMaaned: YearMonth,
+    @no.nav.dagpenger.innsyn.settings.YearMonth val aarMaaned: YearMonth,
     val arbeidsInntektInformasjon: ArbeidsInntektInformasjon
 )
 
@@ -38,13 +38,13 @@ data class InntektListe(
 
     val inntektType: String,
     val header: String,
-    @no.nav.dagpenger.innsyn.parsing.Double val beloep: Double,
+    @no.nav.dagpenger.innsyn.settings.Double val beloep: Double,
     val fordel: String,
     val inntektskilde: String,
     val inntektsperiodetype: String,
     val inntektsstatus: String,
-    @no.nav.dagpenger.innsyn.parsing.YearMonth val leveringstidspunkt: YearMonth,
-    @no.nav.dagpenger.innsyn.parsing.YearMonth val utbetaltIMaaned: YearMonth,
+    @no.nav.dagpenger.innsyn.settings.YearMonth val leveringstidspunkt: YearMonth,
+    @no.nav.dagpenger.innsyn.settings.YearMonth val utbetaltIMaaned: YearMonth,
     val opplysningspliktig: Opplysningspliktig,
     val virksomhet: Virksomhet,
     val inntektsmottaker: Inntektsmottaker,

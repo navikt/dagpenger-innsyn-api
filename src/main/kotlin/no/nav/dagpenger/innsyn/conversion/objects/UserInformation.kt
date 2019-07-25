@@ -1,10 +1,10 @@
-package no.nav.dagpenger.innsyn.data.inntekt
+package no.nav.dagpenger.innsyn.conversion.objects
 
 import java.time.YearMonth
 
-data class ProcessedRequest(
+data class UserInformation(
     val personnummer: String,
-    val totalIncome: Double,
+    val totalIncome36: Double,
     val totalIncome12: Double,
     val employerSummaries: List<EmployerSummary>,
     val monthsIncomeInformation: List<MonthIncomeInformation>
@@ -18,12 +18,12 @@ data class EmployerSummary(
 )
 
 data class EmploymentPeriode(
-    @no.nav.dagpenger.innsyn.parsing.YearMonth val startDateYearMonth: YearMonth,
-    @no.nav.dagpenger.innsyn.parsing.YearMonth val endDateYearMonth: YearMonth
+    @no.nav.dagpenger.innsyn.settings.YearMonth val startDateYearMonth: YearMonth,
+    @no.nav.dagpenger.innsyn.settings.YearMonth val endDateYearMonth: YearMonth
 )
 
 data class MonthIncomeInformation(
-    @no.nav.dagpenger.innsyn.parsing.YearMonth val month: YearMonth,
+    @no.nav.dagpenger.innsyn.settings.YearMonth val month: YearMonth,
     val employers: List<Employer>
 )
 

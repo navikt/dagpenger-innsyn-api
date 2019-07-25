@@ -1,6 +1,7 @@
-package no.nav.dagpenger.innsyn.restapi.streams
+package no.nav.dagpenger.innsyn.lookup.objects
 
 import no.nav.dagpenger.events.Packet
+import no.nav.dagpenger.innsyn.settings.PacketKeys
 
 internal class HashMapPacketStore : PacketStore {
     private val filteredPackets: HashMap<String, Packet> = HashMap()

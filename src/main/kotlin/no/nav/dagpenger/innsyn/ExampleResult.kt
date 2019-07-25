@@ -1,21 +1,21 @@
-package no.nav.dagpenger.innsyn.restapi
+package no.nav.dagpenger.innsyn
 
-import no.nav.dagpenger.innsyn.data.inntekt.Employer
-import no.nav.dagpenger.innsyn.data.inntekt.EmployerSummary
-import no.nav.dagpenger.innsyn.data.inntekt.EmploymentPeriode
-import no.nav.dagpenger.innsyn.data.inntekt.Income
-import no.nav.dagpenger.innsyn.data.inntekt.MonthIncomeInformation
-import no.nav.dagpenger.innsyn.data.inntekt.ProcessedRequest
+import no.nav.dagpenger.innsyn.conversion.objects.Employer
+import no.nav.dagpenger.innsyn.conversion.objects.EmployerSummary
+import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
+import no.nav.dagpenger.innsyn.conversion.objects.Income
+import no.nav.dagpenger.innsyn.conversion.objects.MonthIncomeInformation
+import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
 import java.time.YearMonth
 
 // TODO: Move to test when we have MVP
-fun getExample(): ProcessedRequest {
+fun getExample(): UserInformation {
 
     val fastloennConst = "Fastlønn"
 
-    return ProcessedRequest(
+    return UserInformation(
             personnummer = "18069637988",
-            totalIncome = 25542.12,
+            totalIncome36 = 25542.12,
             totalIncome12 = 122234.3,
             employerSummaries = listOf(
                     EmployerSummary(

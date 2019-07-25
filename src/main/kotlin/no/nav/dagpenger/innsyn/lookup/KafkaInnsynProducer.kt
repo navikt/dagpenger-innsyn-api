@@ -1,4 +1,4 @@
-package no.nav.dagpenger.innsyn.restapi.streams
+package no.nav.dagpenger.innsyn.lookup
 
 import mu.KLogger
 import mu.KotlinLogging
@@ -6,6 +6,7 @@ import no.nav.dagpenger.events.Packet
 import no.nav.dagpenger.innsyn.APPLICATION_NAME
 import no.nav.dagpenger.innsyn.monitoring.HealthCheck
 import no.nav.dagpenger.innsyn.monitoring.HealthStatus
+import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.streams.KafkaCredential
 import no.nav.dagpenger.streams.Topics
 import org.apache.kafka.clients.CommonClientConfigs
