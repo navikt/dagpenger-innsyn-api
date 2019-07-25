@@ -1,7 +1,8 @@
-package no.nav.dagpenger.innsyn.restapi.streams
+package no.nav.dagpenger.innsyn.lookup.objects
 
 import no.nav.dagpenger.events.Packet
 import java.util.concurrent.locks.Condition
+import no.nav.dagpenger.innsyn.settings.PacketKeys
 
 internal class HashMapPacketStore(private val condition: Condition) : PacketStore {
     private val filteredPackets: HashMap<String, Packet> = HashMap()

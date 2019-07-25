@@ -1,4 +1,4 @@
-package no.nav.dagpenger.innsyn.restapi.streams
+package no.nav.dagpenger.innsyn.lookup.objects
 
 import no.nav.dagpenger.events.Packet
 

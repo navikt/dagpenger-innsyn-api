@@ -1,6 +1,10 @@
 package no.nav.dagpenger.innsyn.processing
 
-import no.nav.dagpenger.innsyn.data.inntekt.EmploymentPeriode
+import no.nav.dagpenger.innsyn.conversion.getInntektForTheLast36LastMoths
+import no.nav.dagpenger.innsyn.conversion.getInntektPerArbeidsgiverList
+import no.nav.dagpenger.innsyn.conversion.getTotalInntektPerArbeidsgiver
+import no.nav.dagpenger.innsyn.conversion.groupYearMonthIntoPeriods
+import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
 import no.nav.dagpenger.innsyn.parsing.getJSONParsed
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance

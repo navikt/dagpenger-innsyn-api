@@ -1,4 +1,4 @@
-package no.nav.dagpenger.innsyn.data.configuration
+package no.nav.dagpenger.innsyn.settings
 
 import com.natpryce.konfig.ConfigurationMap
 import com.natpryce.konfig.ConfigurationProperties
@@ -14,7 +14,7 @@ private val localProperties = ConfigurationMap(
                 "vault.mountpath" to "postgresql/dev/",
                 "srvdp.inntekt.innsyn.username" to "igroup",
                 "srvdp.inntekt.innsyn.password" to "itest",
-                "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api/enheter/",
+                "enhetsregisteret.url" to "https://objects.brreg.no/enhetsregisteret/api/enheter/",
                 "aktoerregisteret.url" to "http://mockserver:3050/aktoerregister/api/v1/identer?identgruppe=AktoerId",
                 "oppslag.url" to "https://localhost:8090/api",
                 "oidc.sts.issuerurl" to "http://localhost/",
@@ -32,7 +32,7 @@ private val localProperties = ConfigurationMap(
 private val devProperties = ConfigurationMap(
         mapOf(
                 "vault.mountpath" to "postgresql/preprod-fss/",
-                "enhetsregisteret.url" to "https://no.nav.dagpenger.innsyn.data.brreg.no/enhetsregisteret/api/enheter/",
+                "enhetsregisteret.url" to "https://no.nav.dagpenger.innsyn.objects.brreg.no/enhetsregisteret/api/enheter/",
                 "aktoerregisteret.url" to "http://tjenester.nav.no/aktoerregister/api/v1/identer?identgruppe=AktoerId",
                 "oppslag.url" to "http://dagpenger-oppslag.default.svc.nais.local/api",
                 "oidc.sts.issuerurl" to "https://security-token-service-t4.nais.preprod.local/",
@@ -47,7 +47,7 @@ private val devProperties = ConfigurationMap(
 private val prodProperties = ConfigurationMap(
         mapOf(
                 "vault.mountpath" to "postgresql/prod-fss/",
-                "enhetsregisteret.url" to "https://no.nav.dagpenger.innsyn.data.brreg.no/enhetsregisteret/api/enheter/",
+                "enhetsregisteret.url" to "https://no.nav.dagpenger.innsyn.objects.brreg.no/enhetsregisteret/api/enheter/",
                 "aktoerregisteret.url" to "http://tjenester.nav.no/aktoerregister/api/v1/identer?identgruppe=AktoerId",
                 "oppslag.url" to "http://dagpenger-oppslag.default.svc.nais.local/api",
                 "oidc.sts.issuerurl" to "https://security-token-service.nais.adeo.no/",
@@ -61,33 +61,33 @@ private val prodProperties = ConfigurationMap(
 )
 
 data class Configuration(
-        val application: Application = Application(),
-        val vault: Vault = Vault(),
-        val kafka: Kafka = Kafka()
+    val application: Application = Application(),
+    val vault: Vault = Vault(),
+    val kafka: Kafka = Kafka()
 
 ) {
 
     data class Application(
-            val profile: Profile = config()[Key("application.profile", stringType)].let { Profile.valueOf(it) },
-            val httpPort: Int = config()[Key("application.httpPort", intType)],
-            val applicationUrl: String = config()[Key("application.url", stringType)],
-            val enhetsregisteretUrl: String = config()[Key("enhetsregisteret.url", stringType)],
-            val aktoerregisteretUrl: String = config()[Key("aktoerregisteret.url", stringType)],
-            val oppslagUrl: String = config()[Key("oppslag.url", stringType)],
-            val oicdStsUrl: String = config()[Key("oidc.sts.issuerurl", stringType)],
-            val jwksUrl: String = config()[Key("jwks.url", stringType)],
-            val jwksIssuer: String = config()[Key("jwks.issuer", stringType)],
-            val name: String = "dagpenger-innsyn-api"
+        val profile: Profile = config()[Key("application.profile", stringType)].let { Profile.valueOf(it) },
+        val httpPort: Int = config()[Key("application.httpPort", intType)],
+        val applicationUrl: String = config()[Key("application.url", stringType)],
+        val enhetsregisteretUrl: String = config()[Key("enhetsregisteret.url", stringType)],
+        val aktoerregisteretUrl: String = config()[Key("aktoerregisteret.url", stringType)],
+        val oppslagUrl: String = config()[Key("oppslag.url", stringType)],
+        val oicdStsUrl: String = config()[Key("oidc.sts.issuerurl", stringType)],
+        val jwksUrl: String = config()[Key("jwks.url", stringType)],
+        val jwksIssuer: String = config()[Key("jwks.issuer", stringType)],
+        val name: String = "dagpenger-innsyn-api"
     )
 
     data class Vault(
-            val mountPath: String = config()[Key("vault.mountpath", stringType)]
+        val mountPath: String = config()[Key("vault.mountpath", stringType)]
     )
 
     data class Kafka(
-            val brokers: String = config()[Key("kafka.bootstrap.servers", stringType)],
-            val user: String = config()[Key("srvdp.inntekt.innsyn.username", stringType)],
-            val password: String = config()[Key("srvdp.inntekt.innsyn.password", stringType)]
+        val brokers: String = config()[Key("kafka.bootstrap.servers", stringType)],
+        val user: String = config()[Key("srvdp.inntekt.innsyn.username", stringType)],
+        val password: String = config()[Key("srvdp.inntekt.innsyn.password", stringType)]
     ) {
         fun credential(): KafkaCredential? {
             return if (user != null && password != null) {

@@ -1,7 +1,8 @@
 package no.nav.dagpenger.innsyn.parsing
 
 import mu.KotlinLogging
-import no.nav.dagpenger.innsyn.data.inntekt.InntektsInformasjon
+import no.nav.dagpenger.innsyn.conversion.objects.InntektsInformasjon
+import no.nav.dagpenger.innsyn.settings.defaultParser
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.function.BiPredicate

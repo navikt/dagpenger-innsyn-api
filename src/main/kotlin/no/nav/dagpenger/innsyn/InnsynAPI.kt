@@ -33,31 +33,24 @@ import io.prometheus.client.hotspot.DefaultExports
 import khttp.responses.Response
 import mu.KLogger
 import mu.KotlinLogging
-import no.nav.dagpenger.innsyn.data.configuration.Configuration
-import no.nav.dagpenger.innsyn.data.inntekt.Employer
-import no.nav.dagpenger.innsyn.data.inntekt.EmployerSummary
-import no.nav.dagpenger.innsyn.data.inntekt.EmploymentPeriode
-import no.nav.dagpenger.innsyn.data.inntekt.Income
-import no.nav.dagpenger.innsyn.data.inntekt.MonthIncomeInformation
-import no.nav.dagpenger.innsyn.data.inntekt.ProcessedRequest
+import no.nav.dagpenger.innsyn.settings.Configuration
 import no.nav.dagpenger.innsyn.monitoring.HealthCheck
 import no.nav.dagpenger.innsyn.monitoring.HealthStatus
-import no.nav.dagpenger.innsyn.parsing.defaultParser
-import no.nav.dagpenger.innsyn.restapi.getExample
-import no.nav.dagpenger.innsyn.restapi.streams.Behov
-import no.nav.dagpenger.innsyn.restapi.streams.HashMapPacketStore
-import no.nav.dagpenger.innsyn.restapi.streams.InnsynProducer
-import no.nav.dagpenger.innsyn.restapi.streams.InntektPond
-import no.nav.dagpenger.innsyn.restapi.streams.KafkaInnsynProducer
-import no.nav.dagpenger.innsyn.restapi.streams.KafkaInntektConsumer
-import no.nav.dagpenger.innsyn.restapi.streams.PacketStore
-import no.nav.dagpenger.innsyn.restapi.streams.producerConfig
+import no.nav.dagpenger.innsyn.settings.defaultParser
+import no.nav.dagpenger.innsyn.lookup.objects.Behov
+import no.nav.dagpenger.innsyn.lookup.objects.HashMapPacketStore
+import no.nav.dagpenger.innsyn.lookup.InnsynProducer
+import no.nav.dagpenger.innsyn.lookup.InntektPond
+import no.nav.dagpenger.innsyn.lookup.KafkaInnsynProducer
+import no.nav.dagpenger.innsyn.lookup.KafkaInntektConsumer
+import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
+import no.nav.dagpenger.innsyn.lookup.producerConfig
 import no.nav.dagpenger.streams.KafkaCredential
+import org.apache.kafka.common.errors.TimeoutException
 import org.json.JSONObject
 import org.slf4j.event.Level
 import java.net.URL
 import java.time.LocalDate
-import java.time.YearMonth
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -69,41 +62,6 @@ private val config = Configuration()
 val lock = ReentrantLock()
 val condition = lock.newCondition()
 val APPLICATION_NAME = "dp-inntekt-innsyn-api"
-
-private val testDataIncome = Income(
-        income = 155.13,
-        verdikode = "Total Lønnsinntekt"
-)
-
-private val testDataEmployer = Employer(
-        name = "NAV",
-        orgID = "114235",
-        incomes = listOf(testDataIncome)
-)
-
-private val testDataMonthIncomeInformation = MonthIncomeInformation(
-        month = YearMonth.of(2019, 1),
-        employers = listOf(testDataEmployer)
-)
-
-private val testDataEmployerSummary = EmployerSummary(
-        name = "NAV",
-        orgID = "114235",
-        income = 155.13,
-        employmentPeriodes = listOf(EmploymentPeriode(
-                startDateYearMonth = YearMonth.of(2019, 1),
-                endDateYearMonth = YearMonth.of(2019, 3)
-        )
-        )
-)
-
-private val testDataProcessedRequest = ProcessedRequest(
-        personnummer = "131165542135",
-        totalIncome36 = 155.13,
-        totalIncome12 = 80.25,
-        employerSummaries = listOf(testDataEmployerSummary),
-        monthsIncomeInformation = listOf(testDataMonthIncomeInformation)
-)
 
 fun main() {
 
@@ -197,15 +155,19 @@ fun Application.innsynAPI(
                     call.respond(HttpStatusCode.NotAcceptable, "Missing required cookies")
                 } else {
                     val aktoerID = getAktoerIDFromIDToken(idToken, getSubject())
-                    mapRequestToBehov(aktoerID, beregningsdato).apply {
-                        kafkaProducer.produceEvent(this)
-                    }/*.also {
+                    try {
+                        mapRequestToBehov(aktoerID, beregningsdato).apply {
+                            kafkaProducer.produceEvent(this)
+                        }/*.also {
                         while (!(packetStore.isDone(it.behovId))) {
                             lock.withLock {
                                 condition.await(2000, TimeUnit.MILLISECONDS)
                             }
                         }
                     }*/
+                    } catch (e: TimeoutException) {
+                        logger.error("Timed out waiting for kafka", e)
+                    }
                     call.respond(HttpStatusCode.OK, defaultParser.toJsonString(getExample()))
                 }
             }
@@ -247,7 +209,6 @@ fun getAktoerIDFromIDToken(idToken: String,
     return ""
 }
 
-
 private fun getAktoerResponse(idToken: String, ident: String, url: String): Response {
     return khttp.get(
             url = url,
@@ -263,7 +224,7 @@ private fun getAktoerResponse(idToken: String, ident: String, url: String): Resp
 private fun getFirstMatchingAktoerIDFromIdent(ident: String, jsonResponse: JSONObject): String {
     return (jsonResponse
             .getJSONObject(ident)
-            .getJSONArray("identer")[0] as JSONObject)[ident]
+            .getJSONArray("identer")[0] as JSONObject)["ident"]
             .toString()
 }
 

@@ -1,13 +1,14 @@
-package no.nav.dagpenger.innsyn.restapi.streams
+package no.nav.dagpenger.innsyn.lookup.objects
 
 import de.huxhorn.sulky.ulid.ULID
 import no.nav.dagpenger.events.Packet
+import no.nav.dagpenger.innsyn.settings.PacketKeys
 import java.time.LocalDate
 
 data class Behov(
-        val behovId: String = ulidGenerator.nextULID(),
-        val aktørId: String,
-        val beregningsDato: LocalDate
+    val behovId: String = ulidGenerator.nextULID(),
+    val aktørId: String,
+    val beregningsDato: LocalDate
 ) {
     companion object Mapper {
         private val ulidGenerator = ULID()
