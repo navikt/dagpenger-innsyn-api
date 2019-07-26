@@ -1,12 +1,12 @@
 package no.nav.dagpenger.innsyn.parsing
 
+import no.nav.dagpenger.events.moshiInstance
 import no.nav.dagpenger.innsyn.conversion.objects.Employer
 import no.nav.dagpenger.innsyn.conversion.objects.EmployerSummary
 import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
 import no.nav.dagpenger.innsyn.conversion.objects.Income
 import no.nav.dagpenger.innsyn.conversion.objects.MonthIncomeInformation
 import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
-import no.nav.dagpenger.innsyn.defaultParser
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.time.YearMonth
@@ -52,46 +52,46 @@ class ParsingUserInformationTests {
 
     @Test
     fun klaxonParsesIncome() {
-        defaultParser
-                .parse<Income>(
-                        defaultParser
-                                .toJsonString(testDataIncome)
+        moshiInstance.adapter(Income::class.java)
+                .fromJson(
+                        moshiInstance.adapter(Income::class.java)
+                                .toJson(testDataIncome)
                 )
     }
 
     @Test
     fun klaxonParsesEmployer() {
-        defaultParser
-                .parse<Employer>(
-                        defaultParser
-                                .toJsonString(testDataEmployer)
+        moshiInstance.adapter(Employer::class.java)
+                .fromJson(
+                        moshiInstance.adapter(Employer::class.java)
+                                .toJson(testDataEmployer)
                 )
     }
 
     @Test
     fun klaxonParsesMonthIncomeInformation() {
-        defaultParser
-                .parse<MonthIncomeInformation>(
-                        defaultParser
-                                .toJsonString(testDataMonthIncomeInformation)
+        moshiInstance.adapter(MonthIncomeInformation::class.java)
+                .fromJson(
+                        moshiInstance.adapter(MonthIncomeInformation::class.java)
+                                .toJson(testDataMonthIncomeInformation)
                 )
     }
 
     @Test
     fun klaxonParsesEmployerSummary() {
-        defaultParser
-                .parse<EmployerSummary>(
-                        defaultParser
-                                .toJsonString(testDataEmployerSummary)
+        moshiInstance.adapter(EmployerSummary::class.java)
+                .fromJson(
+                        moshiInstance.adapter(EmployerSummary::class.java)
+                                .toJson(testDataEmployerSummary)
                 )
     }
 
     @Test
     fun klaxonParsesProcessedRequest() {
-        defaultParser
-                .parse<UserInformation>(
-                        defaultParser
-                                .toJsonString(testDataProcessedRequest)
+        moshiInstance.adapter(UserInformation::class.java)
+                .fromJson(
+                        moshiInstance.adapter(UserInformation::class.java)
+                                .toJson(testDataProcessedRequest)
                 )
     }
 }
