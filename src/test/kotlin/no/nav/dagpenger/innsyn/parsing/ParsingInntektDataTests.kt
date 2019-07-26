@@ -1,5 +1,6 @@
 package no.nav.dagpenger.innsyn.parsing
 
+<<<<<<< HEAD
 import com.squareup.moshi.JsonAdapter
 import no.nav.dagpenger.events.moshiInstance
 import no.nav.dagpenger.innsyn.AUG2018
@@ -14,6 +15,10 @@ import org.junit.jupiter.api.TestInstance
 import java.math.BigDecimal
 import java.time.YearMonth
 import kotlin.test.assertEquals
+=======
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+>>>>>>> e7ce4995e64c7e18ff12395f4033b9dba7cb2065
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JSONParseTestClass {
