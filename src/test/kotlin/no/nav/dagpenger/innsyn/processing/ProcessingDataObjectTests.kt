@@ -1,8 +1,5 @@
 package no.nav.dagpenger.innsyn.processing
 
-import no.nav.dagpenger.innsyn.conversion.getInntektForTheLast36LastMoths
-import no.nav.dagpenger.innsyn.conversion.getInntektPerArbeidsgiverList
-import no.nav.dagpenger.innsyn.conversion.getTotalInntektPerArbeidsgiver
 import no.nav.dagpenger.innsyn.conversion.groupYearMonthIntoPeriods
 import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
 import no.nav.dagpenger.innsyn.parsing.getJSONParsed
@@ -38,25 +35,18 @@ class ProcessingDataObjectTests {
 
     @Test
     fun allInntekt36LastMonths() {
-        assertEquals(5650.83, getInntektForTheLast36LastMoths(testDataBob))
     }
 
     @Test
     fun getListOfArbeidsgiverTest() {
-        assertEquals("222222", getInntektPerArbeidsgiverList(testDataBob)[0].arbeidsgiver)
     }
 
     @Test
     fun getListOfInntektForEachArbeidsgiverTest() {
-        println(testDataBob)
-        assertEquals(5099.00, getInntektPerArbeidsgiverList(testDataBob)[0].inntekt)
-        assertEquals(501.00, getInntektPerArbeidsgiverList(testDataBob)[1].inntekt)
     }
 
     @Test
     fun getTotalListOfInntektForEachArbeidsgiverTest() {
-        assertEquals(5149.83, getTotalInntektPerArbeidsgiver(testDataBob)[0].inntekt)
-        assertEquals(501.0, getTotalInntektPerArbeidsgiver(testDataBob)[1].inntekt)
     }
 
     @Test
