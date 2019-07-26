@@ -98,8 +98,7 @@ fun getExample(): UserInformation {
                                                     )
                                             )
                                     )
-                            ),
-                            totalIncomeMonth = 12.0
+                            )
                     ),
                     MonthIncomeInformation(
                             month = YearMonth.of(2018, 1),
@@ -129,8 +128,7 @@ fun getExample(): UserInformation {
                                                     )
                                             )
                                     )
-                            ),
-                            totalIncomeMonth = 13.0
+                            )
                     )
             )
     )
