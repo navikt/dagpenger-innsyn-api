@@ -1,4 +1,4 @@
-package integration
+package no.nav.dagpenger.innsyn.integration
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
