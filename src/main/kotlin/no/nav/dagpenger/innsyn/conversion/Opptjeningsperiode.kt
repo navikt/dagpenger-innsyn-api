@@ -8,7 +8,7 @@ import java.util.Date
 
 private val antattRapporteringsFrist = LocalDate.of(LocalDate.now().year, LocalDate.now().month, 5)
 private val reellRapporteringsFrist: LocalDate =
-        FoersteArbeidsdagEtterRapporterteringsFrist(antattRapporteringsFrist)
+        foersteArbeidsdagEtterRapporterteringsFrist(antattRapporteringsFrist)
 private val maanedSubtraksjon: Long =
         if (LocalDate.now().isBefore(reellRapporteringsFrist) || LocalDate.now().isEqual(reellRapporteringsFrist)) 2 else 1
 
@@ -16,9 +16,9 @@ val sisteAvsluttendeKalenderMaaned: YearMonth = LocalDate.now().minusMonths(maan
 val foersteMaaned36: YearMonth = sisteAvsluttendeKalenderMaaned.minusMonths(36)
 val foersteMaaned12: YearMonth = sisteAvsluttendeKalenderMaaned.minusMonths(12)
 
-private fun FoersteArbeidsdagEtterRapporterteringsFrist(rapporteringsFrist: LocalDate): LocalDate =
+private fun foersteArbeidsdagEtterRapporterteringsFrist(rapporteringsFrist: LocalDate): LocalDate =
     if (rapporteringsFrist.erArbeidsdag()) rapporteringsFrist
-    else FoersteArbeidsdagEtterRapporterteringsFrist(rapporteringsFrist.plusDays(1))
+    else foersteArbeidsdagEtterRapporterteringsFrist(rapporteringsFrist.plusDays(1))
 
 private fun LocalDate.erArbeidsdag(): Boolean =
         NorwegianDateUtil.isWorkingDay(Date.from(this.atStartOfDay(ZoneId.systemDefault()).toInstant()))
