@@ -1,4 +1,4 @@
-package acceptance
+package no.nav.dagpenger.innsyn.acceptance
 
 import no.nav.dagpenger.innsyn.conversion.convertInntektDataIntoUserInformation
 import no.nav.dagpenger.innsyn.testDataSpesifisertInntekt
