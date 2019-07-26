@@ -61,7 +61,6 @@ val konfigVersion = "1.6.10.0"
 val bekkopenVersion = "0.8.2"
 val dagpengerStreamsVersion = "2019.06.26-21.57.bdd7e296c753"
 val khttpVersion = "0.1.0"
-val klaxonVersion = "5.0.1"
 val huxhornSulkyUlidVersion = "8.2.0"
 val kotlinReflectVersion = "1.3.21"
 val log4j2LogstashLayoutFatjarVersion = "0.15"
@@ -95,7 +94,7 @@ dependencies {
     implementation("com.github.jkcclemens:khttp:$khttpVersion")
     implementation("com.natpryce:konfig:$konfigVersion")
     implementation("com.vlkan.log4j2:log4j2-logstash-layout-fatjar:$log4j2LogstashLayoutFatjarVersion")
-    implementation("com.beust:klaxon:$klaxonVersion")
+    implementation("com.squareup.moshi:moshi:1.8.0")
     implementation("no.bekk.bekkopen:nocommons:$bekkopenVersion")
     implementation("de.huxhorn.sulky:de.huxhorn.sulky.ulid:$huxhornSulkyUlidVersion")
     implementation("io.github.microutils:kotlin-logging:$kotlinLoggingVersion")
