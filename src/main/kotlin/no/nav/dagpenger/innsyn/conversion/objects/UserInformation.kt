@@ -1,5 +1,7 @@
 package no.nav.dagpenger.innsyn.conversion.objects
 
+import no.nav.dagpenger.events.inntekt.v1.PosteringsType
+import no.nav.dagpenger.innsyn.YearMonthParsing
 import java.time.YearMonth
 
 data class UserInformation(
@@ -18,13 +20,14 @@ data class EmployerSummary(
 )
 
 data class EmploymentPeriode(
-    @no.nav.dagpenger.innsyn.settings.YearMonth val startDateYearMonth: YearMonth,
-    @no.nav.dagpenger.innsyn.settings.YearMonth val endDateYearMonth: YearMonth
+        @YearMonthParsing val startDateYearMonth: YearMonth,
+        @YearMonthParsing val endDateYearMonth: YearMonth
 )
 
 data class MonthIncomeInformation(
-    @no.nav.dagpenger.innsyn.settings.YearMonth val month: YearMonth,
-    val employers: List<Employer>
+        @YearMonthParsing val month: YearMonth,
+        val employers: List<Employer>,
+        val totalIncomeMonth: Double
 )
 
 data class Employer(
@@ -35,5 +38,5 @@ data class Employer(
 
 data class Income(
     val income: Double,
-    val verdikode: String
+    val beskrivelse: String
 )

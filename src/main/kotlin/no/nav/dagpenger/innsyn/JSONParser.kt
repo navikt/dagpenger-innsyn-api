@@ -1,4 +1,4 @@
-package no.nav.dagpenger.innsyn.settings
+package no.nav.dagpenger.innsyn
 
 import com.beust.klaxon.Converter
 import com.beust.klaxon.JsonValue
@@ -25,7 +25,7 @@ val doubleParser = object : Converter {
 }
 
 @Target(AnnotationTarget.FIELD)
-annotation class YearMonth
+annotation class YearMonthParsing
 
 val yearMonthParser = object : Converter {
     override fun canConvert(cls: Class<*>) = cls == YearMonth::class.java
@@ -34,7 +34,7 @@ val yearMonthParser = object : Converter {
         if (jv.string != null) {
             return YearMonth.parse(jv.string, DateTimeFormatter.ofPattern("yyyy-MM"))
         } else {
-            throw KlaxonException("Could not parse YearMonth: $jv")
+            throw KlaxonException("Could not parse YearMonthParsing: $jv")
         }
     }
 
@@ -43,4 +43,4 @@ val yearMonthParser = object : Converter {
 
 val defaultParser = Klaxon()
         .fieldConverter(Double::class, doubleParser)
-        .fieldConverter(no.nav.dagpenger.innsyn.settings.YearMonth::class, yearMonthParser)
+        .fieldConverter(no.nav.dagpenger.innsyn.YearMonthParsing::class, yearMonthParser)

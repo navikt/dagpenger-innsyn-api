@@ -35,7 +35,6 @@ import mu.KotlinLogging
 import no.nav.dagpenger.innsyn.settings.Configuration
 import no.nav.dagpenger.innsyn.monitoring.HealthCheck
 import no.nav.dagpenger.innsyn.monitoring.HealthStatus
-import no.nav.dagpenger.innsyn.settings.defaultParser
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.innsyn.lookup.objects.HashMapPacketStore
 import no.nav.dagpenger.innsyn.lookup.InnsynProducer

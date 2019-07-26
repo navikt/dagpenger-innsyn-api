@@ -1,18 +1,20 @@
 package no.nav.dagpenger.innsyn.conversion
 
-import mu.KotlinLogging
 import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
-import no.nav.dagpenger.innsyn.conversion.objects.InntektsInformasjon
 
-private val logger = KotlinLogging.logger {}
 
-fun convertInntektDataIntoUserInformation(inntektsInformasjon: InntektsInformasjon): UserInformation {
-    logger.debug("Converting InntektsInformasjon into UserInformation")
+import no.nav.dagpenger.events.inntekt.v1.SpesifisertInntekt
+
+fun convertInntektDataIntoUserInformation(spesifisertInntekt: SpesifisertInntekt): UserInformation {
+    val monthsIncomeInformation = getMonthsIncomeInformation(spesifisertInntekt)
     return UserInformation(
-            personnummer = inntektsInformasjon.inntektId.id,
-            totalIncome36 = getInntektForTheLast36LastMoths(inntektsInformasjon),
-            totalIncome12 = getInntektForTheLast12LastMoths(inntektsInformasjon),
-            employerSummaries = getEmployerSummaries(inntektsInformasjon),
-            monthsIncomeInformation = getMonthsIncomeInformation(inntektsInformasjon)
+            personnummer = spesifisertInntekt.ident.identifikator,
+            totalIncome36 = monthsIncomeInformation
+                    .sumByDouble { it.totalIncomeMonth },
+            totalIncome12 = monthsIncomeInformation
+                    .filter { it.month in get12MonthRange() }
+                    .sumByDouble { it.totalIncomeMonth },
+            employerSummaries = getEmployerSummaries(spesifisertInntekt),
+            monthsIncomeInformation = monthsIncomeInformation
     )
 }

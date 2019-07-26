@@ -6,7 +6,7 @@ import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
 import no.nav.dagpenger.innsyn.conversion.objects.Income
 import no.nav.dagpenger.innsyn.conversion.objects.MonthIncomeInformation
 import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
-import no.nav.dagpenger.innsyn.settings.defaultParser
+import no.nav.dagpenger.innsyn.defaultParser
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.time.YearMonth
@@ -16,7 +16,7 @@ class ParsingUserInformationTests {
 
     private val testDataIncome = Income(
             income = 155.13,
-            verdikode = "Total Lønnsinntekt"
+            beskrivelse = "Fastlønn"
     )
 
     private val testDataEmployer = Employer(
@@ -27,7 +27,8 @@ class ParsingUserInformationTests {
 
     private val testDataMonthIncomeInformation = MonthIncomeInformation(
             month = YearMonth.of(2019, 1),
-            employers = listOf(testDataEmployer)
+            employers = listOf(testDataEmployer),
+            totalIncomeMonth = 155.13
     )
 
     private val testDataEmployerSummary = EmployerSummary(
