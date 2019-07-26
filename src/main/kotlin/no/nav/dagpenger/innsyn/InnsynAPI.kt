@@ -125,7 +125,11 @@ fun Application.innsynAPI(
             }
             authHeader {
                 val cookie = it.request.cookies["ID_token"]
-                        ?: throw Exception("Cookie with name ID_Token not found")
+                        ?: run {
+                            logger.error("Cookie with name ID_Token not found")
+                            "error"
+                        }
+
                 HttpAuthHeader.Single("Bearer", cookie)
             }
             validate {
@@ -157,7 +161,7 @@ fun Application.innsynAPI(
                     try {
                         mapRequestToBehov(aktoerID, beregningsdato).apply {
                             kafkaProducer.produceEvent(this)
-                        } .also {
+                        }.also {
                         while (!(packetStore.isDone(it.behovId))) {
                             lock.withLock {
                                 condition.await(2000, TimeUnit.MILLISECONDS)
