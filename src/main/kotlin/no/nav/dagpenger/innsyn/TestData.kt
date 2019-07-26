@@ -1,4 +1,4 @@
-package no.nav.dagpenger.innsyn.objects
+package no.nav.dagpenger.innsyn
 
 import de.huxhorn.sulky.ulid.ULID
 import no.nav.dagpenger.events.inntekt.v1.Aktør

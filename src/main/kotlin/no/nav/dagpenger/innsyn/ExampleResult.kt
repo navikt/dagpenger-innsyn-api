@@ -62,6 +62,7 @@ fun getExample(): UserInformation {
             monthsIncomeInformation = listOf(
                     MonthIncomeInformation(
                             month = YearMonth.of(2019, 1),
+                            totalIncomeMonth = (7300.0 + 7300.0 + 7300.0),
                             employers = listOf(
                                     Employer(
                                             name = "NAV",
@@ -69,11 +70,11 @@ fun getExample(): UserInformation {
                                             incomes = listOf(
                                                     Income(
                                                             income = 7300.0,
-                                                            verdikode = fastloennConst
+                                                            beskrivelse = fastloennConst
                                                     ),
                                                     Income(
                                                             income = 7300.0,
-                                                            verdikode = "Feriepenger"
+                                                            beskrivelse = "Feriepenger"
                                                     )
                                             )
                                     ),
@@ -83,7 +84,7 @@ fun getExample(): UserInformation {
                                             incomes = listOf(
                                                     Income(
                                                             income = 7300.0,
-                                                            verdikode = "Bil"
+                                                            beskrivelse = "Bil"
                                                     )
                                             )
                                     ),
@@ -93,7 +94,7 @@ fun getExample(): UserInformation {
                                             incomes = listOf(
                                                     Income(
                                                             income = 7300.0,
-                                                            verdikode = fastloennConst
+                                                            beskrivelse = fastloennConst
                                                     )
                                             )
                                     )
@@ -101,6 +102,7 @@ fun getExample(): UserInformation {
                     ),
                     MonthIncomeInformation(
                             month = YearMonth.of(2018, 1),
+                            totalIncomeMonth = (8300.0 + 3300 + 5552),
                             employers = listOf(
                                     Employer(
                                             name = "NAV",
@@ -108,11 +110,11 @@ fun getExample(): UserInformation {
                                             incomes = listOf(
                                                     Income(
                                                             income = 8300.0,
-                                                            verdikode = fastloennConst
+                                                            beskrivelse = fastloennConst
                                                     ),
                                                     Income(
                                                             income = 3300.0,
-                                                            verdikode = "Feriepenger"
+                                                            beskrivelse = "Feriepenger"
                                                     )
                                             )
                                     ),
@@ -122,7 +124,7 @@ fun getExample(): UserInformation {
                                             incomes = listOf(
                                                     Income(
                                                             income = 5552.0,
-                                                            verdikode = "Bil"
+                                                            beskrivelse = "Bil"
                                                     )
                                             )
                                     )
