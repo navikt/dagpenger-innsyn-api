@@ -62,6 +62,7 @@ fun getExample(): UserInformation {
             monthsIncomeInformation = listOf(
                     MonthIncomeInformation(
                             month = YearMonth.of(2019, 1),
+                            totalIncomeMonth = (7300.0 + 7300.0 + 7300.0),
                             employers = listOf(
                                     Employer(
                                             name = "NAV",
@@ -97,11 +98,11 @@ fun getExample(): UserInformation {
                                                     )
                                             )
                                     )
-                            ),
-                            totalIncomeMonth = 12.0
+                            )
                     ),
                     MonthIncomeInformation(
                             month = YearMonth.of(2018, 1),
+                            totalIncomeMonth = (8300.0 + 3300 + 5552),
                             employers = listOf(
                                     Employer(
                                             name = "NAV",
@@ -127,8 +128,7 @@ fun getExample(): UserInformation {
                                                     )
                                             )
                                     )
-                            ),
-                            totalIncomeMonth = 13.0
+                            )
                     )
             )
     )

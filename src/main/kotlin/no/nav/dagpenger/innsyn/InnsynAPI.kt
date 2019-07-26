@@ -4,6 +4,7 @@ import com.auth0.jwk.JwkProvider
 import com.auth0.jwk.JwkProviderBuilder
 import com.auth0.jwt.exceptions.JWTDecodeException
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.squareup.moshi.JsonAdapter
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
@@ -32,6 +33,9 @@ import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
 import mu.KLogger
 import mu.KotlinLogging
+import no.nav.dagpenger.events.moshiInstance
+import no.nav.dagpenger.innsyn.conversion.convertInntektDataIntoUserInformation
+import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
 import no.nav.dagpenger.innsyn.settings.Configuration
 import no.nav.dagpenger.innsyn.monitoring.HealthCheck
 import no.nav.dagpenger.innsyn.monitoring.HealthStatus
@@ -170,7 +174,7 @@ fun Application.innsynAPI(
                     } catch (e: TimeoutException) {
                         logger.error("Timed out waiting for kafka", e)
                     }
-                    call.respond(HttpStatusCode.OK, defaultParser.toJsonString(getExample()))
+                    call.respond(HttpStatusCode.OK, moshiInstance.adapter(UserInformation::class.java).toJson(convertInntektDataIntoUserInformation(testDataSpesifisertInntekt)))
                 }
             }
         }
