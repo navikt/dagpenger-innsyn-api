@@ -69,11 +69,11 @@ fun getExample(): UserInformation {
                                             incomes = listOf(
                                                     Income(
                                                             income = 7300.0,
-                                                            verdikode = fastloennConst
+                                                            beskrivelse = fastloennConst
                                                     ),
                                                     Income(
                                                             income = 7300.0,
-                                                            verdikode = "Feriepenger"
+                                                            beskrivelse = "Feriepenger"
                                                     )
                                             )
                                     ),
@@ -83,7 +83,7 @@ fun getExample(): UserInformation {
                                             incomes = listOf(
                                                     Income(
                                                             income = 7300.0,
-                                                            verdikode = "Bil"
+                                                            beskrivelse = "Bil"
                                                     )
                                             )
                                     ),
@@ -93,11 +93,12 @@ fun getExample(): UserInformation {
                                             incomes = listOf(
                                                     Income(
                                                             income = 7300.0,
-                                                            verdikode = fastloennConst
+                                                            beskrivelse = fastloennConst
                                                     )
                                             )
                                     )
-                            )
+                            ),
+                            totalIncomeMonth = 12.0
                     ),
                     MonthIncomeInformation(
                             month = YearMonth.of(2018, 1),
@@ -108,11 +109,11 @@ fun getExample(): UserInformation {
                                             incomes = listOf(
                                                     Income(
                                                             income = 8300.0,
-                                                            verdikode = fastloennConst
+                                                            beskrivelse = fastloennConst
                                                     ),
                                                     Income(
                                                             income = 3300.0,
-                                                            verdikode = "Feriepenger"
+                                                            beskrivelse = "Feriepenger"
                                                     )
                                             )
                                     ),
@@ -122,11 +123,12 @@ fun getExample(): UserInformation {
                                             incomes = listOf(
                                                     Income(
                                                             income = 5552.0,
-                                                            verdikode = "Bil"
+                                                            beskrivelse = "Bil"
                                                     )
                                             )
                                     )
-                            )
+                            ),
+                            totalIncomeMonth = 13.0
                     )
             )
     )

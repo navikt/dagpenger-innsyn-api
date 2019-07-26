@@ -38,7 +38,7 @@ fun getEmployerSummaries(spesifisertInntekt: SpesifisertInntekt): List<EmployerS
                     arbeidsgiver = it.virksomhet!!.identifikator
             ) } }
             .groupBy { it.arbeidsgiver }
-            .map { groupedEmployerInfo ->  EmployerSummary (
+            .map { groupedEmployerInfo -> EmployerSummary(
                     name = getNameFromBroennoeysundRegisterByID(groupedEmployerInfo.key),
                     orgID = groupedEmployerInfo.key,
                     income = groupedEmployerInfo.value.sumByDouble { it.inntekt },
@@ -46,12 +46,12 @@ fun getEmployerSummaries(spesifisertInntekt: SpesifisertInntekt): List<EmployerS
             ) }
 }
 
-fun getMonthsIncomeInformation(spesifisertInntekt: SpesifisertInntekt) : List<MonthIncomeInformation> {
+fun getMonthsIncomeInformation(spesifisertInntekt: SpesifisertInntekt): List<MonthIncomeInformation> {
     return spesifisertInntekt.månedsInntekter
             .filter { it.årMåned in get36MonthRange() }
             .map { månedsInntekt -> MonthIncomeInformation(
                     month = månedsInntekt.årMåned,
-                    totalIncomeMonth = månedsInntekt.posteringer.sumByDouble { it.beløp.toDouble() }, //TODO: Type safety of BigDecimal vs Double
+                    totalIncomeMonth = månedsInntekt.posteringer.sumByDouble { it.beløp.toDouble() }, // TODO: Type safety of BigDecimal vs Double
                     employers = getEmployersForMonth(månedsInntekt.posteringer)
             ) }
 }

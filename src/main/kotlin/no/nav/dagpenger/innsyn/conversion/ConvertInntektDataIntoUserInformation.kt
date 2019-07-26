@@ -2,7 +2,6 @@ package no.nav.dagpenger.innsyn.conversion
 
 import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
 
-
 import no.nav.dagpenger.events.inntekt.v1.SpesifisertInntekt
 
 fun convertInntektDataIntoUserInformation(spesifisertInntekt: SpesifisertInntekt): UserInformation {
