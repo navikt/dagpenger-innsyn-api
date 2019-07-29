@@ -117,8 +117,8 @@ pipeline {
                 beforeAgent true
                 expression {
                   sh(
-                    label: 'Does the repository define any integration tests?',
-                    script: 'test -f ./scripts/test/integration',
+                    label: 'Does the repository define any no.nav.dagpenger.innsyn.integration tests?',
+                    script: 'test -f ./scripts/test/no.nav.dagpenger.innsyn.integration',
                     returnStatus: true
                   ) == 0
                 }
@@ -126,7 +126,7 @@ pipeline {
 
               steps {
                 sh label: 'Integration Tests', script: """
-                  ./scripts/test/integration || true
+                  ./scripts/test/no.nav.dagpenger.innsyn.integration || true
                 """
               }
             }

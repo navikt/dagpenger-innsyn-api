@@ -1,8 +1,9 @@
-package integration
+package no.nav.dagpenger.innsyn.integration
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
+import no.nav.dagpenger.innsyn.JwtStub
 import no.nav.dagpenger.innsyn.lookup.getGjeldendeAktoerIDFromIDToken
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
@@ -11,6 +12,10 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class AktoerIDFromIDTokenTest {
+
+    val jwtStub = JwtStub()
+    private val token = jwtStub.createTokenFor("user")
+
 companion object {
     val server: WireMockServer = WireMockServer(WireMockConfiguration.options().dynamicPort())
 
@@ -36,7 +41,6 @@ fun configure() {
 fun `Successful fetch of aktoerId`() {
     val testFnr = "12345678912"
     val testAktoerID = "1234567891234"
-    val testIdToken = "1234"
 
     WireMock.stubFor(
             WireMock.get(WireMock.urlEqualTo("/"))
@@ -44,14 +48,13 @@ fun `Successful fetch of aktoerId`() {
                     .willReturn(WireMock.aResponse().withBody(validJsonBody))
     )
 
-    val aktoerID = getGjeldendeAktoerIDFromIDToken(testIdToken, testFnr, server.url(""))
+    val aktoerID = getGjeldendeAktoerIDFromIDToken(token, testFnr, server.url(""))
     assertEquals(testAktoerID, aktoerID)
 }
 
 @Test
-fun `No aktoerId in response from call to Aktørregisteret`() {
+fun `No aktoerId in Aktørregisteret response should return empty string`() {
     val testFnr = "12345678912"
-    val testIdToken = "1234"
 
     WireMock.stubFor(
         WireMock.get(WireMock.urlEqualTo("/"))
@@ -59,7 +62,7 @@ fun `No aktoerId in response from call to Aktørregisteret`() {
             .willReturn(WireMock.aResponse().withBody(validJsonBodyWithEmptyIdenter))
     )
 
-    val aktoerId = getGjeldendeAktoerIDFromIDToken(testIdToken, testFnr, server.url(""))
+    val aktoerId = getGjeldendeAktoerIDFromIDToken(token, testFnr, server.url(""))
     assertEquals("", aktoerId)
 }
 

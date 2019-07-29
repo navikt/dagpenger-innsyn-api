@@ -1,4 +1,4 @@
-package streams
+package no.nav.dagpenger.innsyn.streams
 
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.innsyn.lookup.KafkaInnsynProducer

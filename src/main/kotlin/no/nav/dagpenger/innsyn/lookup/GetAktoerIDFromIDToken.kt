@@ -34,7 +34,7 @@ private fun getAktoerResponse(idToken: String, ident: String, url: String): Resp
     return khttp.get(
             url = url,
             headers = mapOf(
-                    "Authorization" to idToken,
+                    "Authorization" to "Bearer: $idToken",
                     "Nav-Call-Id" to "dagpenger-innsyn-api-${LocalDate.now().dayOfMonth}",
                     "Nav-Consumer-Id" to "dagpenger-innsyn-api",
                     "Nav-Personidenter" to ident

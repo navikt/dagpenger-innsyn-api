@@ -2,7 +2,6 @@ package no.nav.dagpenger.innsyn.settings
 
 import no.nav.dagpenger.events.Packet
 
-// TODO: Move to another package
 internal object PacketKeys {
     const val MANUELT_GRUNNLAG = "manueltGrunnlag"
     const val ANTALL_BARN = "antallBarn"
