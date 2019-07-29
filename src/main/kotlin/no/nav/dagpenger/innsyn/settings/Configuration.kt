@@ -43,7 +43,7 @@ private val devProperties = ConfigurationMap(
                 "application.profile" to "DEV",
                 "application.url" to "/inntekt",
                 "application.httpPort" to "8099",
-                "oidc.user" to "DEFAULT" //TODO: Fix this
+                "oidc.user" to "DEFAULT" // TODO: Fix this
         )
 )
 private val prodProperties = ConfigurationMap(
@@ -59,7 +59,7 @@ private val prodProperties = ConfigurationMap(
                 "application.profile" to "PROD",
                 "application.url" to "/inntekt",
                 "application.httpPort" to "8099",
-                "oidc.user" to "DEFAULT" //TODO: Fix this
+                "oidc.user" to "DEFAULT" // TODO: Fix this
         )
 )
 

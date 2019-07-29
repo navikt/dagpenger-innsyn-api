@@ -11,10 +11,9 @@ class AktoerRegisterLookup(private val url: String = Configuration().application
 
     private val logger: KLogger = KotlinLogging.logger {}
 
-
     fun getGjeldendeAktoerIDFromIDToken(
-            idToken: String,
-            ident: String
+        idToken: String,
+        ident: String
     ): String {
         try {
             return getFirstMatchingAktoerIDFromIdent(ident, getAktoerResponse(idToken, ident, url).jsonObject)
@@ -42,5 +41,4 @@ class AktoerRegisterLookup(private val url: String = Configuration().application
                 )
         )
     }
-
 }

@@ -25,7 +25,7 @@ import kotlin.test.assertTrue
 class InntektRouteTest {
 
     companion object {
-        class KDockerComposeContainer(path: File): DockerComposeContainer<KDockerComposeContainer>(path)
+        class KDockerComposeContainer(path: File) : DockerComposeContainer<KDockerComposeContainer>(path)
 
         @ClassRule
         val env = KDockerComposeContainer(File("..${File.separator}docker-compose.yml"))
@@ -35,9 +35,6 @@ class InntektRouteTest {
 
     private val jwtStub = JwtStub(config.application.jwksIssuer)
     private val token = jwtStub.createTokenFor(config.application.oidcUser)
-
-
-
 
     @Test
     fun `Valid request to inntekt endpoint should succeed and produce an event to Kafka`() {
