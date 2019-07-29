@@ -5,6 +5,7 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
+import io.mockk.Called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -40,10 +41,11 @@ class InntektRouteTest {
 
     @Test
     fun `Valid request to inntekt endpoint should succeed and produce an event to Kafka`() {
-        val kafkaMock = mockk<InnsynProducer>(relaxed = true)
-
         env.withExposedService("mockserver", 3050)
         println(env.getServiceHost("mockserver", 3050))
+
+        val kafkaMock = mockk<InnsynProducer>(relaxed = true)
+
         val slot = slot<String>()
 
         val storeMock = mockk<PacketStore>(relaxed = true).apply {
@@ -56,7 +58,8 @@ class InntektRouteTest {
                 kafkaProducer = kafkaMock,
                 packetStore = storeMock,
                 jwkProvider = jwtStub.stubbedJwkProvider(),
-                aktoerRegisterLookup = AktoerRegisterLookup("http://" + env.getServiceHost("mockserver", 3050) + ":3050/aktoerregister/api/v1/identer"))) {
+                aktoerRegisterLookup = AktoerRegisterLookup("http://" + env.getServiceHost("mockserver", 3050) + ":3050/aktoerregister/api/v1/identer"))
+        ) {
             handleRequest(HttpMethod.Get, config.application.applicationUrl) {
                 addHeader(HttpHeaders.Cookie, cookie)
             }.apply {
@@ -67,6 +70,41 @@ class InntektRouteTest {
 
         verifyAll {
             kafkaMock.produceEvent(any())
+        }
+    }
+
+    @Test
+    fun `504 response on timeout`() {
+
+        env.withExposedService("mockserver", 3050)
+        println(env.getServiceHost("mockserver", 3050))
+
+        val kafkaMock = mockk<InnsynProducer>(relaxed = true)
+
+        val slot = slot<String>()
+
+        val storeMock = mockk<PacketStore>(relaxed = true).apply {
+            every { this@apply.isDone(capture(slot)) } returns false
+        }
+
+        val cookie = "ID_token=$token"
+
+        withTestApplication(MockApi(
+                kafkaProducer = kafkaMock,
+                packetStore = storeMock,
+                jwkProvider = jwtStub.stubbedJwkProvider(),
+                aktoerRegisterLookup = AktoerRegisterLookup("http://" + env.getServiceHost("mockserver", 3050) + ":3050/aktoerregister/api/v1/identer"))
+        ) {
+            handleRequest(HttpMethod.Get, config.application.applicationUrl) {
+                addHeader(HttpHeaders.Cookie, cookie)
+            }.apply {
+                assertEquals(HttpStatusCode.GatewayTimeout, response.status())
+                assertTrue(requestHandled)
+            }
+        }
+
+        verifyAll {
+            storeMock.get(slot.toString()) wasNot Called
         }
     }
 
