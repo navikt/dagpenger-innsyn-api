@@ -39,7 +39,7 @@ fun getEmployerSummaries(spesifisertInntekt: SpesifisertInntekt): List<EmployerS
             ) } }
             .groupBy { it.arbeidsgiver }
             .map { groupedEmployerInfo -> EmployerSummary(
-                    name = getNameFromBroennoeysundRegisterByID(groupedEmployerInfo.key),
+                    name = getNameFromBroennoeysundRegisterByID(id = groupedEmployerInfo.key),
                     orgID = groupedEmployerInfo.key,
                     income = groupedEmployerInfo.value.sumByDouble { it.inntekt },
                     employmentPeriodes = groupYearMonthIntoPeriods(groupedEmployerInfo.value.map { it.maaned })
@@ -65,7 +65,7 @@ fun getEmployersForMonth(posteringer: List<Postering>): List<Employer> {
                             postering.posteringsType.beskrivelse
                     ) } }
             .map { employerIncomeMap -> Employer(
-                    name = getNameFromBroennoeysundRegisterByID(employerIncomeMap.key),
+                    name = getNameFromBroennoeysundRegisterByID(id = employerIncomeMap.key),
                     orgID = employerIncomeMap.key,
                     incomes = employerIncomeMap.value
             ) }

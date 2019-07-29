@@ -18,14 +18,14 @@ data class EmployerSummary(
 )
 
 data class EmploymentPeriode(
-        val startDateYearMonth: YearMonth,
-        val endDateYearMonth: YearMonth
+    val startDateYearMonth: YearMonth,
+    val endDateYearMonth: YearMonth
 )
 
 data class MonthIncomeInformation(
-        val month: YearMonth,
-        val employers: List<Employer>,
-        val totalIncomeMonth: Double
+    val month: YearMonth,
+    val employers: List<Employer>,
+    val totalIncomeMonth: Double
 )
 
 data class Employer(

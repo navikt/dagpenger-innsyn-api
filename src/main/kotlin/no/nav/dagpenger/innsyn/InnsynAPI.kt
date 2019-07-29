@@ -4,7 +4,6 @@ import com.auth0.jwk.JwkProvider
 import com.auth0.jwk.JwkProviderBuilder
 import com.auth0.jwt.exceptions.JWTDecodeException
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.squareup.moshi.JsonAdapter
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
@@ -49,13 +48,11 @@ import no.nav.dagpenger.innsyn.lookup.getGjeldendeAktoerIDFromIDToken
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.lookup.producerConfig
 import no.nav.dagpenger.streams.KafkaCredential
-import org.apache.kafka.common.errors.TimeoutException
 import org.slf4j.event.Level
 import java.net.URL
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
 
 private val logger: KLogger = KotlinLogging.logger {}
 
@@ -161,19 +158,19 @@ fun Application.innsynAPI(
                     call.respond(HttpStatusCode.NotAcceptable, "Missing required cookies")
                 } else {
                     val aktoerID = getGjeldendeAktoerIDFromIDToken(idToken, getSubject())
-                    try {
-                        mapRequestToBehov(aktoerID, beregningsdato).apply {
-                            kafkaProducer.produceEvent(this)
-                        }.also {
-                        while (!(packetStore.isDone(it.behovId))) {
-                            lock.withLock {
-                                condition.await(2000, TimeUnit.MILLISECONDS)
-                            }
-                        }
-                    }
-                    } catch (e: TimeoutException) {
-                        logger.error("Timed out waiting for kafka", e)
-                    }
+//                    try {
+//                        mapRequestToBehov(aktoerID, beregningsdato).apply {
+//                            kafkaProducer.produceEvent(this)
+//                        }.also {
+//                        while (!(packetStore.isDone(it.behovId))) {
+//                            lock.withLock {
+//                                condition.await(2000, TimeUnit.MILLISECONDS)
+//                            }
+//                        }
+//                    }
+//                    } catch (e: TimeoutException) {
+//                        logger.error("Timed out waiting for kafka", e)
+//                    }
                     call.respond(HttpStatusCode.OK, moshiInstance.adapter(UserInformation::class.java).toJson(convertInntektDataIntoUserInformation(testDataSpesifisertInntekt)))
                 }
             }

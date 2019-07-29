@@ -13,8 +13,8 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.YearMonth
 
-//This class cannot be mocked as it is JSON parsed back and forth to test our parsing
-//As such, when extending, do NOT use mock classes
+// This class cannot be mocked as it is JSON parsed back and forth to test our parsing
+// As such, when extending, do NOT use mock classes
 
 val AUG2018 = YearMonth.of(2018, 8)
 val SEP2018 = YearMonth.of(2018, 9)
@@ -30,7 +30,6 @@ val WAGESMALL3 = BigDecimal.valueOf(999.99)
 val WAGEMEDIUM1 = BigDecimal.valueOf(25001.41)
 val WAGEMEDIUM2 = BigDecimal.valueOf(11052.50)
 val WAGEMEDIUM3 = BigDecimal.valueOf(32210.00)
-
 
 val WAGELARGE1 = BigDecimal.valueOf(50012.93)
 val WAGELARGE2 = BigDecimal.valueOf(33651.11)
@@ -50,7 +49,6 @@ val testDataVirksomhet3 = Aktør(
         aktørType = AktørType.ORGANISASJON,
         identifikator = "979312059"
 )
-
 
 val testDataPostering11 = Postering(
         beløp = WAGESMALL1,
@@ -187,7 +185,7 @@ val testDataMaanedsInntekt3 = MånedsInntekt(
         posteringer = testDataPosteringer3
 )
 
-//The processing should ignore this
+// The processing should ignore this
 val testDataMaanedsInntekt4 = MånedsInntekt(
         årMåned = FUTUREMONTH,
         avvikListe = listOf(),
@@ -215,4 +213,3 @@ val testDataSpesifisertInntekt = SpesifisertInntekt(
         manueltRedigert = false,
         timestamp = LocalDateTime.now()
 )
-

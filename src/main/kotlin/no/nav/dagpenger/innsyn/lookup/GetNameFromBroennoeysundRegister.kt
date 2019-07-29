@@ -1,18 +1,24 @@
 package no.nav.dagpenger.innsyn.lookup
 
+import mu.KotlinLogging
 import no.nav.dagpenger.innsyn.settings.Configuration
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 
-private val logger: Logger = LogManager.getLogger()
+private val logger = KotlinLogging.logger { }
 private val config = Configuration()
+private val cache: HashMap<String, String> = HashMap()
 
 fun getNameFromBroennoeysundRegisterByID(id: String, url: String = config.application.enhetsregisteretUrl): String {
+    if (cache.containsKey(id)) {
+        logger.debug("Using cache for $id : ${cache.get(id)}")
+        return cache.get(id)!!
+    }
     val response = khttp.get(url + id)
-    return if (response.statusCode != 200) {
+    if (response.statusCode != 200) {
         logger.error("Error retrieving organisation name $id")
-        (id)
+        return id
     } else {
-        response.jsonObject["navn"].toString()
+        logger.debug("Successfully retrieved name for $id from BR")
+        cache.set(id, response.jsonObject["navn"].toString())
+        return response.jsonObject["navn"].toString()
     }
 }

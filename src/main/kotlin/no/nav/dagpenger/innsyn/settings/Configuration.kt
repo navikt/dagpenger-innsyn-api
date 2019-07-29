@@ -14,7 +14,7 @@ private val localProperties = ConfigurationMap(
                 "vault.mountpath" to "postgresql/dev/",
                 "srvdp.inntekt.innsyn.username" to "igroup",
                 "srvdp.inntekt.innsyn.password" to "itest",
-                "enhetsregisteret.url" to "https://brreg.no/enhetsregisteret/api/enheter/",
+                "enhetsregisteret.url" to "https://data.brreg.no/enhetsregisteret/api/enheter/",
                 "aktoerregisteret.url" to "http://mockserver:3050/aktoerregister/api/v1/identer?identgruppe=AktoerId",
                 "oppslag.url" to "https://localhost:8090/api",
                 "oidc.sts.issuerurl" to "http://localhost/",
@@ -32,7 +32,7 @@ private val localProperties = ConfigurationMap(
 private val devProperties = ConfigurationMap(
         mapOf(
                 "vault.mountpath" to "postgresql/preprod-fss/",
-                "enhetsregisteret.url" to "https://brreg.no/enhetsregisteret/api/enheter/",
+                "enhetsregisteret.url" to "https://data./brreg.no/enhetsregisteret/api/enheter/",
                 "aktoerregisteret.url" to "http://tjenester.nav.no/aktoerregister/api/v1/identer?identgruppe=AktoerId",
                 "oppslag.url" to "http://dagpenger-oppslag.default.svc.nais.local/api",
                 "oidc.sts.issuerurl" to "https://security-token-service-t4.nais.preprod.local/",
