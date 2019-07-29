@@ -66,6 +66,7 @@ val kotlinReflectVersion = "1.3.21"
 val log4j2LogstashLayoutFatjarVersion = "0.15"
 val mockkVersion = "1.9.3"
 val dagpengerEventsVersion = "2019.07.22-09.53.bc75154b4616"
+val testcontainersVersion = "1.11.4"
 
 dependencies {
     implementation(kotlin("stdlib"))
@@ -87,6 +88,7 @@ dependencies {
     implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
     implementation("org.apache.kafka:kafka-streams:$kafkaVersion")
     testImplementation("org.apache.kafka:kafka-streams-test-utils:$kafkaVersion")
+    testImplementation("org.testcontainers:testcontainers:$testcontainersVersion")
 
     implementation("com.github.navikt:dagpenger-streams:$dagpengerStreamsVersion")
     implementation("com.github.navikt:dagpenger-events:$dagpengerEventsVersion")

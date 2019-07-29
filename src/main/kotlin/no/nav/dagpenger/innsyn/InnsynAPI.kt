@@ -35,6 +35,7 @@ import mu.KotlinLogging
 import no.nav.dagpenger.events.moshiInstance
 import no.nav.dagpenger.innsyn.conversion.convertInntektDataIntoUserInformation
 import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
+import no.nav.dagpenger.innsyn.lookup.AktoerRegisterLookup
 import no.nav.dagpenger.innsyn.settings.Configuration
 import no.nav.dagpenger.innsyn.monitoring.HealthCheck
 import no.nav.dagpenger.innsyn.monitoring.HealthStatus
@@ -44,7 +45,6 @@ import no.nav.dagpenger.innsyn.lookup.InnsynProducer
 import no.nav.dagpenger.innsyn.lookup.InntektPond
 import no.nav.dagpenger.innsyn.lookup.KafkaInnsynProducer
 import no.nav.dagpenger.innsyn.lookup.KafkaInntektConsumer
-import no.nav.dagpenger.innsyn.lookup.getGjeldendeAktoerIDFromIDToken
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.lookup.producerConfig
 import no.nav.dagpenger.streams.KafkaCredential
@@ -90,7 +90,8 @@ fun main() {
                 packetStore = packetStore,
                 kafkaProducer = kafkaProducer,
                 jwkProvider = jwkProvider,
-                healthChecks = listOf(kafkaConsumer as HealthCheck, kafkaProducer as HealthCheck)
+                healthChecks = listOf(kafkaConsumer as HealthCheck, kafkaProducer as HealthCheck),
+                aktoerRegisterLookup = AktoerRegisterLookup()
         )
     }
 
@@ -107,7 +108,8 @@ fun Application.innsynAPI(
     packetStore: PacketStore,
     kafkaProducer: InnsynProducer,
     jwkProvider: JwkProvider,
-    healthChecks: List<HealthCheck>
+    healthChecks: List<HealthCheck>,
+    aktoerRegisterLookup: AktoerRegisterLookup
 ) {
 
     logger.debug("Installing jackson for content negotiation")
@@ -159,7 +161,7 @@ fun Application.innsynAPI(
                     logger.error("Received invalid request without ID_token cookie", call)
                     call.respond(HttpStatusCode.NotAcceptable, "Missing required cookies")
                 } else {
-                    val aktoerID = getGjeldendeAktoerIDFromIDToken(idToken, getSubject())
+                    val aktoerID = aktoerRegisterLookup.getGjeldendeAktoerIDFromIDToken(idToken, getSubject())
                     try {
                         mapRequestToBehov(aktoerID, beregningsdato).apply {
                             kafkaProducer.produceEvent(this)
