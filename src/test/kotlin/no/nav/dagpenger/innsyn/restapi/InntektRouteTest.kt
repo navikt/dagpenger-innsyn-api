@@ -5,6 +5,7 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
+import io.mockk.Called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
@@ -50,6 +51,35 @@ class InntektRouteTest {
 
         verifyAll {
             kafkaMock.produceEvent(any())
+        }
+    }
+
+    @Test
+    fun `504 response on timeout`() {
+        val kafkaMock = mockk<InnsynProducer>(relaxed = true)
+
+        val slot = slot<String>()
+
+        val storeMock = mockk<PacketStore>(relaxed = true).apply {
+            every { this@apply.isDone(capture(slot)) } returns false
+        }
+
+        val cookie = "ID_token=$token"
+
+        withTestApplication(MockApi(
+                kafkaProducer = kafkaMock,
+                packetStore = storeMock,
+                jwkProvider = jwtStub.stubbedJwkProvider())) {
+            handleRequest(HttpMethod.Get, config.application.applicationUrl) {
+                addHeader(HttpHeaders.Cookie, cookie)
+            }.apply {
+                assertEquals(HttpStatusCode.GatewayTimeout, response.status())
+                assertTrue(requestHandled)
+            }
+        }
+
+        verifyAll {
+            storeMock.get(slot.toString()) wasNot Called
         }
     }
 

@@ -30,6 +30,9 @@ import io.ktor.util.pipeline.PipelineContext
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import io.prometheus.client.hotspot.DefaultExports
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withTimeout
 import mu.KLogger
 import mu.KotlinLogging
 import no.nav.dagpenger.events.moshiInstance
@@ -52,15 +55,12 @@ import org.slf4j.event.Level
 import java.net.URL
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.locks.ReentrantLock
 
 private val logger: KLogger = KotlinLogging.logger {}
 
 private val config = Configuration()
 
-val lock = ReentrantLock()
-val condition = lock.newCondition()
-val APPLICATION_NAME = "dp-inntekt-innsyn-api"
+const val APPLICATION_NAME = "dp-inntekt-innsyn-api"
 
 fun main() {
 
@@ -70,7 +70,7 @@ fun main() {
             .rateLimited(10, 1, TimeUnit.MINUTES)
             .build()
 
-    val packetStore = HashMapPacketStore(condition)
+    val packetStore = HashMapPacketStore()
 
     val kafkaConsumer = KafkaInntektConsumer(config, InntektPond(packetStore)).also {
         it.start()
@@ -158,20 +158,21 @@ fun Application.innsynAPI(
                     call.respond(HttpStatusCode.NotAcceptable, "Missing required cookies")
                 } else {
                     val aktoerID = getGjeldendeAktoerIDFromIDToken(idToken, getSubject())
-//                    try {
-//                        mapRequestToBehov(aktoerID, beregningsdato).apply {
-//                            kafkaProducer.produceEvent(this)
-//                        }.also {
-//                        while (!(packetStore.isDone(it.behovId))) {
-//                            lock.withLock {
-//                                condition.await(2000, TimeUnit.MILLISECONDS)
-//                            }
-//                        }
-//                    }
-//                    } catch (e: TimeoutException) {
-//                        logger.error("Timed out waiting for kafka", e)
-//                    }
-                    call.respond(HttpStatusCode.OK, moshiInstance.adapter(UserInformation::class.java).toJson(convertInntektDataIntoUserInformation(testDataSpesifisertInntekt)))
+                    try {
+                        mapRequestToBehov(aktoerID, beregningsdato).apply {
+                            kafkaProducer.produceEvent(this)
+                        }.also {
+                            withTimeout(30000) {
+                                while (!(packetStore.isDone(it.behovId))) {
+                                    delay(2000)
+                                }
+                            }
+                            call.respond(HttpStatusCode.OK, moshiInstance.adapter(UserInformation::class.java).toJson(convertInntektDataIntoUserInformation(testDataSpesifisertInntekt)))
+                        }
+                    } catch (e: TimeoutCancellationException) {
+                        logger.error("Timed out waiting for kafka", e)
+                        call.respond(HttpStatusCode.GatewayTimeout, moshiInstance.adapter(UserInformation::class.java).toJson(convertInntektDataIntoUserInformation(testDataSpesifisertInntekt)))
+                    }
                 }
             }
         }
