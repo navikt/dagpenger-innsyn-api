@@ -41,6 +41,11 @@ class InntektRouteTest {
         env.withExposedService("mockserver", 3050)
         println(env.getServiceHost("mockserver", 3050))
 
+        val url = "http://" + env.getServiceHost("mockserver", 3050) + ":3050/aktoerregister/api/v1/identer"
+
+        println(url)
+        println(khttp.get(url).content)
+
         val kafkaMock = mockk<InnsynProducer>(relaxed = true)
 
         val slot = slot<String>()
@@ -55,7 +60,7 @@ class InntektRouteTest {
                 kafkaProducer = kafkaMock,
                 packetStore = storeMock,
                 jwkProvider = jwtStub.stubbedJwkProvider(),
-                aktoerRegisterLookup = AktoerRegisterLookup("http://" + env.getServiceHost("mockserver", 3050) + ":3050/aktoerregister/api/v1/identer"))
+                aktoerRegisterLookup = AktoerRegisterLookup(url = url))
         ) {
             handleRequest(HttpMethod.Get, config.application.applicationUrl) {
                 addHeader(HttpHeaders.Cookie, cookie)
@@ -75,6 +80,7 @@ class InntektRouteTest {
 
         env.withExposedService("mockserver", 3050)
         println(env.getServiceHost("mockserver", 3050))
+        val url = "http://" + env.getServiceHost("mockserver", 3050) + ":3050/aktoerregister/api/v1/identer"
 
         val kafkaMock = mockk<InnsynProducer>(relaxed = true)
 
@@ -90,7 +96,7 @@ class InntektRouteTest {
                 kafkaProducer = kafkaMock,
                 packetStore = storeMock,
                 jwkProvider = jwtStub.stubbedJwkProvider(),
-                aktoerRegisterLookup = AktoerRegisterLookup("http://" + env.getServiceHost("mockserver", 3050) + ":3050/aktoerregister/api/v1/identer"))
+                aktoerRegisterLookup = AktoerRegisterLookup(url = url))
         ) {
             handleRequest(HttpMethod.Get, config.application.applicationUrl) {
                 addHeader(HttpHeaders.Cookie, cookie)
