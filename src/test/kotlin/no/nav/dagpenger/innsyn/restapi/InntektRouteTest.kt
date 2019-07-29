@@ -45,6 +45,7 @@ class InntektRouteTest {
 
         println(url)
         println(khttp.get(url).content)
+        println(config.application.profile.name)
 
         val kafkaMock = mockk<InnsynProducer>(relaxed = true)
 
@@ -80,6 +81,7 @@ class InntektRouteTest {
 
         env.withExposedService("mockserver", 3050)
         println(env.getServiceHost("mockserver", 3050))
+        println(config.application.profile.name)
         val url = "http://" + env.getServiceHost("mockserver", 3050) + ":3050/aktoerregister/api/v1/identer"
 
         val kafkaMock = mockk<InnsynProducer>(relaxed = true)
