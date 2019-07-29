@@ -2,7 +2,6 @@ package no.nav.dagpenger.innsyn.processing
 
 import no.nav.dagpenger.innsyn.conversion.groupYearMonthIntoPeriods
 import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
-import no.nav.dagpenger.innsyn.parsing.getJSONParsed
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.time.YearMonth
@@ -11,7 +10,7 @@ import kotlin.test.assertEquals
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ProcessingDataObjectTests {
 
-    //private val testDataBob = getJSONParsed("Bob")
+    // private val testDataBob = getJSONParsed("Bob")
 
     private val testYearMonths = listOf(YearMonth.of(2001, 1), YearMonth.of(2001, 2), YearMonth.of(2001, 3), YearMonth.of(2001, 4), YearMonth.of(2001, 5),
             YearMonth.of(2001, 9), YearMonth.of(2001, 10), YearMonth.of(2001, 11), YearMonth.of(2001, 12))

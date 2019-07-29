@@ -27,10 +27,8 @@ class JSONParseTestClass {
         val sepInJSON = jsonAdapter.toJson(SEP2018)
         assertEquals(SEP2018, jsonAdapter.fromJson(sepInJSON))
 
-
         val marInJSON = jsonAdapter.toJson(MAR2019)
         assertEquals(MAR2019, jsonAdapter.fromJson(marInJSON))
-
 
         val futureInJSON = jsonAdapter.toJson(FUTUREMONTH)
         assertEquals(FUTUREMONTH, jsonAdapter.fromJson(futureInJSON))
@@ -47,6 +45,5 @@ class JSONParseTestClass {
 
         val largeInJSON = jsonAdapter.toJson(WAGELARGE3)
         assertEquals(WAGELARGE3, jsonAdapter.fromJson(largeInJSON))
-
     }
 }
