@@ -2,58 +2,37 @@ package no.nav.dagpenger.innsyn
 
 import com.auth0.jwk.JwkProvider
 import com.auth0.jwk.JwkProviderBuilder
-import com.auth0.jwt.exceptions.JWTDecodeException
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.Application
-import io.ktor.application.ApplicationCall
-import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.auth.Authentication
-import io.ktor.auth.authenticate
-import io.ktor.auth.authentication
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.auth.jwt.jwt
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
 import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.jackson.jackson
 import io.ktor.request.path
-import io.ktor.response.respond
-import io.ktor.response.respondTextWriter
-import io.ktor.routing.get
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import io.ktor.util.pipeline.PipelineContext
-import io.prometheus.client.CollectorRegistry
-import io.prometheus.client.exporter.common.TextFormat
-import io.prometheus.client.hotspot.DefaultExports
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withTimeout
 import mu.KLogger
 import mu.KotlinLogging
-import no.nav.dagpenger.events.moshiInstance
-import no.nav.dagpenger.innsyn.conversion.convertInntektDataIntoUserInformation
-import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
 import no.nav.dagpenger.innsyn.lookup.AktoerRegisterLookup
-import no.nav.dagpenger.innsyn.settings.Configuration
-import no.nav.dagpenger.innsyn.monitoring.HealthCheck
-import no.nav.dagpenger.innsyn.monitoring.HealthStatus
-import no.nav.dagpenger.innsyn.lookup.objects.Behov
-import no.nav.dagpenger.innsyn.lookup.objects.HashMapPacketStore
 import no.nav.dagpenger.innsyn.lookup.InnsynProducer
 import no.nav.dagpenger.innsyn.lookup.InntektPond
 import no.nav.dagpenger.innsyn.lookup.KafkaInnsynProducer
 import no.nav.dagpenger.innsyn.lookup.KafkaInntektConsumer
+import no.nav.dagpenger.innsyn.lookup.objects.HashMapPacketStore
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.lookup.producerConfig
+import no.nav.dagpenger.innsyn.monitoring.HealthCheck
+import no.nav.dagpenger.innsyn.routing.behov
+import no.nav.dagpenger.innsyn.routing.naischecks
+import no.nav.dagpenger.innsyn.settings.Configuration
 import no.nav.dagpenger.streams.KafkaCredential
 import org.slf4j.event.Level
 import java.net.URL
-import java.time.LocalDate
 import java.util.concurrent.TimeUnit
 
 private val logger: KLogger = KotlinLogging.logger {}
@@ -151,70 +130,7 @@ fun Application.innsynAPI(
     }
 
     routing {
-        authenticate("jwt") {
-            get(config.application.applicationUrl) {
-                val idToken = call.request.cookies["ID_token"]
-                val beregningsdato = LocalDate.now()
-                if (idToken == null) {
-                    logger.error("Received invalid request without ID_token cookie", call)
-                    call.respond(HttpStatusCode.NotAcceptable, "Missing required cookies")
-                } else {
-                    val aktoerID = aktoerRegisterLookup.getGjeldendeAktoerIDFromIDToken(idToken, getSubject())
-                    try {
-                        mapRequestToBehov(aktoerID, beregningsdato).apply {
-                            kafkaProducer.produceEvent(this)
-                        }.also {
-                            withTimeout(30000) {
-                                while (!(packetStore.isDone(it.behovId))) {
-                                    delay(500)
-                                }
-                            }
-                            call.respond(HttpStatusCode.OK, moshiInstance.adapter(UserInformation::class.java).toJson(convertInntektDataIntoUserInformation(testDataSpesifisertInntekt)))
-                        }
-                    } catch (e: TimeoutCancellationException) {
-                        logger.error("Timed out waiting for kafka", e)
-                        call.respond(HttpStatusCode.GatewayTimeout, moshiInstance.adapter(UserInformation::class.java).toJson(convertInntektDataIntoUserInformation(testDataSpesifisertInntekt)))
-                    }
-                }
-            }
-        }
-
-        get("/isAlive") {
-            if (healthChecks.all { it.status() == HealthStatus.UP }) {
-                call.respond(HttpStatusCode.OK, "OK")
-            } else {
-                call.response.status(HttpStatusCode.ServiceUnavailable)
-            }
-        }
-
-        get("/isReady") {
-            call.respond(HttpStatusCode.OK, "OK")
-        }
-
-        get("/metrics") {
-            val collectorRegistry = CollectorRegistry.defaultRegistry
-            DefaultExports.initialize()
-
-            val names = call.request.queryParameters.getAll("name[]")?.toSet() ?: setOf()
-            call.respondTextWriter(ContentType.parse(TextFormat.CONTENT_TYPE_004)) {
-                TextFormat.write004(this, collectorRegistry.filteredMetricFamilySamples(names))
-            }
-        }
+        behov(packetStore, kafkaProducer, aktoerRegisterLookup)
+        naischecks(healthChecks)
     }
 }
-
-private fun PipelineContext<Unit, ApplicationCall>.getSubject(): String {
-    return runCatching {
-        call.authentication.principal?.let {
-            (it as JWTPrincipal).payload.subject
-        } ?: throw JWTDecodeException("Unable to get subject from JWT")
-    }.getOrElse {
-        logger.error(it) { "Unable to get subject from authentication" }
-        return@getOrElse "UNKNOWN"
-    }
-}
-
-internal fun mapRequestToBehov(aktorId: String, beregningsDato: LocalDate): Behov = Behov(
-        aktørId = aktorId,
-        beregningsDato = beregningsDato
-)
