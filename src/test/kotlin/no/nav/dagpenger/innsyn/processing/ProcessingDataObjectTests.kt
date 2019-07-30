@@ -9,6 +9,9 @@ import no.nav.dagpenger.innsyn.conversion.getEmployerSummaries
 import no.nav.dagpenger.innsyn.conversion.getMonthsIncomeInformation
 import no.nav.dagpenger.innsyn.conversion.groupYearMonthIntoPeriods
 import no.nav.dagpenger.innsyn.conversion.isSuccessiveMonth
+import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
+import no.nav.dagpenger.innsyn.expectedEmployerSummaries
+import no.nav.dagpenger.innsyn.expectedMonthsIncomeInformation
 import no.nav.dagpenger.innsyn.testDataSpesifisertInntekt
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -31,6 +34,17 @@ class ProcessingDataObjectTests {
             YearMonth.of(1999, 12), YearMonth.of(2000, 1))
 
     private val empty = SpesifisertInntekt(InntektId(ULID().nextULID()), listOf(), Aktør(AktørType.AKTOER_ID, ""), false, LocalDateTime.now())
+
+    private val expectedResultTestMonths = listOf(
+            EmploymentPeriode(YearMonth.of(2001, 1), YearMonth.of(2001, 5)),
+            EmploymentPeriode(YearMonth.of(2001, 9), YearMonth.of(2001, 12)))
+
+    private val expectedResultTestMonthsEdge = listOf(
+            EmploymentPeriode(YearMonth.of(1999, 12), YearMonth.of(2000, 1)),
+            EmploymentPeriode(YearMonth.of(2000, 10), YearMonth.of(2000, 10)),
+            EmploymentPeriode(YearMonth.of(2000, 12), YearMonth.of(2001, 1)),
+            EmploymentPeriode(YearMonth.of(2001, 3), YearMonth.of(2001, 4)),
+            EmploymentPeriode(YearMonth.of(2001, 12), YearMonth.of(2002, 1)))
 
     @Test
     fun `Grouping works`() {

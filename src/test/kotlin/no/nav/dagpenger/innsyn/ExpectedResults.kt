@@ -1,28 +1,10 @@
-package no.nav.dagpenger.innsyn.processing
+package no.nav.dagpenger.innsyn
 
-import no.nav.dagpenger.innsyn.AUG2018
-import no.nav.dagpenger.innsyn.MAR2019
-import no.nav.dagpenger.innsyn.SEP2018
 import no.nav.dagpenger.innsyn.conversion.objects.Employer
 import no.nav.dagpenger.innsyn.conversion.objects.EmployerSummary
 import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
 import no.nav.dagpenger.innsyn.conversion.objects.Income
 import no.nav.dagpenger.innsyn.conversion.objects.MonthIncomeInformation
-import no.nav.dagpenger.innsyn.testDataVirksomhet1
-import no.nav.dagpenger.innsyn.testDataVirksomhet2
-import no.nav.dagpenger.innsyn.testDataVirksomhet3
-import java.time.YearMonth
-
-val expectedResultTestMonths = listOf(
-        EmploymentPeriode(YearMonth.of(2001, 1), YearMonth.of(2001, 5)),
-        EmploymentPeriode(YearMonth.of(2001, 9), YearMonth.of(2001, 12)))
-
-val expectedResultTestMonthsEdge = listOf(
-        EmploymentPeriode(YearMonth.of(1999, 12), YearMonth.of(2000, 1)),
-        EmploymentPeriode(YearMonth.of(2000, 10), YearMonth.of(2000, 10)),
-        EmploymentPeriode(YearMonth.of(2000, 12), YearMonth.of(2001, 1)),
-        EmploymentPeriode(YearMonth.of(2001, 3), YearMonth.of(2001, 4)),
-        EmploymentPeriode(YearMonth.of(2001, 12), YearMonth.of(2002, 1)))
 
 val expectedEmployerSummaries = listOf(
         EmployerSummary(name = testDataVirksomhet1.identifikator, orgID = testDataVirksomhet1.identifikator, income = 2983.65, employmentPeriodes = listOf(
