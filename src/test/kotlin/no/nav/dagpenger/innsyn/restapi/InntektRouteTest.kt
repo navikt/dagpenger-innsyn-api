@@ -42,14 +42,19 @@ class InntektRouteTest {
     private val token = jwtStub.createTokenFor(config.application.oidcUser)
 
     init {
+        println("Before Exposed Service")
         env.withExposedService("mockserver", 3050, Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(60)))
+        println("Service exposed")
         env.start()
+        println("Service started")
 
 
         val url = "http://" +
                 env.getServiceHost("mockserver", 3050) +
                 env.getServicePort("mockserver", 3050) +
                 "/aktoerregister/api/v1/identer"
+
+        println(url)
 
         println(env.getServiceHost("mockserver", 3050))
         println(env.getServicePort("mockserver", 3050))
