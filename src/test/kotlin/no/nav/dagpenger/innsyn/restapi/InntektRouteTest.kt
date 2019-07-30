@@ -18,10 +18,8 @@ import no.nav.dagpenger.innsyn.settings.Configuration
 import org.junit.ClassRule
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import org.testcontainers.containers.DockerComposeContainer
-import org.testcontainers.containers.wait.strategy.Wait
-import java.io.File
-import java.time.Duration
+import org.testcontainers.containers.GenericContainer
+import org.testcontainers.images.builder.ImageFromDockerfile
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -29,10 +27,10 @@ import kotlin.test.assertTrue
 class InntektRouteTest {
 
     companion object {
-        class KDockerComposeContainer(path: File) : DockerComposeContainer<KDockerComposeContainer>(path)
+        class KGenericContainer() : GenericContainer<KGenericContainer>(ImageFromDockerfile().withDockerfilePath("aktoer-mock/Dockerfile.ci"))
 
         @ClassRule
-        val env = KDockerComposeContainer(File(".${File.separator}docker-compose.yml"))
+        val aktoerMockContainer = Companion.KGenericContainer()
     }
 
     private val aktoerRegister: AktoerRegisterLookup
@@ -43,21 +41,20 @@ class InntektRouteTest {
 
     init {
         println("Before Exposed Service")
-        env.withExposedService("mockserver", 3050, Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(60)))
+        aktoerMockContainer.withExposedPorts(3050, 3050)
         println("Service exposed")
-        env.start()
+        aktoerMockContainer.start()
         println("Service started")
 
-
         val url = "http://" +
-                env.getServiceHost("mockserver", 3050) +
-                env.getServicePort("mockserver", 3050) +
+                aktoerMockContainer.containerIpAddress +
+                aktoerMockContainer.getMappedPort(3050) +
                 "/aktoerregister/api/v1/identer"
 
         println(url)
 
-        println(env.getServiceHost("mockserver", 3050))
-        println(env.getServicePort("mockserver", 3050))
+        println(aktoerMockContainer.containerIpAddress)
+        println(aktoerMockContainer.getMappedPort(3050))
 
         this.aktoerRegister = AktoerRegisterLookup(url = url)
     }
@@ -96,7 +93,6 @@ class InntektRouteTest {
 
     @Test
     fun `504 response on timeout`() {
-
 
         val kafkaMock = mockk<InnsynProducer>(relaxed = true)
 
