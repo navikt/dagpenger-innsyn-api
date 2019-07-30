@@ -21,6 +21,10 @@ pipeline {
           ./gradlew assemble
         """
 
+        sh label: 'Install aktoer-mock', script: """
+                  cd aktoer-mock
+                  npm ci
+                """
         // Should run a set of tests like: unit, functional, component,
         // coverage, contract, lint, mutation.
         sh label: 'Test code', script: """

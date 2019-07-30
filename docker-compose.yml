@@ -1,7 +1,9 @@
 version: '2'
 services:
   mockserver:
-    build: ./aktoer-mock
+    build:
+      context: ./aktoer-mock
+      dockerfile: Dockerfile.ci
     ports:
       - 3050:3050
     environment:
