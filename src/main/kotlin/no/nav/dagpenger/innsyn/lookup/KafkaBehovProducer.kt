@@ -66,11 +66,11 @@ internal fun producerConfig(
     }
 }
 
-interface InnsynProducer {
+interface BehovProducer {
     fun produceEvent(behov: Behov): Future<RecordMetadata>
 }
 
-internal class KafkaInnsynProducer(kafkaProps: Properties) : InnsynProducer, HealthCheck {
+internal class KafkaBehovProducer(kafkaProps: Properties) : BehovProducer, HealthCheck {
 
     private val kafkaProducer = KafkaProducer<String, Packet>(kafkaProps, Topics.DAGPENGER_BEHOV_PACKET_EVENT.keySerde.serializer(), Topics.DAGPENGER_BEHOV_PACKET_EVENT.valueSerde.serializer())
 

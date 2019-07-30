@@ -12,7 +12,7 @@ import io.mockk.slot
 import io.mockk.verifyAll
 import no.nav.dagpenger.innsyn.JwtStub
 import no.nav.dagpenger.innsyn.lookup.AktoerRegisterLookup
-import no.nav.dagpenger.innsyn.lookup.InnsynProducer
+import no.nav.dagpenger.innsyn.lookup.BehovProducer
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.settings.Configuration
 import org.junit.ClassRule
@@ -43,7 +43,7 @@ class InntektRouteTest {
 
         val url = "http://" + env.getServiceHost("mockserver", 3050) + ":3050/aktoerregister/api/v1/identer"
 
-        val kafkaMock = mockk<InnsynProducer>(relaxed = true)
+        val kafkaMock = mockk<BehovProducer>(relaxed = true)
 
         val slot = slot<String>()
 
@@ -79,7 +79,7 @@ class InntektRouteTest {
 
         val url = "http://" + env.getServiceHost("mockserver", 3050) + ":3050/aktoerregister/api/v1/identer"
 
-        val kafkaMock = mockk<InnsynProducer>(relaxed = true)
+        val kafkaMock = mockk<BehovProducer>(relaxed = true)
 
         val slot = slot<String>()
 

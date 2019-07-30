@@ -20,7 +20,7 @@ import no.nav.dagpenger.events.moshiInstance
 import no.nav.dagpenger.innsyn.conversion.convertInntektDataIntoUserInformation
 import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
 import no.nav.dagpenger.innsyn.lookup.AktoerRegisterLookup
-import no.nav.dagpenger.innsyn.lookup.InnsynProducer
+import no.nav.dagpenger.innsyn.lookup.BehovProducer
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.settings.Configuration
@@ -32,7 +32,7 @@ private val config = Configuration()
 
 internal fun Routing.inntekt(
     packetStore: PacketStore,
-    kafkaProducer: InnsynProducer,
+    kafkaProducer: BehovProducer,
     aktoerRegisterLookup: AktoerRegisterLookup
 ) {
     authenticate("jwt") {
