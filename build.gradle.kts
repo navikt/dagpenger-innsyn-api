@@ -56,7 +56,7 @@ val moshiVersion = "1.8.0"
 val ktorMoshiVersion = "1.0.1"
 val orgJsonVersion = "20180813"
 val kafkaVersion = "2.0.1"
-val testcontainers_version = "1.11.2"
+val testcontainerKafkaVersion = "1.11.4"
 val konfigVersion = "1.6.10.0"
 val bekkopenVersion = "0.8.2"
 val dagpengerStreamsVersion = "2019.06.26-21.57.bdd7e296c753"
@@ -110,7 +110,7 @@ dependencies {
     testImplementation(kotlin("test"))
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:$jupiterVersion")
-    testImplementation("org.testcontainers:kafka:$testcontainers_version")
+    testImplementation("org.testcontainers:kafka:$testcontainerKafkaVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$jupiterVersion")
     testImplementation("com.github.tomakehurst:wiremock-standalone:2.21.0")

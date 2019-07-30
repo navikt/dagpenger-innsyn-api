@@ -5,6 +5,7 @@ pipeline {
     APPLICATION_NAME = "${DEPLOYMENT.commonLabels.app}"
     ZONE = "${DEPLOYMENT.commonAnnotations.zone}"
     VERSION = sh(label: 'Get git sha1 as version', script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+    DOCKER_BUILDKIT=1
   }
 
   stages {
@@ -20,6 +21,10 @@ pipeline {
           ./gradlew assemble
         """
 
+        sh label: 'Install aktoer-mock', script: """
+                  cd aktoer-mock
+                  npm ci
+                """
         // Should run a set of tests like: unit, functional, component,
         // coverage, contract, lint, mutation.
         sh label: 'Test code', script: """
