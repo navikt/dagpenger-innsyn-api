@@ -30,7 +30,7 @@ import java.time.LocalDate
 private val logger: KLogger = KotlinLogging.logger {}
 private val config = Configuration()
 
-internal fun Routing.behov(
+internal fun Routing.inntekt(
     packetStore: PacketStore,
     kafkaProducer: InnsynProducer,
     aktoerRegisterLookup: AktoerRegisterLookup

@@ -27,7 +27,7 @@ import no.nav.dagpenger.innsyn.lookup.objects.HashMapPacketStore
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.lookup.producerConfig
 import no.nav.dagpenger.innsyn.monitoring.HealthCheck
-import no.nav.dagpenger.innsyn.routing.behov
+import no.nav.dagpenger.innsyn.routing.inntekt
 import no.nav.dagpenger.innsyn.routing.naischecks
 import no.nav.dagpenger.innsyn.settings.Configuration
 import no.nav.dagpenger.streams.KafkaCredential
@@ -130,7 +130,7 @@ fun Application.innsynAPI(
     }
 
     routing {
-        behov(packetStore, kafkaProducer, aktoerRegisterLookup)
+        inntekt(packetStore, kafkaProducer, aktoerRegisterLookup)
         naischecks(healthChecks)
     }
 }
