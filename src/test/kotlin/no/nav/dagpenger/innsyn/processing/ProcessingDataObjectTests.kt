@@ -1,17 +1,27 @@
 package no.nav.dagpenger.innsyn.processing
 
+import de.huxhorn.sulky.ulid.ULID
+import no.nav.dagpenger.events.inntekt.v1.Aktør
+import no.nav.dagpenger.events.inntekt.v1.AktørType
+import no.nav.dagpenger.events.inntekt.v1.InntektId
+import no.nav.dagpenger.events.inntekt.v1.SpesifisertInntekt
+import no.nav.dagpenger.innsyn.conversion.getEmployerSummaries
+import no.nav.dagpenger.innsyn.conversion.getMonthsIncomeInformation
 import no.nav.dagpenger.innsyn.conversion.groupYearMonthIntoPeriods
-import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
+import no.nav.dagpenger.innsyn.conversion.isSuccessiveMonth
+import no.nav.dagpenger.innsyn.testDataSpesifisertInntekt
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
+import java.time.LocalDateTime
 import java.time.YearMonth
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class ProcessingDataObjectTests {
 
-    // private val testDataBob = getJSONParsed("Bob")
-
+    // TODO: Move to TestData.kt
     private val testYearMonths = listOf(YearMonth.of(2001, 1), YearMonth.of(2001, 2), YearMonth.of(2001, 3), YearMonth.of(2001, 4), YearMonth.of(2001, 5),
             YearMonth.of(2001, 9), YearMonth.of(2001, 10), YearMonth.of(2001, 11), YearMonth.of(2001, 12))
     private val testYearMonthsEdge = listOf(YearMonth.of(2000, 10),
@@ -20,41 +30,45 @@ class ProcessingDataObjectTests {
             YearMonth.of(2001, 12), YearMonth.of(2002, 1),
             YearMonth.of(1999, 12), YearMonth.of(2000, 1))
 
-    private val expectedResultTestMonths = listOf(
-            EmploymentPeriode(YearMonth.of(2001, 1), YearMonth.of(2001, 5)),
-            EmploymentPeriode(YearMonth.of(2001, 9), YearMonth.of(2001, 12)))
-    private val expectedResultTestMonthsEdge = listOf(
-            EmploymentPeriode(YearMonth.of(1999, 12), YearMonth.of(2000, 1)),
-            EmploymentPeriode(YearMonth.of(2000, 10), YearMonth.of(2000, 10)),
-            EmploymentPeriode(YearMonth.of(2000, 12), YearMonth.of(2001, 1)),
-            EmploymentPeriode(YearMonth.of(2001, 3), YearMonth.of(2001, 4)),
-            EmploymentPeriode(YearMonth.of(2001, 12), YearMonth.of(2002, 1)))
-
-    private val expectedPeriodsGabriel = "[ArbeidsgiverOgPeriode(arbeidsgiver=222222, perioder=[EmploymentPeriode(startDateYearMonth=2017-09, endDateYearMonth=2017-09), EmploymentPeriode(startDateYearMonth=2017-12, endDateYearMonth=2017-12)]), ArbeidsgiverOgPeriode(arbeidsgiver=2222221, perioder=[EmploymentPeriode(startDateYearMonth=2017-09, endDateYearMonth=2017-09)]), ArbeidsgiverOgPeriode(arbeidsgiver=55555, perioder=[EmploymentPeriode(startDateYearMonth=2017-10, endDateYearMonth=2017-10)]), ArbeidsgiverOgPeriode(arbeidsgiver=666666, perioder=[EmploymentPeriode(startDateYearMonth=2017-10, endDateYearMonth=2017-10)]), ArbeidsgiverOgPeriode(arbeidsgiver=11111, perioder=[EmploymentPeriode(startDateYearMonth=2017-11, endDateYearMonth=2017-12)])]" // TODO: Fix this nonsense
+    private val empty = SpesifisertInntekt(InntektId(ULID().nextULID()), listOf(), Aktør(AktørType.AKTOER_ID, ""), false, LocalDateTime.now())
 
     @Test
-    fun allInntekt36LastMonths() {
-    }
-
-    @Test
-    fun getListOfArbeidsgiverTest() {
-    }
-
-    @Test
-    fun getListOfInntektForEachArbeidsgiverTest() {
-    }
-
-    @Test
-    fun getTotalListOfInntektForEachArbeidsgiverTest() {
-    }
-
-    @Test
-    fun checkGroupingWorks() {
+    fun `Grouping works`() {
         assertEquals(expectedResultTestMonths, groupYearMonthIntoPeriods(testYearMonths))
     }
 
     @Test
-    fun checkGroupingWorksEdgeCase() {
+    fun `Grouping works for edge case`() {
         assertEquals(expectedResultTestMonthsEdge, groupYearMonthIntoPeriods(testYearMonthsEdge))
+    }
+
+    @Test
+    fun `2019-06 and 2018-07 are not successive months`() {
+        assertFalse(isSuccessiveMonth(YearMonth.of(2019, 6), YearMonth.of(2018, 7)))
+    }
+
+    @Test
+    fun `2019-06 and 2019-07 are successive months`() {
+        assertTrue(isSuccessiveMonth(YearMonth.of(2019, 6), YearMonth.of(2019, 7)))
+    }
+
+    @Test
+    fun `Get correct employerSummaries`() {
+        assertEquals(expectedEmployerSummaries, getEmployerSummaries(testDataSpesifisertInntekt))
+    }
+
+    @Test
+    fun `No månedsinntekter returns empty employerSummaries`() {
+        assertEquals(listOf(), getEmployerSummaries(empty))
+    }
+
+    @Test
+    fun `Get correct monthsIncomeInformation`() {
+        assertEquals(expectedMonthsIncomeInformation, getMonthsIncomeInformation(testDataSpesifisertInntekt))
+    }
+
+    @Test
+    fun `No månedsinntekter returns empty monthsIncomeInformation`() {
+        assertEquals(listOf(), getMonthsIncomeInformation(empty))
     }
 }
