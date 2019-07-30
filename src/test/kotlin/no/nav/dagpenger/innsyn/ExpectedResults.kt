@@ -5,6 +5,7 @@ import no.nav.dagpenger.innsyn.conversion.objects.EmployerSummary
 import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
 import no.nav.dagpenger.innsyn.conversion.objects.Income
 import no.nav.dagpenger.innsyn.conversion.objects.MonthIncomeInformation
+import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
 
 val expectedEmployerSummaries = listOf(
         EmployerSummary(name = testDataVirksomhet1.identifikator, orgID = testDataVirksomhet1.identifikator, income = 2983.65, employmentPeriodes = listOf(
@@ -33,3 +34,11 @@ val expectedMonthsIncomeInformation = listOf(
             Employer(name = testDataVirksomhet2.identifikator, orgID = testDataVirksomhet2.identifikator, incomes = listOf(Income(income = 32210.0, beskrivelse = "Fastlønn"))),
             Employer(name = testDataVirksomhet3.identifikator, orgID = testDataVirksomhet3.identifikator, incomes = listOf(Income(income = 48000.4, beskrivelse = "Fastlønn")))),
                 totalIncomeMonth = 81210.39))
+
+val expectedFinalResult = UserInformation(
+        personnummer = testDataUserAktoer.identifikator,
+        totalIncome36 = 202912.0,
+        totalIncome12 = 202912.0,
+        employerSummaries = expectedEmployerSummaries,
+        monthsIncomeInformation = expectedMonthsIncomeInformation
+)
