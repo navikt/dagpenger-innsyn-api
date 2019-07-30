@@ -17,11 +17,15 @@ import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.settings.Configuration
 import org.junit.ClassRule
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import org.testcontainers.containers.DockerComposeContainer
+import org.testcontainers.containers.wait.strategy.Wait
 import java.io.File
+import java.time.Duration
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class InntektRouteTest {
 
     companion object {
@@ -31,17 +35,26 @@ class InntektRouteTest {
         val env = KDockerComposeContainer(File(".${File.separator}docker-compose.yml"))
     }
 
+    private val aktoerRegister: AktoerRegisterLookup
     private val config = Configuration()
-
     private val jwtStub = JwtStub(config.application.jwksIssuer)
+
     private val token = jwtStub.createTokenFor(config.application.oidcUser)
+
+    init {
+        env.withExposedService("mockserver", 3050, Wait.forListeningPort().withStartupTimeout(Duration.ofSeconds(30)))
+        env.start()
+
+        val url = "http://" +
+                env.getServiceHost("mockserver", 3050) +
+                env.getServicePort("mockserver", 3050) +
+                "/aktoerregister/api/v1/identer"
+
+        this.aktoerRegister = AktoerRegisterLookup(url = url)
+    }
 
     @Test
     fun `Valid request to inntekt endpoint should succeed and produce an event to Kafka`() {
-        env.withExposedService("mockserver", 3050)
-        env.start()
-
-        val url = "http://" + env.getServiceHost("mockserver", 3050) + ":3050/aktoerregister/api/v1/identer"
 
         val kafkaMock = mockk<InnsynProducer>(relaxed = true)
 
@@ -57,7 +70,7 @@ class InntektRouteTest {
                 kafkaProducer = kafkaMock,
                 packetStore = storeMock,
                 jwkProvider = jwtStub.stubbedJwkProvider(),
-                aktoerRegisterLookup = AktoerRegisterLookup(url = url))
+                aktoerRegisterLookup = aktoerRegister)
         ) {
             handleRequest(HttpMethod.Get, config.application.applicationUrl) {
                 addHeader(HttpHeaders.Cookie, cookie)
@@ -74,10 +87,7 @@ class InntektRouteTest {
 
     @Test
     fun `504 response on timeout`() {
-        env.withExposedService("mockserver", 3050)
-        env.start()
 
-        val url = "http://" + env.getServiceHost("mockserver", 3050) + ":3050/aktoerregister/api/v1/identer"
 
         val kafkaMock = mockk<InnsynProducer>(relaxed = true)
 
@@ -93,7 +103,7 @@ class InntektRouteTest {
                 kafkaProducer = kafkaMock,
                 packetStore = storeMock,
                 jwkProvider = jwtStub.stubbedJwkProvider(),
-                aktoerRegisterLookup = AktoerRegisterLookup(url = url))
+                aktoerRegisterLookup = aktoerRegister)
         ) {
             handleRequest(HttpMethod.Get, config.application.applicationUrl) {
                 addHeader(HttpHeaders.Cookie, cookie)
