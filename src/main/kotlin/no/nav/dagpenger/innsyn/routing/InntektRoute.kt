@@ -19,8 +19,8 @@ import mu.KotlinLogging
 import no.nav.dagpenger.events.moshiInstance
 import no.nav.dagpenger.innsyn.conversion.convertInntektDataIntoUserInformation
 import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
+import no.nav.dagpenger.innsyn.lookup.AktoerRegisterLookup
 import no.nav.dagpenger.innsyn.lookup.InnsynProducer
-import no.nav.dagpenger.innsyn.lookup.getGjeldendeAktoerIDFromIDToken
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.settings.Configuration
@@ -30,7 +30,11 @@ import java.time.LocalDate
 private val logger: KLogger = KotlinLogging.logger {}
 private val config = Configuration()
 
-internal fun Routing.behov(packetStore: PacketStore, kafkaProducer: InnsynProducer) {
+internal fun Routing.behov(
+    packetStore: PacketStore,
+    kafkaProducer: InnsynProducer,
+    aktoerRegisterLookup: AktoerRegisterLookup
+) {
     authenticate("jwt") {
         get(config.application.applicationUrl) {
             val idToken = call.request.cookies["ID_token"]
@@ -39,14 +43,14 @@ internal fun Routing.behov(packetStore: PacketStore, kafkaProducer: InnsynProduc
                 logger.error("Received invalid request without ID_token cookie", call)
                 call.respond(HttpStatusCode.NotAcceptable, "Missing required cookies")
             } else {
-                val aktoerID = getGjeldendeAktoerIDFromIDToken(idToken, getSubject())
+                val aktoerID = aktoerRegisterLookup.getGjeldendeAktoerIDFromIDToken(idToken, getSubject())
                 try {
                     mapRequestToBehov(aktoerID, beregningsdato).apply {
                         kafkaProducer.produceEvent(this)
                     }.also {
                         withTimeout(30000) {
                             while (!(packetStore.isDone(it.behovId))) {
-                                delay(2000)
+                                delay(500)
                             }
                         }
                         call.respond(HttpStatusCode.OK, moshiInstance.adapter(UserInformation::class.java).toJson(convertInntektDataIntoUserInformation(testDataSpesifisertInntekt)))

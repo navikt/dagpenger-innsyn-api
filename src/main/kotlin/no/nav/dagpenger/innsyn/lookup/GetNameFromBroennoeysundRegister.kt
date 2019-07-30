@@ -4,10 +4,9 @@ import mu.KotlinLogging
 import no.nav.dagpenger.innsyn.settings.Configuration
 
 private val logger = KotlinLogging.logger { }
-private val config = Configuration()
 private val cache: HashMap<String, String> = HashMap()
 
-fun getNameFromBroennoeysundRegisterByID(id: String, url: String = config.application.enhetsregisteretUrl): String {
+fun getNameFromBroennoeysundRegisterByID(id: String, url: String = Configuration().application.enhetsregisteretUrl): String {
     if (cache.containsKey(id)) {
         logger.debug("Using cache for $id : ${cache.get(id)}")
         return cache.get(id)!!

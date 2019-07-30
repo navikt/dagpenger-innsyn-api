@@ -140,6 +140,7 @@ Temporary Items
 
 ### Gradle ###
 .gradle
+*.lock
 /build/
 build/
 
