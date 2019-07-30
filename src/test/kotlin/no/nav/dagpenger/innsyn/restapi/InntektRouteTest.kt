@@ -27,10 +27,10 @@ import kotlin.test.assertTrue
 class InntektRouteTest {
 
     companion object {
-        class KGenericContainer() : GenericContainer<KGenericContainer>(ImageFromDockerfile().withDockerfilePath("aktoer-mock/Dockerfile.ci"))
+        class KGenericContainer : GenericContainer<KGenericContainer>(ImageFromDockerfile().withDockerfilePath("./aktoer-mock/Dockerfile.ci"))
 
         @ClassRule
-        val aktoerMockContainer = Companion.KGenericContainer()
+        val aktoerMockContainer = KGenericContainer()
     }
 
     private val aktoerRegister: AktoerRegisterLookup
