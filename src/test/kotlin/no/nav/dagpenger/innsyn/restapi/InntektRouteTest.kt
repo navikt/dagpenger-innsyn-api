@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.images.builder.ImageFromDockerfile
+import java.nio.file.Paths
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -41,6 +42,7 @@ class InntektRouteTest {
 
     init {
         println("Before Exposed Service")
+        println(Paths.get("").toAbsolutePath())
         aktoerMockContainer.withExposedPorts(3050, 3050)
         println("Service exposed")
         aktoerMockContainer.start()
