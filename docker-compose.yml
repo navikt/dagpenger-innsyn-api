@@ -1,7 +1,7 @@
-version: '3.3'
+version: '2'
 services:
   innsyn-api:
-    build: ./dagpenger-innsyn-api
+    build: ./
     ports:
       - "8080:8080"
     depends_on:
@@ -16,7 +16,7 @@ services:
       - REDIRECTS=http://localhost:443/dp-inntekt-innsyn-ui/oidc/callback
       - PORT=4352
   mockserver:
-    build: ./dagpenger-innsyn-api/aktoer-mock
+    build: ./aktoer-mock
     ports:
       - 3050:3050
     environment:
