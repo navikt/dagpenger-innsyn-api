@@ -28,7 +28,7 @@ class InntektRouteTest {
         class KDockerComposeContainer(path: File) : DockerComposeContainer<KDockerComposeContainer>(path)
 
         @ClassRule
-        val env = KDockerComposeContainer(File("..${File.separator}docker-compose.yml"))
+        val env = KDockerComposeContainer(File(".${File.separator}docker-compose.yml"))
     }
 
     private val config = Configuration()
@@ -39,13 +39,9 @@ class InntektRouteTest {
     @Test
     fun `Valid request to inntekt endpoint should succeed and produce an event to Kafka`() {
         env.withExposedService("mockserver", 3050)
-        println(env.getServiceHost("mockserver", 3050))
+        env.start()
 
         val url = "http://" + env.getServiceHost("mockserver", 3050) + ":3050/aktoerregister/api/v1/identer"
-
-        println(url)
-        println(khttp.get(url).content)
-        println(config.application.profile.name)
 
         val kafkaMock = mockk<InnsynProducer>(relaxed = true)
 
@@ -78,10 +74,9 @@ class InntektRouteTest {
 
     @Test
     fun `504 response on timeout`() {
-
         env.withExposedService("mockserver", 3050)
-        println(env.getServiceHost("mockserver", 3050))
-        println(config.application.profile.name)
+        env.start()
+
         val url = "http://" + env.getServiceHost("mockserver", 3050) + ":3050/aktoerregister/api/v1/identer"
 
         val kafkaMock = mockk<InnsynProducer>(relaxed = true)
