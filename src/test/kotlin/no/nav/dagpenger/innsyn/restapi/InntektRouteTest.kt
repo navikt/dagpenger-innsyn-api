@@ -20,7 +20,6 @@ import org.junit.ClassRule
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.testcontainers.containers.GenericContainer
-import org.testcontainers.containers.wait.Wait
 import org.testcontainers.containers.wait.strategy.WaitStrategy
 import org.testcontainers.containers.wait.strategy.WaitStrategyTarget
 import org.testcontainers.images.builder.ImageFromDockerfile
@@ -43,7 +42,7 @@ class InntektRouteTest {
         val aktoerMockContainer = KGenericContainer()
     }
 
-    private val fakeWait : WaitStrategy = object : WaitStrategy {
+    private val fakeWait: WaitStrategy = object : WaitStrategy {
         override fun waitUntilReady(waitStrategyTarget: WaitStrategyTarget?) {
             logger.info("Not waiting")
         }
@@ -51,10 +50,9 @@ class InntektRouteTest {
         override fun withStartupTimeout(startupTimeout: Duration?): WaitStrategy {
             return this
         }
-
     }
 
-    private val logger = KotlinLogging.logger {  }
+    private val logger = KotlinLogging.logger { }
 
     private val aktoerRegister: AktoerRegisterLookup
     private val config = Configuration()
@@ -71,7 +69,7 @@ class InntektRouteTest {
         println("Service exposed")
         aktoerMockContainer.start()
         println("Service started")
-        while(!aktoerMockContainer.isRunning) {
+        while (!aktoerMockContainer.isRunning) {
             logger.info("Still waiting")
             Thread.sleep(500)
         }
