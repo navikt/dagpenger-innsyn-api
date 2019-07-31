@@ -11,12 +11,12 @@ import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.monitoring.HealthCheck
 
 internal fun MockApi(
-        packetStore: PacketStore = mockk(),
-        kafkaProducer: BehovProducer = mockk(),
-        jwkProvider: JwkProvider = mockk(),
-        healthChecks: List<HealthCheck> = mockk(),
-        aktørregisterLookup: AktørregisterLookup = mockk(),
-        brønnøysundLookup: BrønnøysundLookup = mockk()
+    packetStore: PacketStore = mockk(),
+    kafkaProducer: BehovProducer = mockk(),
+    jwkProvider: JwkProvider = mockk(),
+    healthChecks: List<HealthCheck> = mockk(),
+    aktørregisterLookup: AktørregisterLookup = mockk(),
+    brønnøysundLookup: BrønnøysundLookup = mockk()
 ): Application.() -> Unit {
     return fun Application.() {
         innsynAPI(packetStore, kafkaProducer, jwkProvider, healthChecks, aktørregisterLookup, brønnøysundLookup)

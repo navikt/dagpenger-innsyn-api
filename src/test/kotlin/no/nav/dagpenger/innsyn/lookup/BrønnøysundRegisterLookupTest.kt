@@ -3,7 +3,6 @@ package no.nav.dagpenger.innsyn.lookup
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
-import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach

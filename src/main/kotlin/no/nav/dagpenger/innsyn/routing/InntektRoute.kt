@@ -26,10 +26,10 @@ private val logger: KLogger = KotlinLogging.logger {}
 private val config = Configuration()
 
 internal fun Routing.inntekt(
-        packetStore: PacketStore,
-        kafkaProducer: BehovProducer,
-        aktørregisterLookup: AktørregisterLookup,
-        brønnøysundLookup: BrønnøysundLookup
+    packetStore: PacketStore,
+    kafkaProducer: BehovProducer,
+    aktørregisterLookup: AktørregisterLookup,
+    brønnøysundLookup: BrønnøysundLookup
 ) {
     authenticate("jwt") {
         get(config.application.applicationUrl) {
