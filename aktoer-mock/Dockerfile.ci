@@ -2,5 +2,6 @@ FROM node:10
 
 COPY . ./
 
-CMD ["node", "server.js"]
 EXPOSE 3050
+
+CMD ["node", "server.js"]

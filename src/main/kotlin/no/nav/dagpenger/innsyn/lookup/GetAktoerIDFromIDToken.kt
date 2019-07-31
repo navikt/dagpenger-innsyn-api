@@ -32,7 +32,6 @@ class AktoerRegisterLookup(private val url: String = Configuration().application
     }
 
     private fun getAktoerResponse(idToken: String, ident: String, url: String): Response {
-        logger.info("Attempting to retrieve with idToken: $idToken, ident: $ident, and url: $url")
         return khttp.get(
                 url = url,
                 headers = mapOf(

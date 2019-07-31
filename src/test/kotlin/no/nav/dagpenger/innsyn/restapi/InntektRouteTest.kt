@@ -29,7 +29,7 @@ private object mockContainer {
 
     class KGenericContainer : GenericContainer<KGenericContainer>(ImageFromDockerfile()
         .withFileFromPath(".", DOCKER_PATH)
-        .withDockerfilePath("./Dockerfile"))
+        .withDockerfilePath("./Dockerfile.ci"))
 
 
     private val instance by lazy {
