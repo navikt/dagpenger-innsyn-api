@@ -19,7 +19,7 @@ import mu.KotlinLogging
 import no.nav.dagpenger.events.moshiInstance
 import no.nav.dagpenger.innsyn.conversion.convertInntektDataIntoUserInformation
 import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
-import no.nav.dagpenger.innsyn.lookup.AktoerRegisterLookup
+import no.nav.dagpenger.innsyn.lookup.AktørregisterLookup
 import no.nav.dagpenger.innsyn.lookup.BehovProducer
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
@@ -31,9 +31,9 @@ private val logger: KLogger = KotlinLogging.logger {}
 private val config = Configuration()
 
 internal fun Routing.inntekt(
-    packetStore: PacketStore,
-    kafkaProducer: BehovProducer,
-    aktoerRegisterLookup: AktoerRegisterLookup
+        packetStore: PacketStore,
+        kafkaProducer: BehovProducer,
+        aktørregisterLookup: AktørregisterLookup
 ) {
     authenticate("jwt") {
         get(config.application.applicationUrl) {
@@ -43,7 +43,7 @@ internal fun Routing.inntekt(
                 logger.error("Received invalid request without ID_token cookie", call)
                 call.respond(HttpStatusCode.NotAcceptable, "Missing required cookies")
             } else {
-                val aktoerID = aktoerRegisterLookup.getGjeldendeAktoerIDFromIDToken(idToken, getSubject())
+                val aktoerID = aktørregisterLookup.getGjeldendeAktørIDFromIDToken(idToken, getSubject())
                 try {
                     mapRequestToBehov(aktoerID, beregningsdato).apply {
                         kafkaProducer.produceEvent(this)

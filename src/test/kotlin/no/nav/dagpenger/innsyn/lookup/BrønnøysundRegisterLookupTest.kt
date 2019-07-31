@@ -1,16 +1,15 @@
-package no.nav.dagpenger.innsyn.integration
+package no.nav.dagpenger.innsyn.lookup
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
-import no.nav.dagpenger.innsyn.lookup.getNameFromBroennoeysundRegisterByID
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-class NameFromBRTest {
+class BrønnøysundRegisterLookupTest {
     companion object {
         val server: WireMockServer = WireMockServer(WireMockConfiguration.options().dynamicPort())
 
@@ -41,7 +40,7 @@ class NameFromBRTest {
                 WireMock.get(WireMock.urlEqualTo("/$testOrgId"))
                         .willReturn(WireMock.aResponse().withBody(validJsonBodyWithNorskOrg))
         )
-        val orgName = getNameFromBroennoeysundRegisterByID(testOrgId, server.url(""))
+        val orgName = getNameFromBrønnøysundRegisterByID(testOrgId, server.url(""))
         assertEquals(testName, orgName)
     }
 
@@ -54,7 +53,7 @@ class NameFromBRTest {
                         .willReturn(WireMock.notFound())
         )
 
-        val orgId = getNameFromBroennoeysundRegisterByID(testOrgId, server.url(""))
+        val orgId = getNameFromBrønnøysundRegisterByID(testOrgId, server.url(""))
         assertEquals(testOrgId, orgId)
     }
 

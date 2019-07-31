@@ -1,8 +1,6 @@
-package no.nav.dagpenger.innsyn.streams
+package no.nav.dagpenger.innsyn.lookup
 
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
-import no.nav.dagpenger.innsyn.lookup.KafkaBehovProducer
-import no.nav.dagpenger.innsyn.lookup.producerConfig
 import org.junit.jupiter.api.Test
 import org.testcontainers.containers.KafkaContainer
 import java.time.LocalDate

@@ -185,7 +185,7 @@ val testDataMaanedsInntekt3 = MånedsInntekt(
         posteringer = testDataPosteringer3
 )
 
-// The processing should ignore this
+// The conversion should ignore this
 val testDataMaanedsInntekt4 = MånedsInntekt(
         årMåned = FUTUREMONTH,
         avvikListe = listOf(),

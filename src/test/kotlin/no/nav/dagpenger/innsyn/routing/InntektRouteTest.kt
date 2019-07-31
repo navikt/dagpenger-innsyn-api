@@ -1,4 +1,4 @@
-package no.nav.dagpenger.innsyn.restapi
+package no.nav.dagpenger.innsyn.routing
 
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -11,7 +11,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verifyAll
 import no.nav.dagpenger.innsyn.JwtStub
-import no.nav.dagpenger.innsyn.lookup.AktoerRegisterLookup
+import no.nav.dagpenger.innsyn.lookup.AktørregisterLookup
 import no.nav.dagpenger.innsyn.lookup.BehovProducer
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.settings.Configuration
@@ -57,7 +57,7 @@ class InntektRouteTest {
                 kafkaProducer = kafkaMock,
                 packetStore = storeMock,
                 jwkProvider = jwtStub.stubbedJwkProvider(),
-                aktoerRegisterLookup = AktoerRegisterLookup(url = url))
+                aktørregisterLookup = AktørregisterLookup(url = url))
         ) {
             handleRequest(HttpMethod.Get, config.application.applicationUrl) {
                 addHeader(HttpHeaders.Cookie, cookie)
@@ -93,7 +93,7 @@ class InntektRouteTest {
                 kafkaProducer = kafkaMock,
                 packetStore = storeMock,
                 jwkProvider = jwtStub.stubbedJwkProvider(),
-                aktoerRegisterLookup = AktoerRegisterLookup(url = url))
+                aktørregisterLookup = AktørregisterLookup(url = url))
         ) {
             handleRequest(HttpMethod.Get, config.application.applicationUrl) {
                 addHeader(HttpHeaders.Cookie, cookie)

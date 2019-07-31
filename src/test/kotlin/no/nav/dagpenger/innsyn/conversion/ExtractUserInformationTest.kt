@@ -1,17 +1,11 @@
-package no.nav.dagpenger.innsyn.processing
+package no.nav.dagpenger.innsyn.conversion
 
 import de.huxhorn.sulky.ulid.ULID
 import no.nav.dagpenger.events.inntekt.v1.Aktør
 import no.nav.dagpenger.events.inntekt.v1.AktørType
 import no.nav.dagpenger.events.inntekt.v1.InntektId
 import no.nav.dagpenger.events.inntekt.v1.SpesifisertInntekt
-import no.nav.dagpenger.innsyn.conversion.getEmployerSummaries
-import no.nav.dagpenger.innsyn.conversion.getMonthsIncomeInformation
-import no.nav.dagpenger.innsyn.conversion.groupYearMonthIntoPeriods
-import no.nav.dagpenger.innsyn.conversion.isSuccessiveMonth
 import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
-import no.nav.dagpenger.innsyn.expectedEmployerSummaries
-import no.nav.dagpenger.innsyn.expectedMonthsIncomeInformation
 import no.nav.dagpenger.innsyn.testDataSpesifisertInntekt
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -22,9 +16,8 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ProcessingDataObjectTests {
+class ExtractUserInformationTest {
 
-    // TODO: Move to TestData.kt
     private val testYearMonths = listOf(YearMonth.of(2001, 1), YearMonth.of(2001, 2), YearMonth.of(2001, 3), YearMonth.of(2001, 4), YearMonth.of(2001, 5),
             YearMonth.of(2001, 9), YearMonth.of(2001, 10), YearMonth.of(2001, 11), YearMonth.of(2001, 12))
     private val testYearMonthsEdge = listOf(YearMonth.of(2000, 10),

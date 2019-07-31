@@ -6,7 +6,7 @@ import no.nav.dagpenger.innsyn.conversion.objects.EmployerSummary
 import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
 import no.nav.dagpenger.innsyn.conversion.objects.Income
 import no.nav.dagpenger.innsyn.conversion.objects.MonthIncomeInformation
-import no.nav.dagpenger.innsyn.lookup.getNameFromBroennoeysundRegisterByID
+import no.nav.dagpenger.innsyn.lookup.getNameFromBrønnøysundRegisterByID
 import no.nav.dagpenger.events.inntekt.v1.SpesifisertInntekt
 import java.time.YearMonth
 
@@ -39,7 +39,7 @@ fun getEmployerSummaries(spesifisertInntekt: SpesifisertInntekt): List<EmployerS
             ) } }
             .groupBy { it.arbeidsgiver }
             .map { groupedEmployerInfo -> EmployerSummary(
-                    name = getNameFromBroennoeysundRegisterByID(id = groupedEmployerInfo.key),
+                    name = getNameFromBrønnøysundRegisterByID(id = groupedEmployerInfo.key),
                     orgID = groupedEmployerInfo.key,
                     income = groupedEmployerInfo.value.sumByDouble { it.inntekt },
                     employmentPeriodes = groupYearMonthIntoPeriods(groupedEmployerInfo.value.map { it.maaned })
@@ -65,7 +65,7 @@ fun getEmployersForMonth(posteringer: List<Postering>): List<Employer> {
                             postering.posteringsType.beskrivelse
                     ) } }
             .map { employerIncomeMap -> Employer(
-                    name = getNameFromBroennoeysundRegisterByID(id = employerIncomeMap.key),
+                    name = getNameFromBrønnøysundRegisterByID(id = employerIncomeMap.key),
                     orgID = employerIncomeMap.key,
                     incomes = employerIncomeMap.value
             ) }

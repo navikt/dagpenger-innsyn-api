@@ -18,7 +18,7 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import mu.KLogger
 import mu.KotlinLogging
-import no.nav.dagpenger.innsyn.lookup.AktoerRegisterLookup
+import no.nav.dagpenger.innsyn.lookup.AktørregisterLookup
 import no.nav.dagpenger.innsyn.lookup.BehovProducer
 import no.nav.dagpenger.innsyn.lookup.InntektPond
 import no.nav.dagpenger.innsyn.lookup.KafkaBehovProducer
@@ -68,7 +68,7 @@ fun main() {
                 kafkaProducer = kafkaProducer,
                 jwkProvider = jwkProvider,
                 healthChecks = listOf(kafkaConsumer as HealthCheck, kafkaProducer as HealthCheck),
-                aktoerRegisterLookup = AktoerRegisterLookup()
+                aktørregisterLookup = AktørregisterLookup()
         )
     }
 
@@ -82,11 +82,11 @@ fun main() {
 }
 
 fun Application.innsynAPI(
-    packetStore: PacketStore,
-    kafkaProducer: BehovProducer,
-    jwkProvider: JwkProvider,
-    healthChecks: List<HealthCheck>,
-    aktoerRegisterLookup: AktoerRegisterLookup
+        packetStore: PacketStore,
+        kafkaProducer: BehovProducer,
+        jwkProvider: JwkProvider,
+        healthChecks: List<HealthCheck>,
+        aktørregisterLookup: AktørregisterLookup
 ) {
 
     logger.debug("Installing jackson for content negotiation")
@@ -130,7 +130,7 @@ fun Application.innsynAPI(
     }
 
     routing {
-        inntekt(packetStore, kafkaProducer, aktoerRegisterLookup)
+        inntekt(packetStore, kafkaProducer, aktørregisterLookup)
         naischecks(healthChecks)
     }
 }

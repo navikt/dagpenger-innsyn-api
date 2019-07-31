@@ -1,4 +1,4 @@
-package no.nav.dagpenger.innsyn.streams
+package no.nav.dagpenger.innsyn.lookup
 
 import io.mockk.Called
 import io.mockk.Runs
@@ -7,7 +7,6 @@ import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verifyAll
 import no.nav.dagpenger.events.Packet
-import no.nav.dagpenger.innsyn.lookup.InntektPond
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.settings.PacketKeys
 import no.nav.dagpenger.innsyn.settings.behovId
