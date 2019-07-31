@@ -18,8 +18,10 @@ import mu.KLogger
 import mu.KotlinLogging
 import no.nav.dagpenger.events.moshiInstance
 import no.nav.dagpenger.innsyn.conversion.convertInntektDataIntoUserInformation
+import no.nav.dagpenger.innsyn.conversion.getUserInformation
 import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
 import no.nav.dagpenger.innsyn.lookup.AktoerRegisterLookup
+import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
 import no.nav.dagpenger.innsyn.lookup.InnsynProducer
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
@@ -33,7 +35,8 @@ private val config = Configuration()
 internal fun Routing.behov(
     packetStore: PacketStore,
     kafkaProducer: InnsynProducer,
-    aktoerRegisterLookup: AktoerRegisterLookup
+    aktoerRegisterLookup: AktoerRegisterLookup,
+    brønnøysundLookup: BrønnøysundLookup
 ) {
     authenticate("jwt") {
         get(config.application.applicationUrl) {
@@ -53,11 +56,11 @@ internal fun Routing.behov(
                                 delay(500)
                             }
                         }
-                        call.respond(HttpStatusCode.OK, moshiInstance.adapter(UserInformation::class.java).toJson(convertInntektDataIntoUserInformation(testDataSpesifisertInntekt)))
+                        call.respond(HttpStatusCode.OK, moshiInstance.adapter(UserInformation::class.java).toJson(getUserInformation(testDataSpesifisertInntekt, brønnøysundLookup)))
                     }
                 } catch (e: TimeoutCancellationException) {
                     logger.error("Timed out waiting for kafka", e)
-                    call.respond(HttpStatusCode.GatewayTimeout, moshiInstance.adapter(UserInformation::class.java).toJson(convertInntektDataIntoUserInformation(testDataSpesifisertInntekt)))
+                    call.respond(HttpStatusCode.GatewayTimeout, moshiInstance.adapter(UserInformation::class.java).toJson(getUserInformation(testDataSpesifisertInntekt, brønnøysundLookup)))
                 }
             }
         }

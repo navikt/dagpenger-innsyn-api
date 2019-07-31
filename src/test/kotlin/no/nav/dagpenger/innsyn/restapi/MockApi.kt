@@ -5,6 +5,7 @@ import io.ktor.application.Application
 import io.mockk.mockk
 import no.nav.dagpenger.innsyn.innsynAPI
 import no.nav.dagpenger.innsyn.lookup.AktoerRegisterLookup
+import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
 import no.nav.dagpenger.innsyn.lookup.InnsynProducer
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.monitoring.HealthCheck
@@ -14,9 +15,10 @@ internal fun MockApi(
     kafkaProducer: InnsynProducer = mockk(),
     jwkProvider: JwkProvider = mockk(),
     healthChecks: List<HealthCheck> = mockk(),
-    aktoerRegisterLookup: AktoerRegisterLookup = mockk()
+    aktoerRegisterLookup: AktoerRegisterLookup = mockk(),
+    brønnøysundLookup: BrønnøysundLookup = mockk()
 ): Application.() -> Unit {
     return fun Application.() {
-        innsynAPI(packetStore, kafkaProducer, jwkProvider, healthChecks, aktoerRegisterLookup)
+        innsynAPI(packetStore, kafkaProducer, jwkProvider, healthChecks, aktoerRegisterLookup, brønnøysundLookup)
     }
 }

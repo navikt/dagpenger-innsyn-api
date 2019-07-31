@@ -3,7 +3,7 @@ package no.nav.dagpenger.innsyn.integration
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
-import no.nav.dagpenger.innsyn.lookup.getNameFromBroennoeysundRegisterByID
+import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
@@ -41,7 +41,7 @@ class NameFromBRTest {
                 WireMock.get(WireMock.urlEqualTo("/$testOrgId"))
                         .willReturn(WireMock.aResponse().withBody(validJsonBodyWithNorskOrg))
         )
-        val orgName = getNameFromBroennoeysundRegisterByID(testOrgId, server.url(""))
+        val orgName = BrønnøysundLookup(server.url("")).getNameFromBroennoeysundRegisterByID(testOrgId)
         assertEquals(testName, orgName)
     }
 
@@ -54,7 +54,7 @@ class NameFromBRTest {
                         .willReturn(WireMock.notFound())
         )
 
-        val orgId = getNameFromBroennoeysundRegisterByID(testOrgId, server.url(""))
+        val orgId = BrønnøysundLookup(server.url("")).getNameFromBroennoeysundRegisterByID(testOrgId)
         assertEquals(testOrgId, orgId)
     }
 

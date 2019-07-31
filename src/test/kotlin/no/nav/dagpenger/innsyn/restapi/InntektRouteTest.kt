@@ -13,6 +13,7 @@ import io.mockk.verifyAll
 import mu.KotlinLogging
 import no.nav.dagpenger.innsyn.JwtStub
 import no.nav.dagpenger.innsyn.lookup.AktoerRegisterLookup
+import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
 import no.nav.dagpenger.innsyn.lookup.InnsynProducer
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.settings.Configuration
@@ -39,7 +40,7 @@ class InntektRouteTest {
                 .withDockerfilePath("./Dockerfile.ci"))
 
         @ClassRule
-        val aktoerMockContainer = KGenericContainer()
+        val mockContainer = KGenericContainer()
     }
 
     private val fakeWait: WaitStrategy = object : WaitStrategy {
@@ -55,6 +56,7 @@ class InntektRouteTest {
     private val logger = KotlinLogging.logger { }
 
     private val aktoerRegister: AktoerRegisterLookup
+    private val brønnøysundLookup: BrønnøysundLookup
     private val config = Configuration()
     private val jwtStub = JwtStub(config.application.jwksIssuer)
 
@@ -63,30 +65,36 @@ class InntektRouteTest {
     init {
         println("Before Exposed Service")
         println(Paths.get("").toAbsolutePath())
-        aktoerMockContainer
+        mockContainer
                 .withExposedPorts(3050)
                 .waitingFor(fakeWait)
         println("Service exposed")
-        aktoerMockContainer.start()
+        mockContainer.start()
         println("Service started")
-        while (!aktoerMockContainer.isRunning) {
+        while (!mockContainer.isRunning) {
             logger.info("Still waiting")
             Thread.sleep(500)
         }
         println("Done waiting")
 
-        val url = "http://" +
-                aktoerMockContainer.containerIpAddress +
+        val aktørURL = "http://" +
+                mockContainer.containerIpAddress +
                 ":" +
-                aktoerMockContainer.getMappedPort(3050) +
+                mockContainer.getMappedPort(3050) +
                 "/aktoerregister/api/v1/identer"
+        val brURL = "http://" +
+                mockContainer.containerIpAddress +
+                ":" +
+                mockContainer.getMappedPort(3050) +
+                "/br/"
 
-        println(url)
+        println(aktørURL)
 
-        println(aktoerMockContainer.containerIpAddress)
-        println(aktoerMockContainer.getMappedPort(3050))
+        println(mockContainer.containerIpAddress)
+        println(mockContainer.getMappedPort(3050))
 
-        this.aktoerRegister = AktoerRegisterLookup(url = url)
+        this.aktoerRegister = AktoerRegisterLookup(url = aktørURL)
+        this.brønnøysundLookup = BrønnøysundLookup(url =)
     }
 
     @Test

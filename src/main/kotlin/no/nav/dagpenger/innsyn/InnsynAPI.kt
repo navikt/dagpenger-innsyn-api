@@ -19,6 +19,7 @@ import io.ktor.server.netty.Netty
 import mu.KLogger
 import mu.KotlinLogging
 import no.nav.dagpenger.innsyn.lookup.AktoerRegisterLookup
+import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
 import no.nav.dagpenger.innsyn.lookup.InnsynProducer
 import no.nav.dagpenger.innsyn.lookup.InntektPond
 import no.nav.dagpenger.innsyn.lookup.KafkaInnsynProducer
@@ -61,6 +62,10 @@ fun main() {
             KafkaCredential(config.kafka.user, config.kafka.password)
     ))
 
+    val brLookup = BrønnøysundLookup(config.application.enhetsregisteretUrl)
+
+    val aktoerRegisterLookup = AktoerRegisterLookup(config.application.aktoerregisteretUrl)
+
     logger.debug("Creating application with port ${config.application.httpPort}")
     val app = embeddedServer(Netty, port = config.application.httpPort) {
         innsynAPI(
@@ -68,7 +73,8 @@ fun main() {
                 kafkaProducer = kafkaProducer,
                 jwkProvider = jwkProvider,
                 healthChecks = listOf(kafkaConsumer as HealthCheck, kafkaProducer as HealthCheck),
-                aktoerRegisterLookup = AktoerRegisterLookup()
+                aktoerRegisterLookup = aktoerRegisterLookup,
+                brønnøysundLookup = brLookup
         )
     }
 
@@ -86,7 +92,8 @@ fun Application.innsynAPI(
     kafkaProducer: InnsynProducer,
     jwkProvider: JwkProvider,
     healthChecks: List<HealthCheck>,
-    aktoerRegisterLookup: AktoerRegisterLookup
+    aktoerRegisterLookup: AktoerRegisterLookup,
+    brønnøysundLookup: BrønnøysundLookup
 ) {
 
     logger.debug("Installing jackson for content negotiation")
@@ -130,7 +137,7 @@ fun Application.innsynAPI(
     }
 
     routing {
-        behov(packetStore, kafkaProducer, aktoerRegisterLookup)
+        behov(packetStore, kafkaProducer, aktoerRegisterLookup, brønnøysundLookup)
         naischecks(healthChecks)
     }
 }
