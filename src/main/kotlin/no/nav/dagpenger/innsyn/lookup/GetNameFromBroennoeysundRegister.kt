@@ -9,9 +9,10 @@ class BrønnøysundLookup(private val url: String = Configuration().application.
     private val cache: HashMap<String, String> = HashMap()
 
     fun getNameFromBroennoeysundRegisterByID(id: String): String {
+        logger.info("Attempting to retrieve br from: $url for $id")
         if (cache.containsKey(id)) {
-            logger.debug("Using cache for $id : ${cache.get(id)}")
-            return cache.get(id)!!
+            logger.debug("Using cache for $id : ${cache[id]}")
+            return cache[id]!!
         }
         val response = khttp.get(url + id)
         return if (response.statusCode != 200) {
@@ -19,7 +20,7 @@ class BrønnøysundLookup(private val url: String = Configuration().application.
             id
         } else {
             logger.debug("Successfully retrieved name for $id from BR")
-            cache.set(id, response.jsonObject["navn"].toString())
+            cache[id] = response.jsonObject["navn"].toString()
             response.jsonObject["navn"].toString()
         }
     }

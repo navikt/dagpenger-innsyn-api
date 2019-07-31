@@ -147,7 +147,8 @@ class InntektRouteTest {
                 kafkaProducer = kafkaMock,
                 packetStore = storeMock,
                 jwkProvider = jwtStub.stubbedJwkProvider(),
-                aktoerRegisterLookup = aktoerRegister)
+                aktoerRegisterLookup = aktoerRegister,
+                brønnøysundLookup = brønnøysundLookup)
         ) {
             handleRequest(HttpMethod.Get, config.application.applicationUrl) {
                 addHeader(HttpHeaders.Cookie, cookie)
