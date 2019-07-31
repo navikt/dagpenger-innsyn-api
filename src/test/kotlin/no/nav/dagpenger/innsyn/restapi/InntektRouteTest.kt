@@ -23,14 +23,12 @@ import java.nio.file.Paths
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-
 private object mockContainer {
     private val DOCKER_PATH = Paths.get("aktoer-mock/")
 
     class KGenericContainer : GenericContainer<KGenericContainer>(ImageFromDockerfile()
         .withFileFromPath(".", DOCKER_PATH)
         .withDockerfilePath("./Dockerfile.ci"))
-
 
     private val instance by lazy {
         KGenericContainer().apply {
@@ -48,18 +46,14 @@ private object mockContainer {
     val aktoerRegister = AktoerRegisterLookup(url = aktørURL)
 
     val brønnøysundLookup = BrønnøysundLookup(url = brURL)
-
 }
 
-
 class InntektRouteTest {
-
 
     private val config = Configuration()
     private val jwtStub = JwtStub(config.application.jwksIssuer)
 
     private val token = jwtStub.createTokenFor(config.application.oidcUser)
-
 
     @Test
     fun `Valid request to inntekt endpoint should succeed and produce an event to Kafka`() {
