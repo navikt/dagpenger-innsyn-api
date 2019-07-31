@@ -10,6 +10,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verifyAll
+import mu.KotlinLogging
 import no.nav.dagpenger.innsyn.JwtStub
 import no.nav.dagpenger.innsyn.lookup.AktoerRegisterLookup
 import no.nav.dagpenger.innsyn.lookup.InnsynProducer
@@ -20,8 +21,11 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.Wait
+import org.testcontainers.containers.wait.strategy.WaitStrategy
+import org.testcontainers.containers.wait.strategy.WaitStrategyTarget
 import org.testcontainers.images.builder.ImageFromDockerfile
 import java.nio.file.Paths
+import java.time.Duration
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -39,6 +43,19 @@ class InntektRouteTest {
         val aktoerMockContainer = KGenericContainer()
     }
 
+    private val fakeWait : WaitStrategy = object : WaitStrategy {
+        override fun waitUntilReady(waitStrategyTarget: WaitStrategyTarget?) {
+            logger.info("Not waiting")
+        }
+
+        override fun withStartupTimeout(startupTimeout: Duration?): WaitStrategy {
+            return this
+        }
+
+    }
+
+    private val logger = KotlinLogging.logger {  }
+
     private val aktoerRegister: AktoerRegisterLookup
     private val config = Configuration()
     private val jwtStub = JwtStub(config.application.jwksIssuer)
@@ -50,10 +67,15 @@ class InntektRouteTest {
         println(Paths.get("").toAbsolutePath())
         aktoerMockContainer
                 .withExposedPorts(3050)
-                .waitingFor(Wait.forHttp("/"))
+                .waitingFor(fakeWait)
         println("Service exposed")
         aktoerMockContainer.start()
         println("Service started")
+        while(!aktoerMockContainer.isRunning) {
+            logger.info("Still waiting")
+            Thread.sleep(500)
+        }
+        println("Done waiting")
 
         val url = "http://" +
                 aktoerMockContainer.containerIpAddress +
