@@ -79,6 +79,7 @@ class InntektRouteTest {
 
         val url = "http://" +
                 aktoerMockContainer.containerIpAddress +
+                ":" +
                 aktoerMockContainer.getMappedPort(3050) +
                 "/aktoerregister/api/v1/identer"
 
