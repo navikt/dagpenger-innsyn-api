@@ -38,7 +38,7 @@ fun getEmployerSummaries(spesifisertInntekt: SpesifisertInntekt, orgMapping: Map
             ) } }
             .groupBy { it.arbeidsgiver }
             .map { groupedEmployerInfo -> EmployerSummary(
-                    name = orgMapping.getOrElse(groupedEmployerInfo.key) { "UNKNOWN" },
+                    name = orgMapping.getOrElse(groupedEmployerInfo.key) { groupedEmployerInfo.key },
                     orgID = groupedEmployerInfo.key,
                     income = groupedEmployerInfo.value.sumByDouble { it.inntekt },
                     employmentPeriodes = groupYearMonthIntoPeriods(groupedEmployerInfo.value.map { it.maaned })
@@ -64,7 +64,7 @@ fun getEmployersForMonth(posteringer: List<Postering>, orgMapping: Map<String, S
                             postering.posteringsType.beskrivelse
                     ) } }
             .map { employerIncomeMap -> Employer(
-                    name = orgMapping.getOrElse(employerIncomeMap.key) { "UNKNOWN" },
+                    name = orgMapping.getOrElse(employerIncomeMap.key) { employerIncomeMap.key },
                     orgID = employerIncomeMap.key,
                     incomes = employerIncomeMap.value
             ) }

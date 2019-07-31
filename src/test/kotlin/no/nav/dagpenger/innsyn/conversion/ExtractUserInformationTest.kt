@@ -6,7 +6,6 @@ import no.nav.dagpenger.events.inntekt.v1.AktørType
 import no.nav.dagpenger.events.inntekt.v1.InntektId
 import no.nav.dagpenger.events.inntekt.v1.SpesifisertInntekt
 import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
-import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
 import no.nav.dagpenger.innsyn.testDataSpesifisertInntekt
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -62,21 +61,21 @@ class ExtractUserInformationTest {
 
     @Test
     fun `Get correct employerSummaries`() {
-        assertEquals(expectedEmployerSummaries, getEmployerSummaries(testDataSpesifisertInntekt, getOrgMapping(testDataSpesifisertInntekt, BrønnøysundLookup())))
+        assertEquals(expectedEmployerSummaries, getEmployerSummaries(testDataSpesifisertInntekt, emptyMap()))
     }
 
     @Test
     fun `No månedsinntekter returns empty employerSummaries`() {
-        assertEquals(listOf(), getEmployerSummaries(empty, getOrgMapping(testDataSpesifisertInntekt, BrønnøysundLookup())))
+        assertEquals(listOf(), getEmployerSummaries(empty, emptyMap()))
     }
 
     @Test
     fun `Get correct monthsIncomeInformation`() {
-        assertEquals(expectedMonthsIncomeInformation, getMonthsIncomeInformation(testDataSpesifisertInntekt, getOrgMapping(testDataSpesifisertInntekt, BrønnøysundLookup())))
+        assertEquals(expectedMonthsIncomeInformation, getMonthsIncomeInformation(testDataSpesifisertInntekt, emptyMap()))
     }
 
     @Test
     fun `No månedsinntekter returns empty monthsIncomeInformation`() {
-        assertEquals(listOf(), getMonthsIncomeInformation(empty, getOrgMapping(testDataSpesifisertInntekt, BrønnøysundLookup())))
+        assertEquals(listOf(), getMonthsIncomeInformation(empty, emptyMap()))
     }
 }
