@@ -20,14 +20,14 @@ fun convertInntektDataIntoUserInformation(spesifisertInntekt: SpesifisertInntekt
     )
 }
 
-fun getUserInformation(spesifisertInntekt: SpesifisertInntekt, brønnøysundLookup: BrønnøysundLookup):UserInformation {
+fun getUserInformation(spesifisertInntekt: SpesifisertInntekt, brønnøysundLookup: BrønnøysundLookup): UserInformation {
     return convertInntektDataIntoUserInformation(spesifisertInntekt, getOrgMapping(spesifisertInntekt, brønnøysundLookup))
 }
 
-fun getOrgMapping(spesifisertInntekt: SpesifisertInntekt, brønnøysundLookup: BrønnøysundLookup): Map<String, String>{
+fun getOrgMapping(spesifisertInntekt: SpesifisertInntekt, brønnøysundLookup: BrønnøysundLookup): Map<String, String> {
     return spesifisertInntekt.månedsInntekter
             .flatMap { it.posteringer
-                    .map { it.virksomhet!!.identifikator }}
+                    .map { it.virksomhet!!.identifikator } }
             .distinct()
             .associateBy { brønnøysundLookup.getNameFromBroennoeysundRegisterByID(it) }
 }

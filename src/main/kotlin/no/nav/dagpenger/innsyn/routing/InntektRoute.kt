@@ -17,7 +17,6 @@ import kotlinx.coroutines.withTimeout
 import mu.KLogger
 import mu.KotlinLogging
 import no.nav.dagpenger.events.moshiInstance
-import no.nav.dagpenger.innsyn.conversion.convertInntektDataIntoUserInformation
 import no.nav.dagpenger.innsyn.conversion.getUserInformation
 import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
 import no.nav.dagpenger.innsyn.lookup.AktoerRegisterLookup

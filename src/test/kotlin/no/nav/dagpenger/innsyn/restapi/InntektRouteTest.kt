@@ -94,7 +94,7 @@ class InntektRouteTest {
         println(mockContainer.getMappedPort(3050))
 
         this.aktoerRegister = AktoerRegisterLookup(url = aktørURL)
-        this.brønnøysundLookup = BrønnøysundLookup(url =)
+        this.brønnøysundLookup = BrønnøysundLookup(url = brURL)
     }
 
     @Test

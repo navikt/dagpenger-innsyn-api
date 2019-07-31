@@ -64,7 +64,7 @@ fun getEmployersForMonth(posteringer: List<Postering>, orgMapping: Map<String, S
                             postering.posteringsType.beskrivelse
                     ) } }
             .map { employerIncomeMap -> Employer(
-                    name = orgMapping.getOrElse(employerIncomeMap.key) {"UNKNOWN"},
+                    name = orgMapping.getOrElse(employerIncomeMap.key) { "UNKNOWN" },
                     orgID = employerIncomeMap.key,
                     incomes = employerIncomeMap.value
             ) }
