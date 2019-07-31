@@ -7,16 +7,16 @@ import no.nav.dagpenger.innsyn.settings.Configuration
 import org.json.JSONObject
 import java.time.LocalDate
 
-class AktoerRegisterLookup(private val url: String = Configuration().application.aktoerregisteretUrl) {
+class AktørregisterLookup(private val url: String = Configuration().application.aktoerregisteretUrl) {
 
     private val logger: KLogger = KotlinLogging.logger {}
 
-    fun getGjeldendeAktoerIDFromIDToken(
+    fun getGjeldendeAktørIDFromIDToken(
         idToken: String,
         ident: String
     ): String {
         try {
-            return getFirstMatchingAktoerIDFromIdent(ident, getAktoerResponse(idToken, ident, url).jsonObject)
+            return getFirstMatchingAktørIDFromIdent(ident, getAktørResponse(idToken, ident, url).jsonObject)
         } catch (e: Exception) {
             logger.error("Attempted to retrieve from: $url")
             logger.error("Could not successfully retrieve the aktoerID from aktoerregisteret's response", e)
@@ -24,14 +24,14 @@ class AktoerRegisterLookup(private val url: String = Configuration().application
         return ""
     }
 
-    private fun getFirstMatchingAktoerIDFromIdent(ident: String, jsonResponse: JSONObject): String {
+    private fun getFirstMatchingAktørIDFromIdent(ident: String, jsonResponse: JSONObject): String {
         return (jsonResponse
                 .getJSONObject(ident)
                 .getJSONArray("identer")[0] as JSONObject)["ident"]
                 .toString()
     }
 
-    private fun getAktoerResponse(idToken: String, ident: String, url: String): Response {
+    private fun getAktørResponse(idToken: String, ident: String, url: String): Response {
         return khttp.get(
                 url = url,
                 headers = mapOf(

@@ -1,4 +1,4 @@
-package no.nav.dagpenger.innsyn.restapi
+package no.nav.dagpenger.innsyn.routing
 
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class NaisChecksRouteTest {
+class NaisChecksTest {
 
     @Test
     fun `isReady route returns 200 OK`() {

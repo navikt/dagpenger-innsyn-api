@@ -11,56 +11,38 @@ import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.get
 import io.ktor.util.pipeline.PipelineContext
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withTimeout
 import mu.KLogger
 import mu.KotlinLogging
-import no.nav.dagpenger.events.moshiInstance
-import no.nav.dagpenger.innsyn.conversion.getUserInformation
-import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
-import no.nav.dagpenger.innsyn.lookup.AktoerRegisterLookup
+import no.nav.dagpenger.innsyn.lookup.AktørregisterLookup
+import no.nav.dagpenger.innsyn.lookup.BehovProducer
+import no.nav.dagpenger.innsyn.lookup.getInntektResponse
 import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
-import no.nav.dagpenger.innsyn.lookup.InnsynProducer
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.settings.Configuration
-import no.nav.dagpenger.innsyn.testDataSpesifisertInntekt
 import java.time.LocalDate
 
 private val logger: KLogger = KotlinLogging.logger {}
 private val config = Configuration()
 
-internal fun Routing.behov(
-    packetStore: PacketStore,
-    kafkaProducer: InnsynProducer,
-    aktoerRegisterLookup: AktoerRegisterLookup,
-    brønnøysundLookup: BrønnøysundLookup
+internal fun Routing.inntekt(
+        packetStore: PacketStore,
+        kafkaProducer: BehovProducer,
+        aktørregisterLookup: AktørregisterLookup,
+        brønnøysundLookup: BrønnøysundLookup
 ) {
     authenticate("jwt") {
         get(config.application.applicationUrl) {
             val idToken = call.request.cookies["ID_token"]
-            val beregningsdato = LocalDate.now()
             if (idToken == null) {
                 logger.error("Received invalid request without ID_token cookie", call)
                 call.respond(HttpStatusCode.NotAcceptable, "Missing required cookies")
             } else {
-                val aktoerID = aktoerRegisterLookup.getGjeldendeAktoerIDFromIDToken(idToken, getSubject())
-                try {
-                    mapRequestToBehov(aktoerID, beregningsdato).apply {
-                        kafkaProducer.produceEvent(this)
-                    }.also {
-                        withTimeout(30000) {
-                            while (!(packetStore.isDone(it.behovId))) {
-                                delay(500)
-                            }
-                        }
-                        call.respond(HttpStatusCode.OK, moshiInstance.adapter(UserInformation::class.java).toJson(getUserInformation(testDataSpesifisertInntekt, brønnøysundLookup)))
-                    }
-                } catch (e: TimeoutCancellationException) {
-                    logger.error("Timed out waiting for kafka", e)
-                    call.respond(HttpStatusCode.GatewayTimeout, moshiInstance.adapter(UserInformation::class.java).toJson(getUserInformation(testDataSpesifisertInntekt, brønnøysundLookup)))
-                }
+                val aktørId = aktørregisterLookup.getGjeldendeAktørIDFromIDToken(idToken, getSubject())
+                val behov = mapRequestToBehov(aktørId, LocalDate.now())
+
+                val (statusCode, response) = getInntektResponse(behov, kafkaProducer, packetStore, brønnøysundLookup)
+                call.respond(statusCode, response)
             }
         }
     }

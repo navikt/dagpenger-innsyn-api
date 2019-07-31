@@ -18,17 +18,17 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import mu.KLogger
 import mu.KotlinLogging
-import no.nav.dagpenger.innsyn.lookup.AktoerRegisterLookup
+import no.nav.dagpenger.innsyn.lookup.AktørregisterLookup
 import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
-import no.nav.dagpenger.innsyn.lookup.InnsynProducer
+import no.nav.dagpenger.innsyn.lookup.BehovProducer
 import no.nav.dagpenger.innsyn.lookup.InntektPond
-import no.nav.dagpenger.innsyn.lookup.KafkaInnsynProducer
+import no.nav.dagpenger.innsyn.lookup.KafkaBehovProducer
 import no.nav.dagpenger.innsyn.lookup.KafkaInntektConsumer
 import no.nav.dagpenger.innsyn.lookup.objects.HashMapPacketStore
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.lookup.producerConfig
 import no.nav.dagpenger.innsyn.monitoring.HealthCheck
-import no.nav.dagpenger.innsyn.routing.behov
+import no.nav.dagpenger.innsyn.routing.inntekt
 import no.nav.dagpenger.innsyn.routing.naischecks
 import no.nav.dagpenger.innsyn.settings.Configuration
 import no.nav.dagpenger.streams.KafkaCredential
@@ -56,7 +56,7 @@ fun main() {
         it.start()
     }
 
-    val kafkaProducer = KafkaInnsynProducer(producerConfig(
+    val kafkaProducer = KafkaBehovProducer(producerConfig(
             APPLICATION_NAME,
             config.kafka.brokers,
             KafkaCredential(config.kafka.user, config.kafka.password)
@@ -64,7 +64,7 @@ fun main() {
 
     val brLookup = BrønnøysundLookup(config.application.enhetsregisteretUrl)
 
-    val aktoerRegisterLookup = AktoerRegisterLookup(config.application.aktoerregisteretUrl)
+    val aktoerRegisterLookup = AktørregisterLookup(config.application.aktoerregisteretUrl)
 
     logger.debug("Creating application with port ${config.application.httpPort}")
     val app = embeddedServer(Netty, port = config.application.httpPort) {
@@ -89,10 +89,10 @@ fun main() {
 
 fun Application.innsynAPI(
     packetStore: PacketStore,
-    kafkaProducer: InnsynProducer,
+    kafkaProducer: BehovProducer,
     jwkProvider: JwkProvider,
     healthChecks: List<HealthCheck>,
-    aktoerRegisterLookup: AktoerRegisterLookup,
+    aktoerRegisterLookup: AktørregisterLookup,
     brønnøysundLookup: BrønnøysundLookup
 ) {
 
@@ -137,7 +137,7 @@ fun Application.innsynAPI(
     }
 
     routing {
-        behov(packetStore, kafkaProducer, aktoerRegisterLookup, brønnøysundLookup)
+        inntekt(packetStore, kafkaProducer, aktoerRegisterLookup, brønnøysundLookup)
         naischecks(healthChecks)
     }
 }

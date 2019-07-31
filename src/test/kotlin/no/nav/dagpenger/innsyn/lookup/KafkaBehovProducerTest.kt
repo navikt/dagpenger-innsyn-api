@@ -1,8 +1,6 @@
-package no.nav.dagpenger.innsyn.streams
+package no.nav.dagpenger.innsyn.lookup
 
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
-import no.nav.dagpenger.innsyn.lookup.KafkaInnsynProducer
-import no.nav.dagpenger.innsyn.lookup.producerConfig
 import org.junit.jupiter.api.Test
 import org.testcontainers.containers.KafkaContainer
 import java.time.LocalDate
@@ -21,7 +19,7 @@ internal class KafkaBehovProducerTest {
 
     @Test
     fun `Produce packet should success`() {
-        KafkaInnsynProducer(producerConfig("APP", Kafka.instance.bootstrapServers, null)).apply {
+        KafkaBehovProducer(producerConfig("APP", Kafka.instance.bootstrapServers, null)).apply {
             val metadata = produceEvent(Behov(aktørId = "12345678901", beregningsDato = LocalDate.now())).get(5, TimeUnit.SECONDS)
 
             assertNotNull(metadata)

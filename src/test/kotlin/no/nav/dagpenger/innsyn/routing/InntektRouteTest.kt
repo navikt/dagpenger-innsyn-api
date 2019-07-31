@@ -1,4 +1,4 @@
-package no.nav.dagpenger.innsyn.restapi
+package no.nav.dagpenger.innsyn.routing
 
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
@@ -11,9 +11,9 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verifyAll
 import no.nav.dagpenger.innsyn.JwtStub
-import no.nav.dagpenger.innsyn.lookup.AktoerRegisterLookup
 import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
-import no.nav.dagpenger.innsyn.lookup.InnsynProducer
+import no.nav.dagpenger.innsyn.lookup.AktørregisterLookup
+import no.nav.dagpenger.innsyn.lookup.BehovProducer
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.settings.Configuration
 import org.junit.jupiter.api.Test
@@ -43,7 +43,7 @@ private object mockContainer {
         mockContainer.instance.getMappedPort(3050) +
         "/br/"
 
-    val aktoerRegister = AktoerRegisterLookup(url = aktørURL)
+    val aktoerRegister = AktørregisterLookup(url = aktørURL)
 
     val brønnøysundLookup = BrønnøysundLookup(url = brURL)
 }
@@ -58,7 +58,7 @@ class InntektRouteTest {
     @Test
     fun `Valid request to inntekt endpoint should succeed and produce an event to Kafka`() {
 
-        val kafkaMock = mockk<InnsynProducer>(relaxed = true)
+        val kafkaMock = mockk<BehovProducer>(relaxed = true)
 
         val slot = slot<String>()
 
@@ -72,7 +72,7 @@ class InntektRouteTest {
             kafkaProducer = kafkaMock,
             packetStore = storeMock,
             jwkProvider = jwtStub.stubbedJwkProvider(),
-            aktoerRegisterLookup = mockContainer.aktoerRegister,
+            aktørregisterLookup = mockContainer.aktoerRegister,
             brønnøysundLookup = mockContainer.brønnøysundLookup)
         ) {
             handleRequest(HttpMethod.Get, config.application.applicationUrl) {
@@ -91,7 +91,7 @@ class InntektRouteTest {
     @Test
     fun `504 response on timeout`() {
 
-        val kafkaMock = mockk<InnsynProducer>(relaxed = true)
+        val kafkaMock = mockk<BehovProducer>(relaxed = true)
 
         val slot = slot<String>()
 
@@ -105,7 +105,7 @@ class InntektRouteTest {
             kafkaProducer = kafkaMock,
             packetStore = storeMock,
             jwkProvider = jwtStub.stubbedJwkProvider(),
-            aktoerRegisterLookup = mockContainer.aktoerRegister,
+            aktørregisterLookup = mockContainer.aktoerRegister,
             brønnøysundLookup = mockContainer.brønnøysundLookup)
         ) {
             handleRequest(HttpMethod.Get, config.application.applicationUrl) {

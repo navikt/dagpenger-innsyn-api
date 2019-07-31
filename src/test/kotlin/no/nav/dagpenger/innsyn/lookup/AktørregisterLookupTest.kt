@@ -1,17 +1,16 @@
-package no.nav.dagpenger.innsyn.integration
+package no.nav.dagpenger.innsyn.lookup
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import no.nav.dagpenger.innsyn.JwtStub
-import no.nav.dagpenger.innsyn.lookup.AktoerRegisterLookup
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-class AktoerIDFromIDTokenTest {
+class AktørregisterLookupTest {
 
     val jwtStub = JwtStub()
     private val token = jwtStub.createTokenFor("user")
@@ -48,7 +47,7 @@ fun `Successful fetch of aktoerId`() {
                     .willReturn(WireMock.aResponse().withBody(validJsonBody))
     )
 
-    val aktoerID = AktoerRegisterLookup(url = server.url("")).getGjeldendeAktoerIDFromIDToken(token, testFnr)
+    val aktoerID = AktørregisterLookup(url = server.url("")).getGjeldendeAktørIDFromIDToken(token, testFnr)
     assertEquals(testAktoerID, aktoerID)
 }
 
@@ -62,7 +61,7 @@ fun `No aktoerId in Aktørregisteret response should return empty string`() {
             .willReturn(WireMock.aResponse().withBody(validJsonBodyWithEmptyIdenter))
     )
 
-    val aktoerId = AktoerRegisterLookup(url = server.url("")).getGjeldendeAktoerIDFromIDToken(token, testFnr)
+    val aktoerId = AktørregisterLookup(url = server.url("")).getGjeldendeAktørIDFromIDToken(token, testFnr)
     assertEquals("", aktoerId)
 }
 

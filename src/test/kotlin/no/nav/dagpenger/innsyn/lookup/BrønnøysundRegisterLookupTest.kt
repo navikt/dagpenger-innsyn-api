@@ -1,4 +1,4 @@
-package no.nav.dagpenger.innsyn.integration
+package no.nav.dagpenger.innsyn.lookup
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-class NameFromBRTest {
+class BrønnøysundRegisterLookupTest {
     companion object {
         val server: WireMockServer = WireMockServer(WireMockConfiguration.options().dynamicPort())
 
