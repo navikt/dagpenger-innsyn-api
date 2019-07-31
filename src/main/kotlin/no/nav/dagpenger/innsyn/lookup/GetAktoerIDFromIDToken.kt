@@ -18,6 +18,7 @@ class AktoerRegisterLookup(private val url: String = Configuration().application
         try {
             return getFirstMatchingAktoerIDFromIdent(ident, getAktoerResponse(idToken, ident, url).jsonObject)
         } catch (e: Exception) {
+            logger.error("Attempted to retrieve from: $url")
             logger.error("Could not successfully retrieve the aktoerID from aktoerregisteret's response", e)
         }
         return ""
@@ -31,6 +32,7 @@ class AktoerRegisterLookup(private val url: String = Configuration().application
     }
 
     private fun getAktoerResponse(idToken: String, ident: String, url: String): Response {
+        logger.info("Attempting to retrieve with idToken: $idToken, ident: $ident, and url: $url")
         return khttp.get(
                 url = url,
                 headers = mapOf(
