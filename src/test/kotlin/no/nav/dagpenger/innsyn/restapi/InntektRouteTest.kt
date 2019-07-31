@@ -49,8 +49,8 @@ class InntektRouteTest {
         println("Before Exposed Service")
         println(Paths.get("").toAbsolutePath())
         aktoerMockContainer
-                .withExposedPorts(3050, 3050)
-                .waitingFor(Wait.forHttp("/"))
+                .withExposedPorts(3050)
+                .waitingFor(Wait.forListeningPort())
         println("Service exposed")
         aktoerMockContainer.start()
         println("Service started")
