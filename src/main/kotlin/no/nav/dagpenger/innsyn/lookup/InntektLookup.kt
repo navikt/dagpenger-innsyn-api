@@ -16,10 +16,11 @@ import no.nav.dagpenger.innsyn.testDataSpesifisertInntekt
 
 private val logger: KLogger = KotlinLogging.logger {}
 
-fun getInntektResponse(behov: Behov,
-                       kafkaProducer: BehovProducer,
-                       packetStore: PacketStore
-) : Response {
+fun getInntektResponse(
+    behov: Behov,
+    kafkaProducer: BehovProducer,
+    packetStore: PacketStore
+): Response {
 
     try {
         kafkaProducer.produceEvent(behov)
@@ -30,8 +31,7 @@ fun getInntektResponse(behov: Behov,
                 }
             }
         }
-    }
-    catch (e: TimeoutCancellationException) {
+    } catch (e: TimeoutCancellationException) {
         logger.error("Timed out waiting for kafka", e)
         return Response(HttpStatusCode.GatewayTimeout, moshiInstance.adapter(UserInformation::class.java).toJson(convertInntektDataIntoUserInformation(testDataSpesifisertInntekt)))
     }

@@ -82,11 +82,11 @@ fun main() {
 }
 
 fun Application.innsynAPI(
-        packetStore: PacketStore,
-        kafkaProducer: BehovProducer,
-        jwkProvider: JwkProvider,
-        healthChecks: List<HealthCheck>,
-        aktørregisterLookup: AktørregisterLookup
+    packetStore: PacketStore,
+    kafkaProducer: BehovProducer,
+    jwkProvider: JwkProvider,
+    healthChecks: List<HealthCheck>,
+    aktørregisterLookup: AktørregisterLookup
 ) {
 
     logger.debug("Installing jackson for content negotiation")
