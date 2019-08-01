@@ -14,12 +14,13 @@ fun getInntekt(
     behov: Behov,
     kafkaProducer: BehovProducer,
     packetStore: PacketStore,
-    brønnøysundLookup: BrønnøysundLookup
+    brønnøysundLookup: BrønnøysundLookup,
+    timeout: Long = 30000
 ) : String {
 
     kafkaProducer.produceEvent(behov)
     runBlocking {
-        withTimeout(30000) {
+        withTimeout(timeout) {
             while (!(packetStore.isDone(behov.behovId))) {
                 delay(500)
             }

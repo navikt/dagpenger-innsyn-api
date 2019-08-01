@@ -5,15 +5,13 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
-import io.mockk.Called
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import io.mockk.verifyAll
 import no.nav.dagpenger.innsyn.JwtStub
-import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
 import no.nav.dagpenger.innsyn.lookup.AktørregisterLookup
 import no.nav.dagpenger.innsyn.lookup.BehovProducer
+import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.settings.Configuration
 import org.junit.jupiter.api.Test
@@ -23,31 +21,6 @@ import java.nio.file.Paths
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-private object mockContainer {
-    private val DOCKER_PATH = Paths.get("aktoer-mock/")
-
-    class KGenericContainer : GenericContainer<KGenericContainer>(ImageFromDockerfile()
-        .withFileFromPath(".", DOCKER_PATH)
-        .withDockerfilePath("./Dockerfile.ci"))
-
-    private val instance by lazy {
-        KGenericContainer().apply {
-            withExposedPorts(3050)
-            start()
-        }
-    }
-    private val aktørURL = "http://" + instance.containerIpAddress + ":" + instance.getMappedPort(3050) + "/aktoerregister/api/v1/identer"
-    private val brURL = "http://" +
-        mockContainer.instance.containerIpAddress +
-        ":" +
-        mockContainer.instance.getMappedPort(3050) +
-        "/br/"
-
-    val aktoerRegister = AktørregisterLookup(url = aktørURL)
-
-    val brønnøysundLookup = BrønnøysundLookup(url = brURL)
-}
-
 class InntektRouteTest {
 
     private val config = Configuration()
@@ -56,7 +29,7 @@ class InntektRouteTest {
     private val token = jwtStub.createTokenFor(config.application.oidcUser)
 
     @Test
-    fun `Valid request to inntekt endpoint should succeed and produce an event to Kafka`() {
+    fun `Valid request to inntekt endpoint should succeed`() {
 
         val kafkaMock = mockk<BehovProducer>(relaxed = true)
 
@@ -81,10 +54,6 @@ class InntektRouteTest {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertTrue(requestHandled)
             }
-        }
-
-        verifyAll {
-            kafkaMock.produceEvent(any())
         }
     }
 
@@ -115,10 +84,6 @@ class InntektRouteTest {
                 assertTrue(requestHandled)
             }
         }
-
-        verifyAll {
-            storeMock.get(slot.toString()) wasNot Called
-        }
     }
 
     @Test
@@ -142,4 +107,29 @@ class InntektRouteTest {
             }.apply { assertEquals(HttpStatusCode.Unauthorized, response.status()) }
         }
     }
+}
+
+private object mockContainer {
+    private val DOCKER_PATH = Paths.get("aktoer-mock/")
+
+    class KGenericContainer : GenericContainer<KGenericContainer>(ImageFromDockerfile()
+            .withFileFromPath(".", DOCKER_PATH)
+            .withDockerfilePath("./Dockerfile.ci"))
+
+    private val instance by lazy {
+        KGenericContainer().apply {
+            withExposedPorts(3050)
+            start()
+        }
+    }
+    private val aktørURL = "http://" + instance.containerIpAddress + ":" + instance.getMappedPort(3050) + "/aktoerregister/api/v1/identer"
+    private val brURL = "http://" +
+            mockContainer.instance.containerIpAddress +
+            ":" +
+            mockContainer.instance.getMappedPort(3050) +
+            "/br/"
+
+    val aktoerRegister = AktørregisterLookup(url = aktørURL)
+
+    val brønnøysundLookup = BrønnøysundLookup(url = brURL)
 }
