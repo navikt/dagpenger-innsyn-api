@@ -11,37 +11,52 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verifyAll
 import no.nav.dagpenger.innsyn.JwtStub
+import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
 import no.nav.dagpenger.innsyn.lookup.AktørregisterLookup
 import no.nav.dagpenger.innsyn.lookup.BehovProducer
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.settings.Configuration
-import org.junit.ClassRule
 import org.junit.jupiter.api.Test
-import org.testcontainers.containers.DockerComposeContainer
-import java.io.File
+import org.testcontainers.containers.GenericContainer
+import org.testcontainers.images.builder.ImageFromDockerfile
+import java.nio.file.Paths
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+private object mockContainer {
+    private val DOCKER_PATH = Paths.get("aktoer-mock/")
+
+    class KGenericContainer : GenericContainer<KGenericContainer>(ImageFromDockerfile()
+        .withFileFromPath(".", DOCKER_PATH)
+        .withDockerfilePath("./Dockerfile.ci"))
+
+    private val instance by lazy {
+        KGenericContainer().apply {
+            withExposedPorts(3050)
+            start()
+        }
+    }
+    private val aktørURL = "http://" + instance.containerIpAddress + ":" + instance.getMappedPort(3050) + "/aktoerregister/api/v1/identer"
+    private val brURL = "http://" +
+        mockContainer.instance.containerIpAddress +
+        ":" +
+        mockContainer.instance.getMappedPort(3050) +
+        "/br/"
+
+    val aktoerRegister = AktørregisterLookup(url = aktørURL)
+
+    val brønnøysundLookup = BrønnøysundLookup(url = brURL)
+}
+
 class InntektRouteTest {
 
-    companion object {
-        class KDockerComposeContainer(path: File) : DockerComposeContainer<KDockerComposeContainer>(path)
-
-        @ClassRule
-        val env = KDockerComposeContainer(File(".${File.separator}docker-compose.yml"))
-    }
-
     private val config = Configuration()
-
     private val jwtStub = JwtStub(config.application.jwksIssuer)
+
     private val token = jwtStub.createTokenFor(config.application.oidcUser)
 
     @Test
     fun `Valid request to inntekt endpoint should succeed and produce an event to Kafka`() {
-        env.withExposedService("mockserver", 3050)
-        env.start()
-
-        val url = "http://" + env.getServiceHost("mockserver", 3050) + ":3050/aktoerregister/api/v1/identer"
 
         val kafkaMock = mockk<BehovProducer>(relaxed = true)
 
@@ -54,10 +69,11 @@ class InntektRouteTest {
         val cookie = "ID_token=$token"
 
         withTestApplication(MockApi(
-                kafkaProducer = kafkaMock,
-                packetStore = storeMock,
-                jwkProvider = jwtStub.stubbedJwkProvider(),
-                aktørregisterLookup = AktørregisterLookup(url = url))
+            kafkaProducer = kafkaMock,
+            packetStore = storeMock,
+            jwkProvider = jwtStub.stubbedJwkProvider(),
+            aktørregisterLookup = mockContainer.aktoerRegister,
+            brønnøysundLookup = mockContainer.brønnøysundLookup)
         ) {
             handleRequest(HttpMethod.Get, config.application.applicationUrl) {
                 addHeader(HttpHeaders.Cookie, cookie)
@@ -74,10 +90,6 @@ class InntektRouteTest {
 
     @Test
     fun `504 response on timeout`() {
-        env.withExposedService("mockserver", 3050)
-        env.start()
-
-        val url = "http://" + env.getServiceHost("mockserver", 3050) + ":3050/aktoerregister/api/v1/identer"
 
         val kafkaMock = mockk<BehovProducer>(relaxed = true)
 
@@ -90,10 +102,11 @@ class InntektRouteTest {
         val cookie = "ID_token=$token"
 
         withTestApplication(MockApi(
-                kafkaProducer = kafkaMock,
-                packetStore = storeMock,
-                jwkProvider = jwtStub.stubbedJwkProvider(),
-                aktørregisterLookup = AktørregisterLookup(url = url))
+            kafkaProducer = kafkaMock,
+            packetStore = storeMock,
+            jwkProvider = jwtStub.stubbedJwkProvider(),
+            aktørregisterLookup = mockContainer.aktoerRegister,
+            brønnøysundLookup = mockContainer.brønnøysundLookup)
         ) {
             handleRequest(HttpMethod.Get, config.application.applicationUrl) {
                 addHeader(HttpHeaders.Cookie, cookie)
@@ -111,9 +124,9 @@ class InntektRouteTest {
     @Test
     fun `Request missing ID token should be unauthorized`() {
         withTestApplication(MockApi(
-                jwkProvider = jwtStub.stubbedJwkProvider())) {
+            jwkProvider = jwtStub.stubbedJwkProvider())) {
             handleRequest(HttpMethod.Get, config.application.applicationUrl)
-                    .apply { assertEquals(HttpStatusCode.Unauthorized, response.status()) }
+                .apply { assertEquals(HttpStatusCode.Unauthorized, response.status()) }
         }
     }
 
@@ -123,7 +136,7 @@ class InntektRouteTest {
         val cookie = "ID_token=${anotherIssuer.createTokenFor("user")}"
 
         withTestApplication(MockApi(
-                jwkProvider = jwtStub.stubbedJwkProvider())) {
+            jwkProvider = jwtStub.stubbedJwkProvider())) {
             handleRequest(HttpMethod.Get, config.application.applicationUrl) {
                 addHeader(HttpHeaders.Cookie, cookie)
             }.apply { assertEquals(HttpStatusCode.Unauthorized, response.status()) }

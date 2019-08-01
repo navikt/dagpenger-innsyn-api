@@ -8,7 +8,7 @@ import kotlinx.coroutines.withTimeout
 import mu.KLogger
 import mu.KotlinLogging
 import no.nav.dagpenger.events.moshiInstance
-import no.nav.dagpenger.innsyn.conversion.convertInntektDataIntoUserInformation
+import no.nav.dagpenger.innsyn.conversion.getUserInformation
 import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
@@ -16,10 +16,12 @@ import no.nav.dagpenger.innsyn.testDataSpesifisertInntekt
 
 private val logger: KLogger = KotlinLogging.logger {}
 
-fun getInntektResponse(behov: Behov,
-                       kafkaProducer: BehovProducer,
-                       packetStore: PacketStore
-) : Response {
+fun getInntektResponse(
+    behov: Behov,
+    kafkaProducer: BehovProducer,
+    packetStore: PacketStore,
+    brønnøysundLookup: BrønnøysundLookup
+): Response {
 
     try {
         kafkaProducer.produceEvent(behov)
@@ -30,13 +32,12 @@ fun getInntektResponse(behov: Behov,
                 }
             }
         }
-    }
-    catch (e: TimeoutCancellationException) {
+    } catch (e: TimeoutCancellationException) {
         logger.error("Timed out waiting for kafka", e)
-        return Response(HttpStatusCode.GatewayTimeout, moshiInstance.adapter(UserInformation::class.java).toJson(convertInntektDataIntoUserInformation(testDataSpesifisertInntekt)))
+        return Response(HttpStatusCode.GatewayTimeout, moshiInstance.adapter(UserInformation::class.java).toJson(getUserInformation(testDataSpesifisertInntekt, brønnøysundLookup)))
     }
 
-    return Response(HttpStatusCode.OK, moshiInstance.adapter(UserInformation::class.java).toJson(convertInntektDataIntoUserInformation(testDataSpesifisertInntekt)))
+    return Response(HttpStatusCode.OK, moshiInstance.adapter(UserInformation::class.java).toJson(getUserInformation(testDataSpesifisertInntekt, brønnøysundLookup)))
 }
 
 data class Response(val statusCode: HttpStatusCode, val message: Any)

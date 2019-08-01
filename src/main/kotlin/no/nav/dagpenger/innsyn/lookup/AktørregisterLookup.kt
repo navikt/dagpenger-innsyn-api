@@ -18,6 +18,7 @@ class AktørregisterLookup(private val url: String = Configuration().application
         try {
             return getFirstMatchingAktørIDFromIdent(ident, getAktørResponse(idToken, ident, url).jsonObject)
         } catch (e: Exception) {
+            logger.error("Attempted to retrieve from: $url")
             logger.error("Could not successfully retrieve the aktoerID from aktoerregisteret's response", e)
         }
         return ""
