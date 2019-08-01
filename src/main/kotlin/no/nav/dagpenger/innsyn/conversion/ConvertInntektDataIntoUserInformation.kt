@@ -29,5 +29,5 @@ fun getOrgMapping(spesifisertInntekt: SpesifisertInntekt, brønnøysundLookup: B
             .flatMap { it.posteringer
                     .map { it.virksomhet!!.identifikator } }
             .distinct()
-            .associateBy { brønnøysundLookup.getNameFromBroennoeysundRegisterByID(it) }
+            .associateBy { brønnøysundLookup.getNameFromBrønnøysundRegisterByID(it) }
 }

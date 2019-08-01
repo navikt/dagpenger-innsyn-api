@@ -8,7 +8,7 @@ private val logger = KotlinLogging.logger { }
 class BrønnøysundLookup(private val url: String = Configuration().application.enhetsregisteretUrl) {
     private val cache: HashMap<String, String> = HashMap()
 
-    fun getNameFromBroennoeysundRegisterByID(id: String): String {
+    fun getNameFromBrønnøysundRegisterByID(id: String): String {
         logger.info("Attempting to retrieve br from: $url for $id")
         if (cache.containsKey(id)) {
             logger.debug("Using cache for $id : ${cache[id]}")
