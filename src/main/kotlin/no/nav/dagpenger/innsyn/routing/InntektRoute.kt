@@ -11,11 +11,12 @@ import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.get
 import io.ktor.util.pipeline.PipelineContext
+import kotlinx.coroutines.TimeoutCancellationException
 import mu.KLogger
 import mu.KotlinLogging
 import no.nav.dagpenger.innsyn.lookup.AktørregisterLookup
 import no.nav.dagpenger.innsyn.lookup.BehovProducer
-import no.nav.dagpenger.innsyn.lookup.getInntektResponse
+import no.nav.dagpenger.innsyn.lookup.getInntekt
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.settings.Configuration
@@ -39,8 +40,13 @@ internal fun Routing.inntekt(
                 val aktørId = aktørregisterLookup.getGjeldendeAktørIDFromIDToken(idToken, getSubject())
                 val behov = mapRequestToBehov(aktørId, LocalDate.now())
 
-                val (statusCode, response) = getInntektResponse(behov, kafkaProducer, packetStore)
-                call.respond(statusCode, response)
+                try {
+                    call.respond(HttpStatusCode.OK, getInntekt(kafkaProducer, behov, packetStore))
+                }
+                catch (e: TimeoutCancellationException) {
+                    logger.error("Timed out waiting for kafka", e)
+                    call.respond(HttpStatusCode.GatewayTimeout, "Could not fetch inntekt")
+                }
             }
         }
     }

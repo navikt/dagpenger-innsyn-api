@@ -6,6 +6,8 @@ import no.nav.dagpenger.events.inntekt.v1.AktørType
 import no.nav.dagpenger.events.inntekt.v1.InntektId
 import no.nav.dagpenger.events.inntekt.v1.SpesifisertInntekt
 import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
+import no.nav.dagpenger.innsyn.expectedEmployerSummaries
+import no.nav.dagpenger.innsyn.expectedMonthsIncomeInformation
 import no.nav.dagpenger.innsyn.testDataSpesifisertInntekt
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
