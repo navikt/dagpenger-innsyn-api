@@ -64,7 +64,7 @@ fun main() {
 
     val brLookup = BrønnøysundLookup(config.application.enhetsregisteretUrl)
 
-    val aktoerRegisterLookup = AktørregisterLookup(config.application.aktoerregisteretUrl)
+    val aktørregisterLookup = AktørregisterLookup(config.application.aktoerregisteretUrl)
 
     logger.debug("Creating application with port ${config.application.httpPort}")
     val app = embeddedServer(Netty, port = config.application.httpPort) {
@@ -73,7 +73,7 @@ fun main() {
                 kafkaProducer = kafkaProducer,
                 jwkProvider = jwkProvider,
                 healthChecks = listOf(kafkaConsumer as HealthCheck, kafkaProducer as HealthCheck),
-                aktoerRegisterLookup = aktoerRegisterLookup,
+                aktørregisterLookup = aktørregisterLookup,
                 brønnøysundLookup = brLookup
         )
     }
@@ -88,12 +88,12 @@ fun main() {
 }
 
 fun Application.innsynAPI(
-    packetStore: PacketStore,
-    kafkaProducer: BehovProducer,
-    jwkProvider: JwkProvider,
-    healthChecks: List<HealthCheck>,
-    aktoerRegisterLookup: AktørregisterLookup,
-    brønnøysundLookup: BrønnøysundLookup
+        packetStore: PacketStore,
+        kafkaProducer: BehovProducer,
+        jwkProvider: JwkProvider,
+        healthChecks: List<HealthCheck>,
+        aktørregisterLookup: AktørregisterLookup,
+        brønnøysundLookup: BrønnøysundLookup
 ) {
 
     logger.debug("Installing jackson for content negotiation")
@@ -137,7 +137,7 @@ fun Application.innsynAPI(
     }
 
     routing {
-        inntekt(packetStore, kafkaProducer, aktoerRegisterLookup, brønnøysundLookup)
+        inntekt(packetStore, kafkaProducer, aktørregisterLookup, brønnøysundLookup)
         naischecks(healthChecks)
     }
 }
