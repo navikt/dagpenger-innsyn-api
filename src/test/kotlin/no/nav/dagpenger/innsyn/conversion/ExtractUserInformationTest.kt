@@ -61,21 +61,21 @@ class ExtractUserInformationTest {
 
     @Test
     fun `Get correct employerSummaries`() {
-        assertEquals(expectedEmployerSummaries, getEmployerSummaries(testDataSpesifisertInntekt))
+        assertEquals(expectedEmployerSummaries, getEmployerSummaries(testDataSpesifisertInntekt, emptyMap()))
     }
 
     @Test
     fun `No månedsinntekter returns empty employerSummaries`() {
-        assertEquals(listOf(), getEmployerSummaries(empty))
+        assertEquals(listOf(), getEmployerSummaries(empty, emptyMap()))
     }
 
     @Test
     fun `Get correct monthsIncomeInformation`() {
-        assertEquals(expectedMonthsIncomeInformation, getMonthsIncomeInformation(testDataSpesifisertInntekt))
+        assertEquals(expectedMonthsIncomeInformation, getMonthsIncomeInformation(testDataSpesifisertInntekt, emptyMap()))
     }
 
     @Test
     fun `No månedsinntekter returns empty monthsIncomeInformation`() {
-        assertEquals(listOf(), getMonthsIncomeInformation(empty))
+        assertEquals(listOf(), getMonthsIncomeInformation(empty, emptyMap()))
     }
 }

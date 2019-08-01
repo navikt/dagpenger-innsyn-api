@@ -16,6 +16,7 @@ import mu.KotlinLogging
 import no.nav.dagpenger.innsyn.lookup.AktørregisterLookup
 import no.nav.dagpenger.innsyn.lookup.BehovProducer
 import no.nav.dagpenger.innsyn.lookup.getInntektResponse
+import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.settings.Configuration
@@ -27,7 +28,8 @@ private val config = Configuration()
 internal fun Routing.inntekt(
     packetStore: PacketStore,
     kafkaProducer: BehovProducer,
-    aktørregisterLookup: AktørregisterLookup
+    aktørregisterLookup: AktørregisterLookup,
+    brønnøysundLookup: BrønnøysundLookup
 ) {
     authenticate("jwt") {
         get(config.application.applicationUrl) {
@@ -39,7 +41,7 @@ internal fun Routing.inntekt(
                 val aktørId = aktørregisterLookup.getGjeldendeAktørIDFromIDToken(idToken, getSubject())
                 val behov = mapRequestToBehov(aktørId, LocalDate.now())
 
-                val (statusCode, response) = getInntektResponse(behov, kafkaProducer, packetStore)
+                val (statusCode, response) = getInntektResponse(behov, kafkaProducer, packetStore, brønnøysundLookup)
                 call.respond(statusCode, response)
             }
         }

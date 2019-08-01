@@ -6,7 +6,6 @@ import no.nav.dagpenger.innsyn.conversion.objects.EmployerSummary
 import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
 import no.nav.dagpenger.innsyn.conversion.objects.Income
 import no.nav.dagpenger.innsyn.conversion.objects.MonthIncomeInformation
-import no.nav.dagpenger.innsyn.lookup.getNameFromBrønnøysundRegisterByID
 import no.nav.dagpenger.events.inntekt.v1.SpesifisertInntekt
 import java.time.YearMonth
 
@@ -29,7 +28,7 @@ fun isSuccessiveMonth(monthOne: YearMonth, monthTwo: YearMonth): Boolean {
     return monthOne.plusMonths(1) == monthTwo
 }
 
-fun getEmployerSummaries(spesifisertInntekt: SpesifisertInntekt): List<EmployerSummary> {
+fun getEmployerSummaries(spesifisertInntekt: SpesifisertInntekt, orgMapping: Map<String, String>): List<EmployerSummary> {
     return spesifisertInntekt.månedsInntekter
             .filter { it.årMåned in get36MonthRange() }
             .flatMap { månedsInntekt -> månedsInntekt.posteringer.map { ArbeidsgiverMaanedInntekt(
@@ -39,24 +38,24 @@ fun getEmployerSummaries(spesifisertInntekt: SpesifisertInntekt): List<EmployerS
             ) } }
             .groupBy { it.arbeidsgiver }
             .map { groupedEmployerInfo -> EmployerSummary(
-                    name = getNameFromBrønnøysundRegisterByID(id = groupedEmployerInfo.key),
+                    name = orgMapping.getOrElse(groupedEmployerInfo.key) { groupedEmployerInfo.key },
                     orgID = groupedEmployerInfo.key,
                     income = groupedEmployerInfo.value.sumByDouble { it.inntekt },
                     employmentPeriodes = groupYearMonthIntoPeriods(groupedEmployerInfo.value.map { it.maaned })
             ) }
 }
 
-fun getMonthsIncomeInformation(spesifisertInntekt: SpesifisertInntekt): List<MonthIncomeInformation> {
+fun getMonthsIncomeInformation(spesifisertInntekt: SpesifisertInntekt, orgMapping: Map<String, String>): List<MonthIncomeInformation> {
     return spesifisertInntekt.månedsInntekter
             .filter { it.årMåned in get36MonthRange() }
             .map { månedsInntekt -> MonthIncomeInformation(
                     month = månedsInntekt.årMåned,
                     totalIncomeMonth = månedsInntekt.posteringer.sumByDouble { it.beløp.toDouble() }, // TODO: Type safety of BigDecimal vs Double
-                    employers = getEmployersForMonth(månedsInntekt.posteringer)
+                    employers = getEmployersForMonth(månedsInntekt.posteringer, orgMapping)
             ) }
 }
 
-fun getEmployersForMonth(posteringer: List<Postering>): List<Employer> {
+fun getEmployersForMonth(posteringer: List<Postering>, orgMapping: Map<String, String>): List<Employer> {
     return posteringer
             .groupBy { it.virksomhet!!.identifikator }
             .mapValues { employerPosteringMap -> employerPosteringMap.value
@@ -65,7 +64,7 @@ fun getEmployersForMonth(posteringer: List<Postering>): List<Employer> {
                             postering.posteringsType.beskrivelse
                     ) } }
             .map { employerIncomeMap -> Employer(
-                    name = getNameFromBrønnøysundRegisterByID(id = employerIncomeMap.key),
+                    name = orgMapping.getOrElse(employerIncomeMap.key) { employerIncomeMap.key },
                     orgID = employerIncomeMap.key,
                     incomes = employerIncomeMap.value
             ) }

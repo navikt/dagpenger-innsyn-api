@@ -19,6 +19,7 @@ import io.ktor.server.netty.Netty
 import mu.KLogger
 import mu.KotlinLogging
 import no.nav.dagpenger.innsyn.lookup.AktørregisterLookup
+import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
 import no.nav.dagpenger.innsyn.lookup.BehovProducer
 import no.nav.dagpenger.innsyn.lookup.InntektPond
 import no.nav.dagpenger.innsyn.lookup.KafkaBehovProducer
@@ -61,6 +62,10 @@ fun main() {
             KafkaCredential(config.kafka.user, config.kafka.password)
     ))
 
+    val brLookup = BrønnøysundLookup(config.application.enhetsregisteretUrl)
+
+    val aktørregisterLookup = AktørregisterLookup(config.application.aktoerregisteretUrl)
+
     logger.debug("Creating application with port ${config.application.httpPort}")
     val app = embeddedServer(Netty, port = config.application.httpPort) {
         innsynAPI(
@@ -68,7 +73,8 @@ fun main() {
                 kafkaProducer = kafkaProducer,
                 jwkProvider = jwkProvider,
                 healthChecks = listOf(kafkaConsumer as HealthCheck, kafkaProducer as HealthCheck),
-                aktørregisterLookup = AktørregisterLookup()
+                aktørregisterLookup = aktørregisterLookup,
+                brønnøysundLookup = brLookup
         )
     }
 
@@ -82,11 +88,12 @@ fun main() {
 }
 
 fun Application.innsynAPI(
-    packetStore: PacketStore,
-    kafkaProducer: BehovProducer,
-    jwkProvider: JwkProvider,
-    healthChecks: List<HealthCheck>,
-    aktørregisterLookup: AktørregisterLookup
+        packetStore: PacketStore,
+        kafkaProducer: BehovProducer,
+        jwkProvider: JwkProvider,
+        healthChecks: List<HealthCheck>,
+        aktørregisterLookup: AktørregisterLookup,
+        brønnøysundLookup: BrønnøysundLookup
 ) {
 
     logger.debug("Installing jackson for content negotiation")
@@ -130,7 +137,7 @@ fun Application.innsynAPI(
     }
 
     routing {
-        inntekt(packetStore, kafkaProducer, aktørregisterLookup)
+        inntekt(packetStore, kafkaProducer, aktørregisterLookup, brønnøysundLookup)
         naischecks(healthChecks)
     }
 }
