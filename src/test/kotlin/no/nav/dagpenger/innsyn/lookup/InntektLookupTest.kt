@@ -31,7 +31,8 @@ class InntektLookupTest {
         withTestApplication { getInntekt(
                 kafkaProducer = kafkaMock,
                 packetStore = storeMock,
-                behov = behov
+                behov = behov,
+                brønnøysundLookup = mockk()
         ) }.apply {
             assertEquals(
                     moshiInstance.adapter(UserInformation::class.java).toJson(expectedFinalResult),

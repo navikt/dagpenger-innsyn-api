@@ -4,13 +4,19 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import no.nav.dagpenger.events.moshiInstance
-import no.nav.dagpenger.innsyn.conversion.convertInntektDataIntoUserInformation
+import no.nav.dagpenger.innsyn.conversion.getUserInformation
 import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.testDataSpesifisertInntekt
 
-fun getInntekt(kafkaProducer: BehovProducer, behov: Behov, packetStore: PacketStore) : String {
+fun getInntekt(
+    behov: Behov,
+    kafkaProducer: BehovProducer,
+    packetStore: PacketStore,
+    brønnøysundLookup: BrønnøysundLookup
+) : String {
+
     kafkaProducer.produceEvent(behov)
     runBlocking {
         withTimeout(30000) {
@@ -19,5 +25,6 @@ fun getInntekt(kafkaProducer: BehovProducer, behov: Behov, packetStore: PacketSt
             }
         }
     }
-    return moshiInstance.adapter(UserInformation::class.java).toJson(convertInntektDataIntoUserInformation(testDataSpesifisertInntekt))
+
+    return moshiInstance.adapter(UserInformation::class.java).toJson(getUserInformation(testDataSpesifisertInntekt, brønnøysundLookup))
 }

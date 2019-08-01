@@ -40,7 +40,7 @@ class BrønnøysundRegisterLookupTest {
                 WireMock.get(WireMock.urlEqualTo("/$testOrgId"))
                         .willReturn(WireMock.aResponse().withBody(validJsonBodyWithNorskOrg))
         )
-        val orgName = getNameFromBrønnøysundRegisterByID(testOrgId, server.url(""))
+        val orgName = BrønnøysundLookup(server.url("")).getNameFromBrønnøysundRegisterByID(testOrgId)
         assertEquals(testName, orgName)
     }
 
@@ -53,7 +53,7 @@ class BrønnøysundRegisterLookupTest {
                         .willReturn(WireMock.notFound())
         )
 
-        val orgId = getNameFromBrønnøysundRegisterByID(testOrgId, server.url(""))
+        val orgId = BrønnøysundLookup(server.url("")).getNameFromBrønnøysundRegisterByID(testOrgId)
         assertEquals(testOrgId, orgId)
     }
 

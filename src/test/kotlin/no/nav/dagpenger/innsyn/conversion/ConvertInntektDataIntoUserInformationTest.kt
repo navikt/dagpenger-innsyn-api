@@ -9,6 +9,6 @@ class ConvertInntektDataIntoUserInformationTest {
 
     @Test
     fun `Successfully convert SpesifisertInntekt to UserInformation`() {
-        assertEquals(expectedFinalResult, convertInntektDataIntoUserInformation(spesifisertInntekt = testDataSpesifisertInntekt))
+        assertEquals(expectedFinalResult, convertInntektDataIntoUserInformation(spesifisertInntekt = testDataSpesifisertInntekt, orgMapping = emptyMap()))
     }
 }

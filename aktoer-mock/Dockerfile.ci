@@ -1,0 +1,7 @@
+FROM navikt/node-express
+
+COPY . ./
+
+EXPOSE 3050
+
+CMD ["node", "server.js"]
