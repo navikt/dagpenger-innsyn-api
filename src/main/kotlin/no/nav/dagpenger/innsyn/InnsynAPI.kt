@@ -20,12 +20,11 @@ import mu.KLogger
 import mu.KotlinLogging
 import no.nav.dagpenger.innsyn.lookup.AktørregisterLookup
 import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
-import no.nav.dagpenger.innsyn.lookup.BehovProducer
+import no.nav.dagpenger.innsyn.lookup.InntektLookup
 import no.nav.dagpenger.innsyn.lookup.InntektPond
 import no.nav.dagpenger.innsyn.lookup.KafkaBehovProducer
 import no.nav.dagpenger.innsyn.lookup.KafkaInntektConsumer
 import no.nav.dagpenger.innsyn.lookup.objects.HashMapPacketStore
-import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.lookup.producerConfig
 import no.nav.dagpenger.innsyn.monitoring.HealthCheck
 import no.nav.dagpenger.innsyn.routing.inntekt
@@ -64,17 +63,17 @@ fun main() {
 
     val brLookup = BrønnøysundLookup(config.application.enhetsregisteretUrl)
 
+    val inntektLookup = InntektLookup(kafkaProducer, packetStore, brLookup)
+
     val aktørregisterLookup = AktørregisterLookup(config.application.aktoerregisteretUrl)
 
     logger.debug("Creating application with port ${config.application.httpPort}")
     val app = embeddedServer(Netty, port = config.application.httpPort) {
         innsynAPI(
-                packetStore = packetStore,
-                kafkaProducer = kafkaProducer,
                 jwkProvider = jwkProvider,
                 healthChecks = listOf(kafkaConsumer as HealthCheck, kafkaProducer as HealthCheck),
                 aktørregisterLookup = aktørregisterLookup,
-                brønnøysundLookup = brLookup
+                inntektLookup = inntektLookup
         )
     }
 
@@ -88,12 +87,10 @@ fun main() {
 }
 
 fun Application.innsynAPI(
-    packetStore: PacketStore,
-    kafkaProducer: BehovProducer,
     jwkProvider: JwkProvider,
     healthChecks: List<HealthCheck>,
     aktørregisterLookup: AktørregisterLookup,
-    brønnøysundLookup: BrønnøysundLookup
+    inntektLookup: InntektLookup
 ) {
 
     logger.debug("Installing jackson for content negotiation")
@@ -137,7 +134,7 @@ fun Application.innsynAPI(
     }
 
     routing {
-        inntekt(packetStore, kafkaProducer, aktørregisterLookup, brønnøysundLookup)
+        inntekt(aktørregisterLookup, inntektLookup)
         naischecks(healthChecks)
     }
 }

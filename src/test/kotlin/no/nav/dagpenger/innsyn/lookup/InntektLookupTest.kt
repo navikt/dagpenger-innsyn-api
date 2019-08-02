@@ -6,13 +6,11 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verifyAll
 import kotlinx.coroutines.TimeoutCancellationException
+import no.nav.dagpenger.innsyn.MockContainer
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.testcontainers.containers.GenericContainer
-import org.testcontainers.images.builder.ImageFromDockerfile
-import java.nio.file.Paths
 import java.time.LocalDate
 
 class InntektLookupTest {
@@ -29,17 +27,13 @@ class InntektLookupTest {
 
         val behov = Behov(aktørId = "1", beregningsDato = LocalDate.now())
 
-        getInntekt(
-            kafkaProducer = kafkaMock,
-            packetStore = storeMock,
-            behov = behov,
-            brønnøysundLookup = mockContainer.brønnøysundLookup
-        )
+        InntektLookup(kafkaMock, storeMock, MockContainer.brønnøysundLookup)
+                .getInntekt(behov = behov)
 
         verifyAll {
             kafkaMock.produceEvent(behov)
             // TODO: Uncomment in production
-            //storeMock.get(slot.toString())
+            // storeMock.get(slot.toString())
         }
     }
 
@@ -54,42 +48,12 @@ class InntektLookupTest {
         val behov = Behov(aktørId = "1", beregningsDato = LocalDate.now())
 
         assertThrows<TimeoutCancellationException> {
-            getInntekt(
-                    kafkaProducer = kafkaMock,
-                    packetStore = storeMock,
-                    behov = behov,
-                    brønnøysundLookup = mockContainer.brønnøysundLookup,
-                    timeout = 1000
-            )
+            InntektLookup(kafkaMock, storeMock, MockContainer.brønnøysundLookup)
+                    .getInntekt(behov = behov, timeout = 1000)
         }
 
         verifyAll {
             storeMock.get(slot.toString()) wasNot Called
         }
     }
-}
-
-private object mockContainer {
-    private val DOCKER_PATH = Paths.get("aktoer-mock/")
-
-    class KGenericContainer : GenericContainer<KGenericContainer>(ImageFromDockerfile()
-            .withFileFromPath(".", DOCKER_PATH)
-            .withDockerfilePath("./Dockerfile.ci"))
-
-    private val instance by lazy {
-        KGenericContainer().apply {
-            withExposedPorts(3050)
-            start()
-        }
-    }
-    private val aktørURL = "http://" + instance.containerIpAddress + ":" + instance.getMappedPort(3050) + "/aktoerregister/api/v1/identer"
-    private val brURL = "http://" +
-            mockContainer.instance.containerIpAddress +
-            ":" +
-            mockContainer.instance.getMappedPort(3050) +
-            "/br/"
-
-    val aktoerRegister = AktørregisterLookup(url = aktørURL)
-
-    val brønnøysundLookup = BrønnøysundLookup(url = brURL)
 }

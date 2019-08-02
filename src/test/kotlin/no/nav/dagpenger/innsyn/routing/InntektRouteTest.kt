@@ -7,17 +7,13 @@ import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.slot
 import no.nav.dagpenger.innsyn.JwtStub
-import no.nav.dagpenger.innsyn.lookup.AktørregisterLookup
 import no.nav.dagpenger.innsyn.lookup.BehovProducer
-import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
+import no.nav.dagpenger.innsyn.lookup.InntektLookup
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
+import no.nav.dagpenger.innsyn.MockContainer
 import no.nav.dagpenger.innsyn.settings.Configuration
 import org.junit.jupiter.api.Test
-import org.testcontainers.containers.GenericContainer
-import org.testcontainers.images.builder.ImageFromDockerfile
-import java.nio.file.Paths
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -30,23 +26,14 @@ class InntektRouteTest {
 
     @Test
     fun `Valid request to inntekt endpoint should succeed`() {
-
-        val kafkaMock = mockk<BehovProducer>(relaxed = true)
-
-        val slot = slot<String>()
-
-        val storeMock = mockk<PacketStore>(relaxed = true).apply {
-            every { this@apply.isDone(capture(slot)) } returns true
-        }
+        val inntektMock = mockk<InntektLookup>(relaxed = true)
 
         val cookie = "ID_token=$token"
 
         withTestApplication(MockApi(
-            kafkaProducer = kafkaMock,
-            packetStore = storeMock,
             jwkProvider = jwtStub.stubbedJwkProvider(),
-            aktørregisterLookup = mockContainer.aktoerRegister,
-            brønnøysundLookup = mockContainer.brønnøysundLookup)
+            aktørregisterLookup = MockContainer.aktoerRegister,
+            inntektLookup = inntektMock)
         ) {
             handleRequest(HttpMethod.Get, config.application.applicationUrl) {
                 addHeader(HttpHeaders.Cookie, cookie)
@@ -59,23 +46,18 @@ class InntektRouteTest {
 
     @Test
     fun `504 response on timeout`() {
-
         val kafkaMock = mockk<BehovProducer>(relaxed = true)
 
-        val slot = slot<String>()
-
         val storeMock = mockk<PacketStore>(relaxed = true).apply {
-            every { this@apply.isDone(capture(slot)) } returns false
+            every { this@apply.isDone(any()) } returns false
         }
 
         val cookie = "ID_token=$token"
 
         withTestApplication(MockApi(
-            kafkaProducer = kafkaMock,
-            packetStore = storeMock,
             jwkProvider = jwtStub.stubbedJwkProvider(),
-            aktørregisterLookup = mockContainer.aktoerRegister,
-            brønnøysundLookup = mockContainer.brønnøysundLookup)
+            aktørregisterLookup = MockContainer.aktoerRegister,
+            inntektLookup = InntektLookup(kafkaMock, storeMock, mockk()))
         ) {
             handleRequest(HttpMethod.Get, config.application.applicationUrl) {
                 addHeader(HttpHeaders.Cookie, cookie)
@@ -107,29 +89,4 @@ class InntektRouteTest {
             }.apply { assertEquals(HttpStatusCode.Unauthorized, response.status()) }
         }
     }
-}
-
-private object mockContainer {
-    private val DOCKER_PATH = Paths.get("aktoer-mock/")
-
-    class KGenericContainer : GenericContainer<KGenericContainer>(ImageFromDockerfile()
-            .withFileFromPath(".", DOCKER_PATH)
-            .withDockerfilePath("./Dockerfile.ci"))
-
-    private val instance by lazy {
-        KGenericContainer().apply {
-            withExposedPorts(3050)
-            start()
-        }
-    }
-    private val aktørURL = "http://" + instance.containerIpAddress + ":" + instance.getMappedPort(3050) + "/aktoerregister/api/v1/identer"
-    private val brURL = "http://" +
-            mockContainer.instance.containerIpAddress +
-            ":" +
-            mockContainer.instance.getMappedPort(3050) +
-            "/br/"
-
-    val aktoerRegister = AktørregisterLookup(url = aktørURL)
-
-    val brønnøysundLookup = BrønnøysundLookup(url = brURL)
 }
