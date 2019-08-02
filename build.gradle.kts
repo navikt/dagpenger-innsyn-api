@@ -65,7 +65,7 @@ val huxhornSulkyUlidVersion = "8.2.0"
 val kotlinReflectVersion = "1.3.21"
 val log4j2LogstashLayoutFatjarVersion = "0.15"
 val mockkVersion = "1.9.3"
-val dagpengerEventsVersion = "2019.07.22-09.53.bc75154b4616"
+val dagpengerEventsVersion = "2019.07.31-14.14.8a2572241cf8"
 val testcontainersVersion = "1.11.4"
 
 dependencies {

@@ -6,6 +6,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verifyAll
 import kotlinx.coroutines.TimeoutCancellationException
+import no.nav.dagpenger.events.Packet
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import org.junit.jupiter.api.Test
@@ -18,10 +19,32 @@ class InntektLookupTest {
 
     @Test
     fun `Produces an event to kafka and returns inntekt`() {
-        val slot = slot<String>()
 
-        val storeMock = mockk<PacketStore>(relaxed = true).apply {
-            every { this@apply.isDone(capture(slot)) } returns false andThen true
+        val packetJson = """
+            {
+                "aktørId": "12345",
+                "vedtakId": 123,
+                "beregningsDato": 2019-01-25,
+                "spesifisertInntektV1": {
+                    "inntektId": {
+                        "id": "01D8G6FS9QGRT3JKBTA5KEE64C"
+                    },
+                    "avvik": [],
+                    "posteringer": [],
+                    "ident": {
+                        "aktørType": "NATURLIG_IDENT",
+                        "identifikator": "-1"
+                    },
+                    "manueltRedigert": false,
+                    "timestamp": "2019-08-02T10:20:32.996314"
+                }
+            }
+        """.trimIndent()
+        val packet = Packet(packetJson)
+
+        val storeMock = mockk<PacketStore>().apply {
+            every { this@apply.isDone(any()) } returns false andThen true
+            every { this@apply.get(any())} returns packet
         }
 
         val brønnøysundLookupMock = mockk<BrønnøysundLookup>(relaxed = true)
