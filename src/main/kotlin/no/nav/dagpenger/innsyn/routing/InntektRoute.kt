@@ -41,6 +41,7 @@ internal fun Routing.inntekt(
                     call.respond(HttpStatusCode.OK, inntektLookup.getInntekt(behov))
                 } catch (e: TimeoutCancellationException) {
                     logger.error("Timed out waiting for Kafka", e)
+                    // call.respond(HttpStatusCode.OK, moshiInstance.adapter(UserInformation::class.java).toJson(getUserInformation(testDataSpesifisertInntekt, BrønnøysundLookup())))
                     call.respond(HttpStatusCode.GatewayTimeout, "Could not fetch inntekt")
                 }
             }

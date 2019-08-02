@@ -29,13 +29,14 @@ fun isSuccessiveMonth(monthOne: YearMonth, monthTwo: YearMonth): Boolean {
 }
 
 fun getEmployerSummaries(spesifisertInntekt: SpesifisertInntekt, orgMapping: Map<String, String>): List<EmployerSummary> {
-    return spesifisertInntekt.månedsInntekter
-            .filter { it.årMåned in get36MonthRange() }
-            .flatMap { månedsInntekt -> månedsInntekt.posteringer.map { ArbeidsgiverMaanedInntekt(
-                    inntekt = it.beløp.toDouble(),
-                    maaned = månedsInntekt.årMåned,
-                    arbeidsgiver = it.virksomhet!!.identifikator
-            ) } }
+    return spesifisertInntekt
+            .posteringer
+            .filter { it.posteringsMåned in get36MonthRange() }
+            .map { postering -> ArbeidsgiverMaanedInntekt(
+                    inntekt = postering.beløp.toDouble(),
+                    maaned = postering.posteringsMåned,
+                    arbeidsgiver = postering.virksomhet!!.identifikator
+            ) }
             .groupBy { it.arbeidsgiver }
             .map { groupedEmployerInfo -> EmployerSummary(
                     name = orgMapping.getOrElse(groupedEmployerInfo.key) { groupedEmployerInfo.key },
@@ -46,12 +47,15 @@ fun getEmployerSummaries(spesifisertInntekt: SpesifisertInntekt, orgMapping: Map
 }
 
 fun getMonthsIncomeInformation(spesifisertInntekt: SpesifisertInntekt, orgMapping: Map<String, String>): List<MonthIncomeInformation> {
-    return spesifisertInntekt.månedsInntekter
-            .filter { it.årMåned in get36MonthRange() }
-            .map { månedsInntekt -> MonthIncomeInformation(
-                    month = månedsInntekt.årMåned,
-                    totalIncomeMonth = månedsInntekt.posteringer.sumByDouble { it.beløp.toDouble() }, // TODO: Type safety of BigDecimal vs Double
-                    employers = getEmployersForMonth(månedsInntekt.posteringer, orgMapping)
+
+    return spesifisertInntekt
+            .posteringer
+            .filter { it.posteringsMåned in get36MonthRange() }
+            .groupBy { it.posteringsMåned }
+            .map { postering -> MonthIncomeInformation(
+                    month = postering.key,
+                    totalIncomeMonth = postering.value.sumByDouble { it.beløp.toDouble() }, // TODO: Type safety of BigDecimal vs Double
+                    employers = getEmployersForMonth(postering.value, orgMapping)
             ) }
 }
 

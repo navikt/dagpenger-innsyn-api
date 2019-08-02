@@ -1,8 +1,7 @@
-FROM navikt/java:11 AS base
+FROM navikt/java:11
 
-FROM base AS dev-env
-COPY . /app
-RUN /app/gradlew build
+COPY build/libs/*.jar app.jar
 
-FROM base AS release
-COPY build/libs/*.jar /app/app.jar
+RUN mkdir -p /test/resources
+
+COPY src/test/resources/* /test/resources/

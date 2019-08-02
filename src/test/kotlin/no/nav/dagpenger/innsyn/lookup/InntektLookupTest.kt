@@ -44,7 +44,7 @@ class InntektLookupTest {
 
         val storeMock = mockk<PacketStore>().apply {
             every { this@apply.isDone(any()) } returns false andThen true
-            every { this@apply.get(any())} returns packet
+            every { this@apply.get(any()) } returns packet
         }
 
         val brønnøysundLookupMock = mockk<BrønnøysundLookup>(relaxed = true)
