@@ -1,17 +1,20 @@
 package no.nav.dagpenger.innsyn.lookup
 
+import com.squareup.moshi.JsonAdapter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
+import no.nav.dagpenger.events.inntekt.v1.SpesifisertInntekt
 import no.nav.dagpenger.events.moshiInstance
 import no.nav.dagpenger.innsyn.conversion.getUserInformation
 import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
-import no.nav.dagpenger.innsyn.testDataSpesifisertInntekt
 
 private val logger = KotlinLogging.logger { }
+
+val spesifisertInntektJsonAdapter: JsonAdapter<SpesifisertInntekt> = moshiInstance.adapter(SpesifisertInntekt::class.java)
 
 class InntektLookup(
     private val kafkaProducer: BehovProducer,
@@ -33,6 +36,13 @@ class InntektLookup(
             }
         }
 
-        return moshiInstance.adapter(UserInformation::class.java).toJson(getUserInformation(testDataSpesifisertInntekt, brønnøysundLookup))
+        val packet = packetStore.get(behov.behovId)
+        val spesifisertInntekt = packet.getObjectValue("spesifisertInntektV1") { serialized ->
+            checkNotNull(
+                    spesifisertInntektJsonAdapter.fromJsonValue(serialized)
+            )
+        }
+
+        return moshiInstance.adapter(UserInformation::class.java).toJson(getUserInformation(spesifisertInntekt, brønnøysundLookup))
     }
 }
