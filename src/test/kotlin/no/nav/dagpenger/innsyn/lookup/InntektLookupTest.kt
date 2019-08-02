@@ -6,7 +6,6 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verifyAll
 import kotlinx.coroutines.TimeoutCancellationException
-import no.nav.dagpenger.innsyn.MockContainer
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import org.junit.jupiter.api.Test
@@ -25,9 +24,11 @@ class InntektLookupTest {
             every { this@apply.isDone(capture(slot)) } returns false andThen true
         }
 
+        val brønnøysundLookupMock = mockk<BrønnøysundLookup>(relaxed = true)
+
         val behov = Behov(aktørId = "1", beregningsDato = LocalDate.now())
 
-        InntektLookup(kafkaMock, storeMock, MockContainer.brønnøysundLookup)
+        InntektLookup(kafkaMock, storeMock, brønnøysundLookupMock)
                 .getInntekt(behov = behov)
 
         verifyAll {
@@ -45,10 +46,12 @@ class InntektLookupTest {
             every { this@apply.isDone(capture(slot)) } returns false
         }
 
+        val brønnøysundLookupMock = mockk<BrønnøysundLookup>(relaxed = true)
+
         val behov = Behov(aktørId = "1", beregningsDato = LocalDate.now())
 
         assertThrows<TimeoutCancellationException> {
-            InntektLookup(kafkaMock, storeMock, MockContainer.brønnøysundLookup)
+            InntektLookup(kafkaMock, storeMock, brønnøysundLookupMock)
                     .getInntekt(behov = behov, timeout = 1000)
         }
 

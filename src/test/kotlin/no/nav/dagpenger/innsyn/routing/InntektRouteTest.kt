@@ -11,7 +11,7 @@ import no.nav.dagpenger.innsyn.JwtStub
 import no.nav.dagpenger.innsyn.lookup.BehovProducer
 import no.nav.dagpenger.innsyn.lookup.InntektLookup
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
-import no.nav.dagpenger.innsyn.MockContainer
+import no.nav.dagpenger.innsyn.lookup.AktørregisterLookup
 import no.nav.dagpenger.innsyn.settings.Configuration
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -26,13 +26,15 @@ class InntektRouteTest {
 
     @Test
     fun `Valid request to inntekt endpoint should succeed`() {
-        val inntektMock = mockk<InntektLookup>(relaxed = true)
 
         val cookie = "ID_token=$token"
 
+        val aktørregisterLookupMock = mockk<AktørregisterLookup>(relaxed = true)
+        val inntektMock = mockk<InntektLookup>(relaxed = true)
+
         withTestApplication(MockApi(
             jwkProvider = jwtStub.stubbedJwkProvider(),
-            aktørregisterLookup = MockContainer.aktoerRegister,
+            aktørregisterLookup = aktørregisterLookupMock,
             inntektLookup = inntektMock)
         ) {
             handleRequest(HttpMethod.Get, config.application.applicationUrl) {
@@ -52,11 +54,13 @@ class InntektRouteTest {
             every { this@apply.isDone(any()) } returns false
         }
 
+        val aktørregisterLookupMock = mockk<AktørregisterLookup>(relaxed = true)
+
         val cookie = "ID_token=$token"
 
         withTestApplication(MockApi(
             jwkProvider = jwtStub.stubbedJwkProvider(),
-            aktørregisterLookup = MockContainer.aktoerRegister,
+            aktørregisterLookup = aktørregisterLookupMock,
             inntektLookup = InntektLookup(kafkaMock, storeMock, mockk()))
         ) {
             handleRequest(HttpMethod.Get, config.application.applicationUrl) {
