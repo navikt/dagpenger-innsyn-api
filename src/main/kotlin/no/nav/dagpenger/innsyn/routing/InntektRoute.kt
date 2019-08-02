@@ -11,14 +11,12 @@ import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.get
 import io.ktor.util.pipeline.PipelineContext
+import kotlinx.coroutines.TimeoutCancellationException
 import mu.KLogger
 import mu.KotlinLogging
 import no.nav.dagpenger.innsyn.lookup.AktørregisterLookup
-import no.nav.dagpenger.innsyn.lookup.BehovProducer
-import no.nav.dagpenger.innsyn.lookup.getInntektResponse
-import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
+import no.nav.dagpenger.innsyn.lookup.InntektLookup
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
-import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.settings.Configuration
 import java.time.LocalDate
 
@@ -26,10 +24,8 @@ private val logger: KLogger = KotlinLogging.logger {}
 private val config = Configuration()
 
 internal fun Routing.inntekt(
-    packetStore: PacketStore,
-    kafkaProducer: BehovProducer,
     aktørregisterLookup: AktørregisterLookup,
-    brønnøysundLookup: BrønnøysundLookup
+    inntektLookup: InntektLookup
 ) {
     authenticate("jwt") {
         get(config.application.applicationUrl) {
@@ -41,8 +37,12 @@ internal fun Routing.inntekt(
                 val aktørId = aktørregisterLookup.getGjeldendeAktørIDFromIDToken(idToken, getSubject())
                 val behov = mapRequestToBehov(aktørId, LocalDate.now())
 
-                val (statusCode, response) = getInntektResponse(behov, kafkaProducer, packetStore, brønnøysundLookup)
-                call.respond(statusCode, response)
+                try {
+                    call.respond(HttpStatusCode.OK, inntektLookup.getInntekt(behov))
+                } catch (e: TimeoutCancellationException) {
+                    logger.error("Timed out waiting for Kafka", e)
+                    call.respond(HttpStatusCode.GatewayTimeout, "Could not fetch inntekt")
+                }
             }
         }
     }

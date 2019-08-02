@@ -1,5 +1,6 @@
 package no.nav.dagpenger.innsyn.conversion
 
+import no.nav.dagpenger.innsyn.expectedFinalResult
 import no.nav.dagpenger.innsyn.testDataSpesifisertInntekt
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals

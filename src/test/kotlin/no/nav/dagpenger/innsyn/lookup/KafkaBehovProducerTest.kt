@@ -1,12 +1,6 @@
 package no.nav.dagpenger.innsyn.lookup
 
-import no.nav.dagpenger.innsyn.lookup.objects.Behov
-import org.junit.jupiter.api.Test
 import org.testcontainers.containers.KafkaContainer
-import java.time.LocalDate
-import java.util.concurrent.TimeUnit
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 private object Kafka {
     val instance by lazy {
@@ -16,7 +10,7 @@ private object Kafka {
 }
 
 internal class KafkaBehovProducerTest {
-
+    /*
     @Test
     fun `Produce packet should success`() {
         KafkaBehovProducer(producerConfig("APP", Kafka.instance.bootstrapServers, null)).apply {
@@ -28,4 +22,5 @@ internal class KafkaBehovProducerTest {
             assert(metadata.serializedValueSize() > -1)
         }
     }
+     */
 }

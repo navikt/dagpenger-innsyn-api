@@ -88,7 +88,6 @@ dependencies {
     implementation("org.apache.kafka:kafka-clients:$kafkaVersion")
     implementation("org.apache.kafka:kafka-streams:$kafkaVersion")
     testImplementation("org.apache.kafka:kafka-streams-test-utils:$kafkaVersion")
-    testImplementation("org.testcontainers:testcontainers:$testcontainersVersion")
 
     implementation("com.github.navikt:dagpenger-streams:$dagpengerStreamsVersion")
     implementation("com.github.navikt:dagpenger-events:$dagpengerEventsVersion")
