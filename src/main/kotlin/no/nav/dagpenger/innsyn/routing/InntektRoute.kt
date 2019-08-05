@@ -11,9 +11,9 @@ import io.ktor.response.respond
 import io.ktor.routing.Routing
 import io.ktor.routing.get
 import io.ktor.util.pipeline.PipelineContext
-import kotlinx.coroutines.TimeoutCancellationException
 import mu.KLogger
 import mu.KotlinLogging
+import no.nav.dagpenger.innsyn.CookieNotSetException
 import no.nav.dagpenger.innsyn.lookup.AktørregisterLookup
 import no.nav.dagpenger.innsyn.lookup.InntektLookup
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
@@ -30,21 +30,12 @@ internal fun Routing.inntekt(
     authenticate("jwt") {
         get(config.application.applicationUrl) {
             val idToken = call.request.cookies["ID_token"]
-            if (idToken == null) {
-                logger.error("Received invalid request without ID_token cookie", call)
-                call.respond(HttpStatusCode.NotAcceptable, "Missing required cookies")
-            } else {
-                val aktørId = aktørregisterLookup.getGjeldendeAktørIDFromIDToken(idToken, getSubject())
-                val behov = mapRequestToBehov(aktørId, LocalDate.now())
+                    ?: throw CookieNotSetException("Cookie with name ID_Token not found")
 
-                try {
-                    call.respond(HttpStatusCode.OK, inntektLookup.getInntekt(behov))
-                } catch (e: TimeoutCancellationException) {
-                    logger.error("Timed out waiting for Kafka", e)
-                    // call.respond(HttpStatusCode.OK, moshiInstance.adapter(UserInformation::class.java).toJson(getUserInformation(testDataSpesifisertInntekt, BrønnøysundLookup())))
-                    call.respond(HttpStatusCode.GatewayTimeout, "Could not fetch inntekt")
-                }
-            }
+            val aktørId = aktørregisterLookup.getGjeldendeAktørIDFromIDToken(idToken, getSubject())
+            val behov = mapRequestToBehov(aktørId, LocalDate.now())
+
+            call.respond(HttpStatusCode.OK, inntektLookup.getInntekt(behov))
         }
     }
 }

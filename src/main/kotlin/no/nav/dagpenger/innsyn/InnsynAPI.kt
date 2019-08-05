@@ -2,22 +2,29 @@ package no.nav.dagpenger.innsyn
 
 import com.auth0.jwk.JwkProvider
 import com.auth0.jwk.JwkProviderBuilder
+import com.auth0.jwt.exceptions.JWTDecodeException
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.Application
+import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.auth.Authentication
 import io.ktor.auth.jwt.JWTPrincipal
 import io.ktor.auth.jwt.jwt
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
+import io.ktor.features.StatusPages
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.auth.HttpAuthHeader
 import io.ktor.jackson.jackson
 import io.ktor.request.path
+import io.ktor.response.respond
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import kotlinx.coroutines.TimeoutCancellationException
 import mu.KLogger
 import mu.KotlinLogging
+import no.nav.dagpenger.events.Problem
 import no.nav.dagpenger.innsyn.lookup.AktørregisterLookup
 import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
 import no.nav.dagpenger.innsyn.lookup.InntektLookup
@@ -110,16 +117,52 @@ fun Application.innsynAPI(
             }
             authHeader {
                 val cookie = it.request.cookies["ID_token"]
-                        ?: run {
-                            logger.error("Cookie with name ID_Token not found")
-                            "error"
-                        }
-
+                        ?: throw CookieNotSetException("Cookie with name ID_Token not found")
                 HttpAuthHeader.Single("Bearer", cookie)
             }
             validate {
                 return@validate JWTPrincipal(it.payload)
             }
+        }
+    }
+
+    install(StatusPages) {
+        exception<Throwable> { cause ->
+            logger.error("Request failed!", cause)
+            val error = Problem(
+                    title = "Uhåndtert feil!"
+            )
+            call.respond(HttpStatusCode.InternalServerError, error)
+        }
+        exception<CookieNotSetException> { cause ->
+            logger.warn("Unauthorized call", cause)
+            val statusCode = HttpStatusCode.Unauthorized
+            val error = Problem(
+                    title = "Ikke innlogget",
+                    detail = "${cause.message}",
+                    status = statusCode.value
+            )
+            call.respond(statusCode, error)
+        }
+        exception<JWTDecodeException> { cause ->
+            logger.warn("JWT decoding failed", cause)
+            val statusCode = HttpStatusCode.Unauthorized
+            val error = Problem(
+                    title = "Klarte ikke hente fødselsnummer",
+                    detail = "${cause.message}",
+                    status = statusCode.value
+            )
+            call.respond(statusCode, error)
+        }
+        exception<TimeoutCancellationException> { cause ->
+            logger.error("Timed out waiting for Kafka", cause)
+            val statusCode = HttpStatusCode.GatewayTimeout
+            val error = Problem(
+                    title = "Klarte ikke hente inntekt. Prøv igjen senere",
+                    detail = "${cause.message}",
+                    status = statusCode.value
+            )
+            call.respond(statusCode, error)
         }
     }
 
