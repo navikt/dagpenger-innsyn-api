@@ -117,6 +117,5 @@ class InntektRouteTest {
                 assertEquals(500, problem?.status)
             }
         }
-
     }
 }
