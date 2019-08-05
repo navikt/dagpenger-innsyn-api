@@ -7,6 +7,8 @@ import io.ktor.server.testing.handleRequest
 import io.ktor.server.testing.withTestApplication
 import io.mockk.every
 import io.mockk.mockk
+import no.nav.dagpenger.events.Problem
+import no.nav.dagpenger.events.moshiInstance
 import no.nav.dagpenger.innsyn.JwtStub
 import no.nav.dagpenger.innsyn.lookup.BehovProducer
 import no.nav.dagpenger.innsyn.lookup.InntektLookup
@@ -92,5 +94,29 @@ class InntektRouteTest {
                 addHeader(HttpHeaders.Cookie, cookie)
             }.apply { assertEquals(HttpStatusCode.Unauthorized, response.status()) }
         }
+    }
+
+    @Test
+    fun `Should respond on unhandled errors`() {
+        val cookie = "ID_token=$token"
+        val aktørregisterLookupMock = mockk<AktørregisterLookup>(relaxed = true).apply {
+            every { this@apply.getGjeldendeAktørIDFromIDToken(any(), any()) } throws Exception("")
+        }
+
+        withTestApplication(MockApi(
+                jwkProvider = jwtStub.stubbedJwkProvider(),
+                aktørregisterLookup = aktørregisterLookupMock
+        )) {
+            handleRequest(HttpMethod.Get, config.application.applicationUrl) {
+                addHeader(HttpHeaders.Cookie, cookie)
+            }.apply {
+                assertTrue(requestHandled)
+                assertEquals(HttpStatusCode.InternalServerError, response.status())
+                val problem = moshiInstance.adapter(Problem::class.java).fromJson(response.content!!)
+                assertEquals("Uhåndtert feil!", problem?.title)
+                assertEquals(500, problem?.status)
+            }
+        }
+
     }
 }
