@@ -5,7 +5,6 @@ import no.nav.dagpenger.events.inntekt.v1.Aktør
 import no.nav.dagpenger.events.inntekt.v1.AktørType
 import no.nav.dagpenger.events.inntekt.v1.Avvik
 import no.nav.dagpenger.events.inntekt.v1.InntektId
-import no.nav.dagpenger.events.inntekt.v1.MånedsInntekt
 import no.nav.dagpenger.events.inntekt.v1.Postering
 import no.nav.dagpenger.events.inntekt.v1.PosteringsType
 import no.nav.dagpenger.events.inntekt.v1.SpesifisertInntekt
@@ -16,24 +15,30 @@ import java.time.YearMonth
 // This class cannot be mocked as it is JSON parsed back and forth to test our parsing
 // As such, when extending, do NOT use mock classes
 
-val AUG2018 = YearMonth.of(2018, 8)
-val SEP2018 = YearMonth.of(2018, 9)
-val MAR2019 = YearMonth.of(2019, 3)
-val FUTUREMONTH = YearMonth.now().plusMonths(1)
+val AUG2018: YearMonth = YearMonth.of(2018, 8)
+val SEP2018: YearMonth = YearMonth.of(2018, 9)
+val MAR2019: YearMonth = YearMonth.of(2019, 3)
+val FUTUREMONTH: YearMonth = YearMonth.now().plusMonths(1)
 
-val TESTSTRING = ""
+const val TESTSTRING: String = ""
 
-val WAGESMALL1 = BigDecimal.valueOf(1102.15)
-val WAGESMALL2 = BigDecimal.valueOf(881.51)
-val WAGESMALL3 = BigDecimal.valueOf(999.99)
+val WAGESMALL1: BigDecimal = BigDecimal.valueOf(1102.15)
+val WAGESMALL2: BigDecimal = BigDecimal.valueOf(881.51)
+val WAGESMALL3: BigDecimal = BigDecimal.valueOf(999.99)
 
-val WAGEMEDIUM1 = BigDecimal.valueOf(25001.41)
-val WAGEMEDIUM2 = BigDecimal.valueOf(11052.50)
-val WAGEMEDIUM3 = BigDecimal.valueOf(32210.00)
+val WAGEMEDIUM1: BigDecimal = BigDecimal.valueOf(25001.41)
+val WAGEMEDIUM2: BigDecimal = BigDecimal.valueOf(11052.50)
+val WAGEMEDIUM3: BigDecimal = BigDecimal.valueOf(32210.00)
 
-val WAGELARGE1 = BigDecimal.valueOf(50012.93)
-val WAGELARGE2 = BigDecimal.valueOf(33651.11)
-val WAGELARGE3 = BigDecimal.valueOf(48000.40)
+val WAGELARGE1: BigDecimal = BigDecimal.valueOf(50012.93)
+val WAGELARGE2: BigDecimal = BigDecimal.valueOf(33651.11)
+val WAGELARGE3: BigDecimal = BigDecimal.valueOf(48000.40)
+
+val testOrgMapping = mapOf(
+        Pair("981566378", "BEKK CONSULTING AS"),
+        Pair("922332231", "BRAIN NTNU"),
+        Pair("979312059", "NAV AS")
+)
 
 val testDataVirksomhet1 = Aktør(
         aktørType = AktørType.ORGANISASJON,
@@ -51,6 +56,7 @@ val testDataVirksomhet3 = Aktør(
 )
 
 val testDataPostering11 = Postering(
+        posteringsMåned = AUG2018,
         beløp = WAGESMALL1,
         fordel = TESTSTRING,
         inntektskilde = TESTSTRING,
@@ -61,6 +67,7 @@ val testDataPostering11 = Postering(
         posteringsType = PosteringsType.L_FASTLØNN
 )
 val testDataPostering12 = Postering(
+        posteringsMåned = AUG2018,
         beløp = WAGEMEDIUM1,
         fordel = TESTSTRING,
         inntektskilde = TESTSTRING,
@@ -71,6 +78,7 @@ val testDataPostering12 = Postering(
         posteringsType = PosteringsType.L_FASTLØNN
 )
 val testDataPostering13 = Postering(
+        posteringsMåned = AUG2018,
         beløp = WAGELARGE1,
         fordel = TESTSTRING,
         inntektskilde = TESTSTRING,
@@ -82,6 +90,7 @@ val testDataPostering13 = Postering(
 )
 
 val testDataPostering21 = Postering(
+        posteringsMåned = SEP2018,
         beløp = WAGESMALL2,
         fordel = TESTSTRING,
         inntektskilde = TESTSTRING,
@@ -92,6 +101,7 @@ val testDataPostering21 = Postering(
         posteringsType = PosteringsType.L_FASTLØNN
 )
 val testDataPostering22 = Postering(
+        posteringsMåned = SEP2018,
         beløp = WAGEMEDIUM2,
         fordel = TESTSTRING,
         inntektskilde = TESTSTRING,
@@ -102,6 +112,7 @@ val testDataPostering22 = Postering(
         posteringsType = PosteringsType.L_FASTLØNN
 )
 val testDataPostering23 = Postering(
+        posteringsMåned = SEP2018,
         beløp = WAGELARGE2,
         fordel = TESTSTRING,
         inntektskilde = TESTSTRING,
@@ -113,6 +124,7 @@ val testDataPostering23 = Postering(
 )
 
 val testDataPostering31 = Postering(
+        posteringsMåned = MAR2019,
         beløp = WAGESMALL3,
         fordel = TESTSTRING,
         inntektskilde = TESTSTRING,
@@ -123,6 +135,7 @@ val testDataPostering31 = Postering(
         posteringsType = PosteringsType.L_FASTLØNN
 )
 val testDataPostering32 = Postering(
+        posteringsMåned = MAR2019,
         beløp = WAGEMEDIUM3,
         fordel = TESTSTRING,
         inntektskilde = TESTSTRING,
@@ -133,6 +146,7 @@ val testDataPostering32 = Postering(
         posteringsType = PosteringsType.L_FASTLØNN
 )
 val testDataPostering33 = Postering(
+        posteringsMåned = MAR2019,
         beløp = WAGELARGE3,
         fordel = TESTSTRING,
         inntektskilde = TESTSTRING,
@@ -161,43 +175,23 @@ val testDataPosteringer3 = listOf(
         testDataPostering33
 )
 
+val testDataAllPosteringer = listOf(
+        testDataPosteringer1,
+        testDataPosteringer2,
+        testDataPosteringer3
+).flatten()
+
 val testDataAvvikListe1 = listOf<Avvik>()
 
 val testDataAvvikListe2 = listOf<Avvik>()
 
 val testDataAvvikListe3 = listOf<Avvik>()
 
-val testDataMaanedsInntekt1 = MånedsInntekt(
-        årMåned = AUG2018,
-        avvikListe = testDataAvvikListe1,
-        posteringer = testDataPosteringer1
-)
-
-val testDataMaanedsInntekt2 = MånedsInntekt(
-        årMåned = SEP2018,
-        avvikListe = testDataAvvikListe2,
-        posteringer = testDataPosteringer2
-)
-
-val testDataMaanedsInntekt3 = MånedsInntekt(
-        årMåned = MAR2019,
-        avvikListe = testDataAvvikListe3,
-        posteringer = testDataPosteringer3
-)
-
-// The conversion should ignore this
-val testDataMaanedsInntekt4 = MånedsInntekt(
-        årMåned = FUTUREMONTH,
-        avvikListe = listOf(),
-        posteringer = listOf()
-)
-
-val testDataMaanedsInntekter = listOf(
-        testDataMaanedsInntekt1,
-        testDataMaanedsInntekt2,
-        testDataMaanedsInntekt3,
-        testDataMaanedsInntekt4
-)
+val testDataAllAvvik = listOf(
+        testDataAvvikListe1,
+        testDataAvvikListe2,
+        testDataAvvikListe3
+).flatten()
 
 val testDataUserAktoer = Aktør(
         aktørType = AktørType.AKTOER_ID,
@@ -208,7 +202,8 @@ val testDataInntektId = InntektId(ULID().nextULID())
 
 val testDataSpesifisertInntekt = SpesifisertInntekt(
         inntektId = testDataInntektId,
-        månedsInntekter = testDataMaanedsInntekter,
+        posteringer = testDataAllPosteringer,
+        avvik = testDataAllAvvik,
         ident = testDataUserAktoer,
         manueltRedigert = false,
         timestamp = LocalDateTime.now()

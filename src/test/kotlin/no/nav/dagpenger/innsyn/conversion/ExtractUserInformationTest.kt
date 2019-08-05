@@ -9,6 +9,7 @@ import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
 import no.nav.dagpenger.innsyn.expectedEmployerSummaries
 import no.nav.dagpenger.innsyn.expectedMonthsIncomeInformation
 import no.nav.dagpenger.innsyn.testDataSpesifisertInntekt
+import no.nav.dagpenger.innsyn.testOrgMapping
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.time.LocalDateTime
@@ -28,7 +29,13 @@ class ExtractUserInformationTest {
             YearMonth.of(2001, 12), YearMonth.of(2002, 1),
             YearMonth.of(1999, 12), YearMonth.of(2000, 1))
 
-    private val empty = SpesifisertInntekt(InntektId(ULID().nextULID()), listOf(), Aktør(AktørType.AKTOER_ID, ""), false, LocalDateTime.now())
+    private val empty = SpesifisertInntekt(
+            inntektId = InntektId(ULID().nextULID()),
+            avvik = emptyList(),
+            posteringer = emptyList(),
+            ident = Aktør(AktørType.AKTOER_ID, ""),
+            manueltRedigert = false,
+            timestamp = LocalDateTime.now())
 
     private val expectedResultTestMonths = listOf(
             EmploymentPeriode(YearMonth.of(2001, 1), YearMonth.of(2001, 5)),
@@ -79,5 +86,10 @@ class ExtractUserInformationTest {
     @Test
     fun `No månedsinntekter returns empty monthsIncomeInformation`() {
         assertEquals(listOf(), getMonthsIncomeInformation(empty, emptyMap()))
+    }
+
+    @Test
+    fun `Mapping with orgID works`() {
+        assertEquals(testOrgMapping.values.toList(), convertInntektDataIntoUserInformation(testDataSpesifisertInntekt, testOrgMapping).employerSummaries.map { it.name })
     }
 }

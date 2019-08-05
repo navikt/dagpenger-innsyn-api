@@ -25,9 +25,8 @@ fun getUserInformation(spesifisertInntekt: SpesifisertInntekt, brønnøysundLook
 }
 
 fun getOrgMapping(spesifisertInntekt: SpesifisertInntekt, brønnøysundLookup: BrønnøysundLookup): Map<String, String> {
-    return spesifisertInntekt.månedsInntekter
-            .flatMap { it.posteringer
-                    .map { it.virksomhet!!.identifikator } }
+    return spesifisertInntekt
+            .posteringer.map { it.virksomhet!!.identifikator }
             .distinct()
-            .associateBy { brønnøysundLookup.getNameFromBrønnøysundRegisterByID(it) }
+            .associateWith { brønnøysundLookup.getNameFromBrønnøysundRegisterByID(it) }
 }
