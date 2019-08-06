@@ -33,9 +33,13 @@ internal fun Routing.inntekt(
                     ?: throw CookieNotSetException("Cookie with name ID_Token not found")
 
             val aktørId = aktørregisterLookup.getGjeldendeAktørIDFromIDToken(idToken, getSubject())
-            val behov = mapRequestToBehov(aktørId, LocalDate.now())
-
-            call.respond(HttpStatusCode.OK, inntektLookup.getInntekt(behov))
+            if (aktørId == "") {
+                logger.error("No aktørID for IDToken")
+                call.respond(HttpStatusCode.Unauthorized, "Ingen gyldig aktør med den innloggingsinformasjonen")
+            } else {
+                val behov = mapRequestToBehov(aktørId, LocalDate.now())
+                call.respond(HttpStatusCode.OK, inntektLookup.getInntekt(behov))
+            }
         }
     }
 }

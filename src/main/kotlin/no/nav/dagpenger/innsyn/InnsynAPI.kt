@@ -25,6 +25,7 @@ import kotlinx.coroutines.TimeoutCancellationException
 import mu.KLogger
 import mu.KotlinLogging
 import no.nav.dagpenger.events.Problem
+import no.nav.dagpenger.innsyn.lookup.AktørIdNotFoundException
 import no.nav.dagpenger.innsyn.lookup.AktørregisterLookup
 import no.nav.dagpenger.innsyn.lookup.BrønnøysundLookup
 import no.nav.dagpenger.innsyn.lookup.InntektLookup
@@ -159,6 +160,16 @@ fun Application.innsynAPI(
             val statusCode = HttpStatusCode.GatewayTimeout
             val error = Problem(
                     title = "Klarte ikke hente inntekt. Prøv igjen senere",
+                    detail = "${cause.message}",
+                    status = statusCode.value
+            )
+            call.respond(statusCode, error)
+        }
+        exception<AktørIdNotFoundException> { cause ->
+            logger.error("Could not retrieve aktørId from Aktørregisteret", cause)
+            val statusCode = HttpStatusCode.InternalServerError
+            val error = Problem(
+                    title = "Klarte ikke hente Aktør ID",
                     detail = "${cause.message}",
                     status = statusCode.value
             )

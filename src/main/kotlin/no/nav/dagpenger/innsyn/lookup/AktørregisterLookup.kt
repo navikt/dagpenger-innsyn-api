@@ -1,33 +1,23 @@
 package no.nav.dagpenger.innsyn.lookup
 
 import khttp.responses.Response
-import mu.KLogger
-import mu.KotlinLogging
 import no.nav.dagpenger.innsyn.settings.Configuration
+import org.json.JSONArray
 import org.json.JSONObject
+import java.lang.RuntimeException
 import java.time.LocalDate
 
 class AktørregisterLookup(private val url: String = Configuration().application.aktoerregisteretUrl) {
-
-    private val logger: KLogger = KotlinLogging.logger {}
 
     fun getGjeldendeAktørIDFromIDToken(
         idToken: String,
         ident: String
     ): String {
-        try {
-            return getFirstMatchingAktørIDFromIdent(ident, getAktørResponse(idToken, ident, url).jsonObject)
-        } catch (e: Exception) {
-            logger.error("Attempted to retrieve from: $url")
-            logger.error("Could not successfully retrieve the aktoerID from aktoerregisteret's response", e)
-        }
-        return ""
+        return getFirst(getIdenter(idToken, ident, url))
     }
 
-    private fun getFirstMatchingAktørIDFromIdent(ident: String, jsonResponse: JSONObject): String {
-        return (jsonResponse
-                .getJSONObject(ident)
-                .getJSONArray("identer")[0] as JSONObject)["ident"]
+    private fun getFirst(identer: JSONArray): String {
+        return (identer[0] as JSONObject)["ident"]
                 .toString()
     }
 
@@ -42,4 +32,20 @@ class AktørregisterLookup(private val url: String = Configuration().application
                 )
         )
     }
+
+    private fun getIdenter(idToken: String, ident: String, url: String): JSONArray {
+        val jsonObject = getAktørResponse(idToken, ident, url)
+                .jsonObject
+                .getJSONObject(ident)
+
+        val identer = jsonObject
+                .getJSONArray("identer")
+
+        if (identer.length() == 0) {
+            throw AktørIdNotFoundException("Did not receive a matching aktør from register")
+        }
+        return identer
+    }
 }
+
+class AktørIdNotFoundException(override val message: String) : RuntimeException(message)
