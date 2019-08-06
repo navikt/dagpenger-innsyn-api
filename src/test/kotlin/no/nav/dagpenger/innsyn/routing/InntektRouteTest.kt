@@ -19,6 +19,8 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
+private val aktørResponse = "18128126178"
+
 class InntektRouteTest {
 
     private val config = Configuration()
@@ -31,7 +33,10 @@ class InntektRouteTest {
 
         val cookie = "ID_token=$token"
 
-        val aktørregisterLookupMock = mockk<AktørregisterLookup>(relaxed = true)
+        val aktørregisterLookupMock = mockk<AktørregisterLookup>(relaxed = true).apply {
+            every { this@apply.getGjeldendeAktørIDFromIDToken(any(), any()) } returns aktørResponse
+        }
+
         val inntektMock = mockk<InntektLookup>(relaxed = true)
 
         withTestApplication(MockApi(
@@ -56,7 +61,9 @@ class InntektRouteTest {
             every { this@apply.isDone(any()) } returns false
         }
 
-        val aktørregisterLookupMock = mockk<AktørregisterLookup>(relaxed = true)
+        val aktørregisterLookupMock = mockk<AktørregisterLookup>(relaxed = true).apply {
+            every { this@apply.getGjeldendeAktørIDFromIDToken(any(), any()) } returns aktørResponse
+        }
 
         val cookie = "ID_token=$token"
 
