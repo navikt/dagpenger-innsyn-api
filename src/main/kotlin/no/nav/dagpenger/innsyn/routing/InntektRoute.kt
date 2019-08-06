@@ -13,11 +13,18 @@ import io.ktor.routing.get
 import io.ktor.util.pipeline.PipelineContext
 import mu.KLogger
 import mu.KotlinLogging
+import no.nav.dagpenger.events.moshiInstance
 import no.nav.dagpenger.innsyn.CookieNotSetException
+import no.nav.dagpenger.innsyn.conversion.convertInntektDataIntoUserInformation
+import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
 import no.nav.dagpenger.innsyn.lookup.AktørregisterLookup
 import no.nav.dagpenger.innsyn.lookup.InntektLookup
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.innsyn.settings.Configuration
+import no.nav.dagpenger.innsyn.testDataMinsteinntektResultat
+import no.nav.dagpenger.innsyn.testDataPeriodeResultat
+import no.nav.dagpenger.innsyn.testDataSatsResultat
+import no.nav.dagpenger.innsyn.testDataSpesifisertInntekt
 import java.time.LocalDate
 
 private val logger: KLogger = KotlinLogging.logger {}
@@ -36,6 +43,7 @@ internal fun Routing.inntekt(
 
             val behov = mapRequestToBehov(aktørId, LocalDate.now())
             call.respond(HttpStatusCode.OK, inntektLookup.getInntekt(behov))
+           // call.respond(HttpStatusCode.OK, moshiInstance.adapter(UserInformation::class.java).toJson(convertInntektDataIntoUserInformation(testDataSpesifisertInntekt, testDataPeriodeResultat, testDataSatsResultat, testDataMinsteinntektResultat, emptyMap())))
         }
     }
 }

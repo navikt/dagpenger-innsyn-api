@@ -8,6 +8,7 @@ import no.nav.dagpenger.events.inntekt.v1.SpesifisertInntekt
 import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
 import no.nav.dagpenger.innsyn.expectedEmployerSummaries
 import no.nav.dagpenger.innsyn.expectedMonthsIncomeInformation
+import no.nav.dagpenger.innsyn.testDataMinsteinntektResultat
 import no.nav.dagpenger.innsyn.testDataPeriodeResultat
 import no.nav.dagpenger.innsyn.testDataSatsResultat
 import no.nav.dagpenger.innsyn.testDataSpesifisertInntekt
@@ -92,7 +93,7 @@ class ExtractUserInformationTest {
 
     @Test
     fun `Mapping with orgID works`() {
-        assertEquals(testOrgMapping.values.toList(), convertInntektDataIntoUserInformation(testDataSpesifisertInntekt, testDataPeriodeResultat, testDataSatsResultat, testOrgMapping).employerSummaries.map { it.name })
+        assertEquals(testOrgMapping.values.toList(), convertInntektDataIntoUserInformation(testDataSpesifisertInntekt, testDataPeriodeResultat, testDataSatsResultat, testDataMinsteinntektResultat, testOrgMapping).employerSummaries.map { it.name })
     }
 
     @Test

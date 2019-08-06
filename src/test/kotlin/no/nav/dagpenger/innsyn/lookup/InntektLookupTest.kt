@@ -38,6 +38,12 @@ class InntektLookupTest {
                     "manueltRedigert": false,
                     "timestamp": "2019-08-02T10:20:32.996314"
                 },
+                "minsteinntektResultat": {
+                    "sporingsId": "01DH8XYCEQCTS1M951ZETRYJAK",
+                    "subsumsjonsId": "01DH8XYCEQHRP7GBCDFCAGFMRY",
+                    "regelIdentifikator": "Minsteinntekt.v1",
+                    "oppfyllerMinsteinntekt": true
+                  },
                 "satsResultat": {
                     "sporingsId": "01DH8XYCYYYQ8PGCYAWA1RVV3S",
                     "subsumsjonsId": "01DH8XYCYYWYJQ2SC2029533BY",

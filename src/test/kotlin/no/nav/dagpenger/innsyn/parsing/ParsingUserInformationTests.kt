@@ -46,6 +46,7 @@ class ParsingUserInformationTests {
             personnummer = "131165542135",
             totalIncome36 = 155.13,
             totalIncome12 = 80.25,
+            oppfyllerMinstekrav = true,
             periodeAntalluker = 54.0,
             ukeSats = 3000.0,
             employerSummaries = listOf(testDataEmployerSummary),

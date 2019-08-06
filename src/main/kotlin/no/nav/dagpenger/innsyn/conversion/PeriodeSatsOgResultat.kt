@@ -15,3 +15,10 @@ data class SatsResultat(
     val ukesats: Double,
     val benyttet90ProsentRegel: Boolean
 )
+
+data class KvalifisertResultat(
+    val sporingsId: String,
+    val subsumsjonsId: String,
+    val regelIdentifikator: String,
+    val oppfyllerMinsteinntekt: Boolean
+)

@@ -8,6 +8,7 @@ data class UserInformation(
     val totalIncome12: Double,
     val employerSummaries: List<EmployerSummary>,
     val monthsIncomeInformation: List<MonthIncomeInformation>,
+    val oppfyllerMinstekrav: Boolean,
     val periodeAntalluker: Double,
     val ukeSats: Double
 )

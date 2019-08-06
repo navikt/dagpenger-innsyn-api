@@ -35,7 +35,8 @@ internal class KafkaInntektConsumerTest {
                 ${PacketKeys.BEHOV_ID}: "behovId",
                 ${PacketKeys.SPESIFISERT_INNTEKT}: "spesifisertInntekt",
                 ${PacketKeys.PERIODE_RESULTAT}: "periodeResultat",
-                ${PacketKeys.SATS_RESULTAT}: "satsResultat"
+                ${PacketKeys.SATS_RESULTAT}: "satsResultat",
+                ${PacketKeys.MINSTEINNTEKT_RESULTAT}: "minsteinntektResultat"
             }
         """.trimIndent()
         )

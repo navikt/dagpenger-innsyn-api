@@ -7,6 +7,7 @@ import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
 import no.nav.dagpenger.events.inntekt.v1.SpesifisertInntekt
 import no.nav.dagpenger.events.moshiInstance
+import no.nav.dagpenger.innsyn.conversion.KvalifisertResultat
 import no.nav.dagpenger.innsyn.conversion.PeriodeResultat
 import no.nav.dagpenger.innsyn.conversion.SatsResultat
 import no.nav.dagpenger.innsyn.conversion.getUserInformation
@@ -14,12 +15,17 @@ import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.settings.PacketKeys
+import no.nav.dagpenger.innsyn.testDataMinsteinntektResultat
+import no.nav.dagpenger.innsyn.testDataPeriodeResultat
+import no.nav.dagpenger.innsyn.testDataSatsResultat
+import no.nav.dagpenger.innsyn.testDataSpesifisertInntekt
 
 private val logger = KotlinLogging.logger { }
 
 val spesifisertInntektJsonAdapter: JsonAdapter<SpesifisertInntekt> = moshiInstance.adapter(SpesifisertInntekt::class.java)
 val spesifisertPeriodeJsonAdapter: JsonAdapter<PeriodeResultat> = moshiInstance.adapter(PeriodeResultat::class.java)
 val spesifisertSatsJsonAdapter: JsonAdapter<SatsResultat> = moshiInstance.adapter(SatsResultat::class.java)
+val spesifisertResultatJsonAdapter: JsonAdapter<KvalifisertResultat> = moshiInstance.adapter(KvalifisertResultat::class.java)
 
 class InntektLookup(
     private val kafkaProducer: BehovProducer,
@@ -58,6 +64,13 @@ class InntektLookup(
             )
         }
 
-        return moshiInstance.adapter(UserInformation::class.java).toJson(getUserInformation(spesifisertInntekt, brønnøysundLookup, periodeResultat, satsResultat))
+        val kvalifisertResultat = packet.getObjectValue(PacketKeys.MINSTEINNTEKT_RESULTAT) { serialized ->
+            checkNotNull(
+                    spesifisertResultatJsonAdapter.fromJsonValue(serialized)
+            )
+        }
+
+         return moshiInstance.adapter(UserInformation::class.java).toJson(getUserInformation(spesifisertInntekt, brønnøysundLookup, periodeResultat, satsResultat, kvalifisertResultat))
+        //return moshiInstance.adapter(UserInformation::class.java).toJson(getUserInformation(testDataSpesifisertInntekt, brønnøysundLookup, testDataPeriodeResultat, testDataSatsResultat, testDataMinsteinntektResultat))
     }
 }

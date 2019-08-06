@@ -60,7 +60,8 @@ internal class InntektPond(private val packetStore: PacketStore) : Pond() {
                     Predicate { _, packet -> !packet.hasProblem() },
                     Predicate { _, packet -> packet.hasField(PacketKeys.SPESIFISERT_INNTEKT) },
                     Predicate { _, packet -> packet.hasField(PacketKeys.PERIODE_RESULTAT) },
-                    Predicate { _, packet -> packet.hasField(PacketKeys.SATS_RESULTAT) }
+                    Predicate { _, packet -> packet.hasField(PacketKeys.SATS_RESULTAT) },
+                    Predicate { _, packet -> packet.hasField(PacketKeys.MINSTEINNTEKT_RESULTAT) }
             )
 
     override fun onPacket(packet: Packet) {
