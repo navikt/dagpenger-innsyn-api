@@ -14,8 +14,6 @@ class ConvertInntektDataIntoUserInformationTest {
 
     @Test
     fun `Successfully convert SpesifisertInntekt to UserInformation`() {
-        println(moshiInstance.adapter(UserInformation::class.java).toJson(expectedFinalResult))
-        println(moshiInstance.adapter(UserInformation::class.java).toJson(convertInntektDataIntoUserInformation(spesifisertInntekt = testDataSpesifisertInntekt, periodeResultat = testDataPeriodeResultat, satsResultat = testDataSatsResultat, kvalifisertResultat = testDataMinsteinntektResultat, orgMapping = emptyMap())))
         assertEquals(expectedFinalResult, convertInntektDataIntoUserInformation(spesifisertInntekt = testDataSpesifisertInntekt, periodeResultat = testDataPeriodeResultat, satsResultat = testDataSatsResultat, kvalifisertResultat = testDataMinsteinntektResultat, orgMapping = emptyMap()))
     }
 }

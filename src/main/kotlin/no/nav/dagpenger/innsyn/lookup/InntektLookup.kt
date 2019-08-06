@@ -15,10 +15,6 @@ import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
 import no.nav.dagpenger.innsyn.settings.PacketKeys
-import no.nav.dagpenger.innsyn.testDataMinsteinntektResultat
-import no.nav.dagpenger.innsyn.testDataPeriodeResultat
-import no.nav.dagpenger.innsyn.testDataSatsResultat
-import no.nav.dagpenger.innsyn.testDataSpesifisertInntekt
 
 private val logger = KotlinLogging.logger { }
 
@@ -70,7 +66,6 @@ class InntektLookup(
             )
         }
 
-         return moshiInstance.adapter(UserInformation::class.java).toJson(getUserInformation(spesifisertInntekt, brønnøysundLookup, periodeResultat, satsResultat, kvalifisertResultat))
-        //return moshiInstance.adapter(UserInformation::class.java).toJson(getUserInformation(testDataSpesifisertInntekt, brønnøysundLookup, testDataPeriodeResultat, testDataSatsResultat, testDataMinsteinntektResultat))
+        return moshiInstance.adapter(UserInformation::class.java).toJson(getUserInformation(spesifisertInntekt, brønnøysundLookup, periodeResultat, satsResultat, kvalifisertResultat))
     }
 }
