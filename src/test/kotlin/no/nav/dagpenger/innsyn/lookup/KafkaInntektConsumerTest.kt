@@ -33,10 +33,9 @@ internal class KafkaInntektConsumerTest {
         val packet = Packet("""
             {
                 ${PacketKeys.BEHOV_ID}: "behovId",
-                ${PacketKeys.INNTEKT}: "inntekt",
-                ${PacketKeys.MINSTEINNTEKT_RESULTAT}: "minsteinntektResultat",
-                ${PacketKeys.MINSTEINNTEKT_INNTEKTSPERIODER}: "minsteinntektInntektsperioder",
-                ${PacketKeys.PERIODE_RESULTAT}: "periodeResultat"
+                ${PacketKeys.SPESIFISERT_INNTEKT}: "spesifisertInntekt",
+                ${PacketKeys.PERIODE_RESULTAT}: "periodeResultat",
+                ${PacketKeys.SATS_RESULTAT}: "satsResultat"
             }
         """.trimIndent()
         )

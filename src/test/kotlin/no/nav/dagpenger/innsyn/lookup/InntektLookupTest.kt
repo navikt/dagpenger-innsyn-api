@@ -37,7 +37,21 @@ class InntektLookupTest {
                     },
                     "manueltRedigert": false,
                     "timestamp": "2019-08-02T10:20:32.996314"
-                }
+                },
+                "satsResultat": {
+                    "sporingsId": "01DH8XYCYYYQ8PGCYAWA1RVV3S",
+                    "subsumsjonsId": "01DH8XYCYYWYJQ2SC2029533BY",
+                    "regelIdentifikator": "Sats.v1",
+                    "dagsats": 848,
+                    "ukesats": 4240,
+                    "benyttet90ProsentRegel": false
+                  },
+                  "periodeResultat": {
+                    "sporingsId": "01DH8XYDT1232Q25X8Y63GHB0S",
+                    "subsumsjonsId": "01DH8XYDT1XCDVD5RTKD06R292",
+                    "regelIdentifikator": "Periode.v1",
+                    "periodeAntallUker": 104
+                  }
             }
         """.trimIndent()
         val packet = Packet(packetJson)

@@ -39,6 +39,8 @@ val expectedFinalResult = UserInformation(
         personnummer = testDataUserAktoer.identifikator,
         totalIncome36 = 202912.0,
         totalIncome12 = 202912.0,
+        ukeSats = 3000.0,
+        periodeAntalluker = 54.0,
         employerSummaries = expectedEmployerSummaries,
         monthsIncomeInformation = expectedMonthsIncomeInformation
 )
