@@ -166,10 +166,10 @@ fun Application.innsynAPI(
             call.respond(statusCode, error)
         }
         exception<AktørIdNotFoundException> { cause ->
-            logger.error("Could not retrieve aktørId from Aktørregisteret", cause)
-            val statusCode = HttpStatusCode.InternalServerError
+            logger.error("No aktørID for ident", cause)
+            val statusCode = HttpStatusCode.Unauthorized
             val error = Problem(
-                    title = "Klarte ikke hente Aktør ID",
+                    title = "Ingen gyldig aktør med den innloggingsinformasjonen",
                     detail = "${cause.message}",
                     status = statusCode.value
             )
