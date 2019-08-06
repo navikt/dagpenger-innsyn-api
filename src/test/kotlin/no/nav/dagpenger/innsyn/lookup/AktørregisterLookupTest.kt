@@ -4,10 +4,12 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import no.nav.dagpenger.innsyn.JwtStub
+import org.json.JSONException
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
 class AktørregisterLookupTest {
@@ -52,7 +54,7 @@ fun `Successful fetch of aktoerId`() {
 }
 
 @Test
-fun `No aktoerId in Aktørregisteret response should return empty string`() {
+fun `No aktørId in Aktørregisteret response should throw exception`() {
     val testFnr = "12345678912"
 
     WireMock.stubFor(
@@ -61,8 +63,9 @@ fun `No aktoerId in Aktørregisteret response should return empty string`() {
             .willReturn(WireMock.aResponse().withBody(validJsonBodyWithEmptyIdenter))
     )
 
-    val aktoerId = AktørregisterLookup(url = server.url("")).getGjeldendeAktørIDFromIDToken(token, testFnr)
-    assertEquals("", aktoerId)
+    assertThrows<AktørIdNotFoundException>{
+        AktørregisterLookup(url = server.url("")).getGjeldendeAktørIDFromIDToken(token, testFnr)
+    }
 }
 
 val validJsonBody = """
@@ -85,7 +88,7 @@ val validJsonBodyWithEmptyIdenter = """
     "12345678912": {
         "identer": [
         ],
-        "feilmelding": null
+        "feilmelding": "Feilet"
     }
 }
 """.trimIndent()
