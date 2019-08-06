@@ -7,7 +7,9 @@ data class UserInformation(
     val totalIncome36: Double,
     val totalIncome12: Double,
     val employerSummaries: List<EmployerSummary>,
-    val monthsIncomeInformation: List<MonthIncomeInformation>
+    val monthsIncomeInformation: List<MonthIncomeInformation>,
+    val periodeAntalluker: Double,
+    val ukeSats: Double
 )
 
 data class EmployerSummary(

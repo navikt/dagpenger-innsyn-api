@@ -8,6 +8,8 @@ import no.nav.dagpenger.events.inntekt.v1.InntektId
 import no.nav.dagpenger.events.inntekt.v1.Postering
 import no.nav.dagpenger.events.inntekt.v1.PosteringsType
 import no.nav.dagpenger.events.inntekt.v1.SpesifisertInntekt
+import no.nav.dagpenger.innsyn.conversion.PeriodeResultat
+import no.nav.dagpenger.innsyn.conversion.SatsResultat
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.YearMonth
@@ -208,3 +210,19 @@ val testDataSpesifisertInntekt = SpesifisertInntekt(
         manueltRedigert = false,
         timestamp = LocalDateTime.now()
 )
+
+val testDataPeriodeResultat = PeriodeResultat(
+        subsumsjonsId = "noe",
+        sporingsId = "111",
+        regelIdentifikator = "55",
+        periodeAntallUker = 54.0
+)
+val testDataSatsResultat = SatsResultat(
+        "noe",
+        "111",
+        "55",
+        54,
+        3000.0,
+        false
+)
+
