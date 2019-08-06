@@ -8,6 +8,8 @@ import no.nav.dagpenger.events.inntekt.v1.SpesifisertInntekt
 import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
 import no.nav.dagpenger.innsyn.expectedEmployerSummaries
 import no.nav.dagpenger.innsyn.expectedMonthsIncomeInformation
+import no.nav.dagpenger.innsyn.testDataPeriodeResultat
+import no.nav.dagpenger.innsyn.testDataSatsResultat
 import no.nav.dagpenger.innsyn.testDataSpesifisertInntekt
 import no.nav.dagpenger.innsyn.testOrgMapping
 import org.junit.jupiter.api.Test
@@ -90,6 +92,16 @@ class ExtractUserInformationTest {
 
     @Test
     fun `Mapping with orgID works`() {
-        assertEquals(testOrgMapping.values.toList(), convertInntektDataIntoUserInformation(testDataSpesifisertInntekt, testOrgMapping).employerSummaries.map { it.name })
+        assertEquals(testOrgMapping.values.toList(), convertInntektDataIntoUserInformation(testDataSpesifisertInntekt, testDataPeriodeResultat, testDataSatsResultat, testOrgMapping).employerSummaries.map { it.name })
+    }
+
+    @Test
+    fun `Get uksats`() {
+        assertEquals(3000.0, testDataSatsResultat.ukesats)
+    }
+
+    @Test
+    fun `Get periodeResultat`() {
+        assertEquals(54.0, testDataPeriodeResultat.periodeAntallUker)
     }
 }
