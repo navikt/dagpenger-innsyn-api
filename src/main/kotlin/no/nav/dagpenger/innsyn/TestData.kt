@@ -225,4 +225,3 @@ val testDataSatsResultat = SatsResultat(
         3000.0,
         false
 )
-
