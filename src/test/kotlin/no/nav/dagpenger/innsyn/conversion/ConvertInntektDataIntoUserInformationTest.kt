@@ -1,7 +1,5 @@
 package no.nav.dagpenger.innsyn.conversion
 
-import no.nav.dagpenger.events.moshiInstance
-import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
 import no.nav.dagpenger.innsyn.expectedFinalResult
 import no.nav.dagpenger.innsyn.testDataMinsteinntektResultat
 import no.nav.dagpenger.innsyn.testDataPeriodeResultat
