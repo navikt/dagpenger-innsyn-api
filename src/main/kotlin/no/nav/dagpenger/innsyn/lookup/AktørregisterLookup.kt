@@ -44,11 +44,8 @@ class AktørregisterLookup(private val url: String = Configuration().application
                 .getJSONArray("identer")
 
         if (identer.length() == 0) {
-            throw AktørIdNotFoundException("Could not retrieve aktørId from Aktørregisteret, returned message:" +
-                    "${
-                    try:jsonObject
-                            .getString("feilmelding")}}")
-        }
+		    throw AktørIdNotFoundException("Did not receive a matching aktør from register")
+	    }
         return identer
     }
 }
