@@ -4,7 +4,6 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import no.nav.dagpenger.innsyn.JwtStub
-import org.json.JSONException
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
@@ -63,7 +62,7 @@ fun `No aktørId in Aktørregisteret response should throw exception`() {
             .willReturn(WireMock.aResponse().withBody(validJsonBodyWithEmptyIdenter))
     )
 
-    assertThrows<AktørIdNotFoundException>{
+    assertThrows<AktørIdNotFoundException> {
         AktørregisterLookup(url = server.url("")).getGjeldendeAktørIDFromIDToken(token, testFnr)
     }
 }

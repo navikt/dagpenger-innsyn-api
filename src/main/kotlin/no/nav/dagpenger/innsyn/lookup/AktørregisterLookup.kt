@@ -1,8 +1,6 @@
 package no.nav.dagpenger.innsyn.lookup
 
 import khttp.responses.Response
-import mu.KLogger
-import mu.KotlinLogging
 import no.nav.dagpenger.innsyn.settings.Configuration
 import org.json.JSONArray
 import org.json.JSONObject
@@ -35,7 +33,7 @@ class AktørregisterLookup(private val url: String = Configuration().application
         )
     }
 
-    private fun getIdenter(idToken: String, ident: String, url: String) : JSONArray {
+    private fun getIdenter(idToken: String, ident: String, url: String): JSONArray {
         val jsonObject = getAktørResponse(idToken, ident, url)
                 .jsonObject
                 .getJSONObject(ident)
@@ -44,8 +42,8 @@ class AktørregisterLookup(private val url: String = Configuration().application
                 .getJSONArray("identer")
 
         if (identer.length() == 0) {
-		    throw AktørIdNotFoundException("Did not receive a matching aktør from register")
-	    }
+            throw AktørIdNotFoundException("Did not receive a matching aktør from register")
+        }
         return identer
     }
 }

@@ -165,7 +165,7 @@ fun Application.innsynAPI(
             )
             call.respond(statusCode, error)
         }
-        exception<AktørIdNotFoundException> {cause ->
+        exception<AktørIdNotFoundException> { cause ->
             logger.error("Could not retrieve aktørId from Aktørregisteret", cause)
             val statusCode = HttpStatusCode.InternalServerError
             val error = Problem(
