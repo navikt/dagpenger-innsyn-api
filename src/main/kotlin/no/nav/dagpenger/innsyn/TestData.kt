@@ -11,6 +11,11 @@ import no.nav.dagpenger.events.inntekt.v1.SpesifisertInntekt
 import no.nav.dagpenger.innsyn.conversion.KvalifisertResultat
 import no.nav.dagpenger.innsyn.conversion.PeriodeResultat
 import no.nav.dagpenger.innsyn.conversion.SatsResultat
+import no.nav.dagpenger.innsyn.conversion.foersteMaaned12
+import no.nav.dagpenger.innsyn.conversion.foersteMaaned24
+import no.nav.dagpenger.innsyn.conversion.foersteMaaned36
+import no.nav.dagpenger.innsyn.conversion.objects.PeriodIncomeInformation
+import no.nav.dagpenger.innsyn.conversion.sisteAvsluttendeKalenderMaaned
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.YearMonth
@@ -223,7 +228,7 @@ val testDataPeriodeResultat = PeriodeResultat(
         subsumsjonsId = "noe",
         sporingsId = "111",
         regelIdentifikator = "55",
-        periodeAntallUker = 54.0
+        periodeAntallUker = 52.0
 )
 
 val testDataSatsResultat = SatsResultat(
@@ -234,3 +239,26 @@ val testDataSatsResultat = SatsResultat(
         3000.0,
         false
 )
+
+val testDataPeriodeIncome1 = PeriodIncomeInformation (
+        periodNum = 1,
+        startMonth = sisteAvsluttendeKalenderMaaned,
+        endMonth = foersteMaaned12,
+        totalIncome = 202912.0
+)
+
+val testDataPeriodeIncome2 = PeriodIncomeInformation (
+        periodNum = 2,
+        startMonth = foersteMaaned12.minusMonths(1),
+        endMonth = foersteMaaned24,
+        totalIncome = 0.0
+        )
+
+val testDataPeriodeIncome3 = PeriodIncomeInformation (
+        periodNum = 3,
+        startMonth = foersteMaaned24.minusMonths(1),
+        endMonth = foersteMaaned36,
+        totalIncome = 0.0
+        )
+
+val testDataPeriodIncomeInformation = listOf(testDataPeriodeIncome1, testDataPeriodeIncome2, testDataPeriodeIncome3)

@@ -103,6 +103,6 @@ class ExtractUserInformationTest {
 
     @Test
     fun `Get periodeResultat`() {
-        assertEquals(54.0, testDataPeriodeResultat.periodeAntallUker)
+        assertEquals(52.0, testDataPeriodeResultat.periodeAntallUker)
     }
 }

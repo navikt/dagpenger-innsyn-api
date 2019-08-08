@@ -36,12 +36,12 @@ val expectedMonthsIncomeInformation = listOf(
                 totalIncomeMonth = 81210.39))
 
 val expectedFinalResult = UserInformation(
-        personnummer = testDataUserAktoer.identifikator,
         totalIncome36 = 202912.0,
         totalIncome12 = 202912.0,
         oppfyllerMinstekrav = true,
         ukeSats = 3000.0,
-        periodeAntalluker = 54.0,
+        periodeAntalluker = 52.0,
         employerSummaries = expectedEmployerSummaries,
-        monthsIncomeInformation = expectedMonthsIncomeInformation
+        monthsIncomeInformation = expectedMonthsIncomeInformation,
+        periodIncome = testDataPeriodIncomeInformation
 )

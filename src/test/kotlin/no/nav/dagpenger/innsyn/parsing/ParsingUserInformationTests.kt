@@ -7,6 +7,7 @@ import no.nav.dagpenger.innsyn.conversion.objects.EmploymentPeriode
 import no.nav.dagpenger.innsyn.conversion.objects.Income
 import no.nav.dagpenger.innsyn.conversion.objects.MonthIncomeInformation
 import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
+import no.nav.dagpenger.innsyn.testDataPeriodIncomeInformation
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.time.YearMonth
@@ -43,14 +44,14 @@ class ParsingUserInformationTests {
     )
 
     private val testDataProcessedRequest = UserInformation(
-            personnummer = "131165542135",
             totalIncome36 = 155.13,
             totalIncome12 = 80.25,
             oppfyllerMinstekrav = true,
             periodeAntalluker = 54.0,
             ukeSats = 3000.0,
             employerSummaries = listOf(testDataEmployerSummary),
-            monthsIncomeInformation = listOf(testDataMonthIncomeInformation)
+            monthsIncomeInformation = listOf(testDataMonthIncomeInformation),
+            periodIncome = testDataPeriodIncomeInformation
     )
 
     @Test

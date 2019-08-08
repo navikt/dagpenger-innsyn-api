@@ -13,8 +13,9 @@ private val maanedSubtraksjon: Long =
         if (LocalDate.now().isBefore(reellRapporteringsFrist) || LocalDate.now().isEqual(reellRapporteringsFrist)) 2 else 1
 
 val sisteAvsluttendeKalenderMaaned: YearMonth = LocalDate.now().minusMonths(maanedSubtraksjon).toYearMonth()
-val foersteMaaned36: YearMonth = sisteAvsluttendeKalenderMaaned.minusMonths(36)
-val foersteMaaned12: YearMonth = sisteAvsluttendeKalenderMaaned.minusMonths(12)
+val foersteMaaned36: YearMonth = sisteAvsluttendeKalenderMaaned.minusMonths(35)
+val foersteMaaned24: YearMonth = sisteAvsluttendeKalenderMaaned.minusMonths(23)
+val foersteMaaned12: YearMonth = sisteAvsluttendeKalenderMaaned.minusMonths(11)
 
 private fun foersteArbeidsdagEtterRapporterteringsFrist(rapporteringsFrist: LocalDate): LocalDate =
     if (rapporteringsFrist.erArbeidsdag()) rapporteringsFrist
@@ -28,3 +29,7 @@ private fun LocalDate.toYearMonth(): YearMonth = YearMonth.of(this.year, this.mo
 fun get36MonthRange(): ClosedRange<YearMonth> = foersteMaaned36..sisteAvsluttendeKalenderMaaned
 
 fun get12MonthRange(): ClosedRange<YearMonth> = foersteMaaned12..sisteAvsluttendeKalenderMaaned
+
+fun get12to24MonthRange(): ClosedRange<YearMonth> = foersteMaaned24..foersteMaaned12.minusMonths(1)
+
+fun get24to36MonthRange(): ClosedRange<YearMonth> = foersteMaaned36..foersteMaaned24.minusMonths(1)

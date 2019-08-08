@@ -9,7 +9,6 @@ fun convertInntektDataIntoUserInformation(spesifisertInntekt: SpesifisertInntekt
     val monthsIncomeInformation = getMonthsIncomeInformation(spesifisertInntekt, orgMapping)
     val employerSummaries = getEmployerSummaries(spesifisertInntekt, orgMapping)
     return UserInformation(
-            personnummer = spesifisertInntekt.ident.identifikator,
             totalIncome36 = monthsIncomeInformation
                     .sumByDouble { it.totalIncomeMonth },
             totalIncome12 = monthsIncomeInformation
@@ -19,7 +18,8 @@ fun convertInntektDataIntoUserInformation(spesifisertInntekt: SpesifisertInntekt
             oppfyllerMinstekrav = kvalifisertResultat.oppfyllerMinsteinntekt,
             monthsIncomeInformation = monthsIncomeInformation,
             periodeAntalluker = periodeResultat.periodeAntallUker,
-            ukeSats = satsResultat.ukesats
+            ukeSats = satsResultat.ukesats,
+            periodIncome = getIncomeForPeriods(spesifisertInntekt.posteringer)
 
     )
 }

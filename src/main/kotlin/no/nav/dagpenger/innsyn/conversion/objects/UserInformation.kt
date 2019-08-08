@@ -3,11 +3,11 @@ package no.nav.dagpenger.innsyn.conversion.objects
 import java.time.YearMonth
 
 data class UserInformation(
-    val personnummer: String,
     val totalIncome36: Double,
     val totalIncome12: Double,
     val employerSummaries: List<EmployerSummary>,
     val monthsIncomeInformation: List<MonthIncomeInformation>,
+    val periodIncome: List<PeriodIncomeInformation>,
     val oppfyllerMinstekrav: Boolean,
     val periodeAntalluker: Double,
     val ukeSats: Double
@@ -23,6 +23,13 @@ data class EmployerSummary(
 data class EmploymentPeriode(
     val startDateYearMonth: YearMonth,
     val endDateYearMonth: YearMonth
+)
+
+data class PeriodIncomeInformation(
+    val periodNum: Int,
+    val startMonth: YearMonth,
+    val endMonth: YearMonth,
+    val totalIncome: Double
 )
 
 data class MonthIncomeInformation(
