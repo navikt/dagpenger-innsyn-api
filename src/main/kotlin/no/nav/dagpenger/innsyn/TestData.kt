@@ -240,21 +240,21 @@ val testDataSatsResultat = SatsResultat(
         false
 )
 
-val testDataPeriodeIncome1 = PeriodIncomeInformation (
+val testDataPeriodeIncome1 = PeriodIncomeInformation(
         periodNum = 1,
         startMonth = sisteAvsluttendeKalenderMaaned,
         endMonth = foersteMaaned12,
         totalIncome = 202912.0
 )
 
-val testDataPeriodeIncome2 = PeriodIncomeInformation (
+val testDataPeriodeIncome2 = PeriodIncomeInformation(
         periodNum = 2,
         startMonth = foersteMaaned12.minusMonths(1),
         endMonth = foersteMaaned24,
         totalIncome = 0.0
         )
 
-val testDataPeriodeIncome3 = PeriodIncomeInformation (
+val testDataPeriodeIncome3 = PeriodIncomeInformation(
         periodNum = 3,
         startMonth = foersteMaaned24.minusMonths(1),
         endMonth = foersteMaaned36,
