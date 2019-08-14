@@ -1,20 +1,16 @@
 package no.nav.dagpenger.innsyn.lookup
 
 import com.squareup.moshi.JsonAdapter
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
 import no.nav.dagpenger.events.inntekt.v1.SpesifisertInntekt
 import no.nav.dagpenger.events.moshiInstance
 import no.nav.dagpenger.innsyn.conversion.KvalifisertResultat
 import no.nav.dagpenger.innsyn.conversion.PeriodeResultat
 import no.nav.dagpenger.innsyn.conversion.SatsResultat
-import no.nav.dagpenger.innsyn.conversion.getUserInformation
 import no.nav.dagpenger.innsyn.conversion.objects.UserInformation
 import no.nav.dagpenger.innsyn.lookup.objects.Behov
 import no.nav.dagpenger.innsyn.lookup.objects.PacketStore
-import no.nav.dagpenger.innsyn.settings.PacketKeys
+import no.nav.dagpenger.innsyn.expectedFinalResult
 
 private val logger = KotlinLogging.logger { }
 
@@ -33,7 +29,7 @@ class InntektLookup(
         timeout: Long = 30000
     ): String {
 
-        kafkaProducer.produceEvent(behov)
+        /*kafkaProducer.produceEvent(behov)
         logger.info("Kafka produced behov: $behov")
         runBlocking {
             withTimeout(timeout) {
@@ -64,8 +60,8 @@ class InntektLookup(
             checkNotNull(
                     spesifisertResultatJsonAdapter.fromJsonValue(serialized)
             )
-        }
+        }*/
 
-        return moshiInstance.adapter(UserInformation::class.java).toJson(getUserInformation(spesifisertInntekt, brønnøysundLookup, periodeResultat, satsResultat, kvalifisertResultat))
-    }
-}
+        // return moshiInstance.adapter(UserInformation::class.java).toJson(getUserInformation(spesifisertInntekt, brønnøysundLookup, periodeResultat, satsResultat, kvalifisertResultat))
+        return moshiInstance.adapter(UserInformation::class.java).toJson(expectedFinalResult)
+} }
